@@ -27,8 +27,8 @@
                 <a class="nav-link" href="iletisim.php">BİZ KİMİZ ?</a>
             </div>
             <div class="navbar-nav">
-                <a href="login.php" class="btn-login nav-link">Giriş Yap</a>
-                <a href="register.php" class="btn-register nav-link">Kayıt Ol</a>
+                <a href="login.php" class="btn-login">Giriş Yap</a>
+                <a href="register.php" class="btn-register">Kayıt Ol</a>
             </div>
         </div>
     </div>

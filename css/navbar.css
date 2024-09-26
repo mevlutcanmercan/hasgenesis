@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap");
 
-*{
+* {
     font-family: "Poppins", sans-serif;
 }
 
@@ -28,10 +28,6 @@
     display: block; /* Flex yerine block */
 }
 
-/* .navbar-brand img:hover {
-    transform: scale(1.1);  %10 büyütme 
-} */
-
 .navbar-brand {
     color: rgb(255, 255, 255) !important;
     font-weight: bold;
@@ -49,7 +45,6 @@
     text-align: center;
     font-size: 1.5rem;
     transition: transform 0.3s ease, color 0.3s ease;
-    
 }
 
 .navbar-brand.header-text:hover {
@@ -58,11 +53,11 @@
 }
 
 .navbar-nav .nav-link {
-    color: white !important;
+    color: rgb(0, 0, 0) !important;
     border-radius: 5px;
     padding: 10px 15px;
     font-size: 1.10rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.6);
     font-weight: bold;
     transition: transform 0.3s, background-color 0.3s, color 0.3s;
     margin: 0 5px;
@@ -76,10 +71,11 @@
     transition: transform 0.3s, background-color 0.3s, color 0.3s;
 }
 
+/* Giriş Yap butonu */
 .btn-login {
-    color: white; 
-    background-color: #4CAF50;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+    color: white !important; /* Yazı rengi beyaz */
+    background-color: #3d3d3d;
+    text-shadow: 2px 2px 4px rgb(122, 122, 122);
     border-radius: 5px;
     border: none;
     padding: 10px 20px;
@@ -87,14 +83,14 @@
     font-weight: bold;
     transition: transform 0.3s, background-color 0.3s, color 0.3s;
     display: inline-block;
-    font-size: 1.10rem;
+    font-size: 1rem;
     margin: 4px 10px 4px 2px;
     cursor: pointer;
 }
 
 .btn-register {
-    color: white; 
-    background-color: #4CAF50;
+    color: white !important; /* Yazı rengi beyaz */
+    background-color: #3d3d3d;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
     border-radius: 5px;
     border: none;
@@ -103,7 +99,7 @@
     font-weight: bold;
     transition: transform 0.3s, background-color 0.3s, color 0.3s;
     display: inline-block;
-    font-size: 1.10rem;
+    font-size: 1rem;
     margin: 4px 2px;
     cursor: pointer;
 }
@@ -111,14 +107,13 @@
 .btn-login:hover, .btn-register:hover {
     transform: scale(1.05);
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    background-color: #3e8e41;
+    background-color: #000000;
     color: white;
 }
 
-
 .navbar-nav .nav-link.active {
-    color: black !important;
-    background-color: white;
+    background-color: #1f1f1f;
+    color: white !important;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
@@ -130,12 +125,8 @@
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCI+PHBhdGggZmlsbD0ibm9uZSIgZD0iTTAsMGw4LDB2OGwwLDB6bTAsNGwtOiw4eiIvPjwvc3ZnPg==');
 }
 
-
-
 a.nav-link {
     margin: 0 5px;
 }
-
-
 
 @import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
