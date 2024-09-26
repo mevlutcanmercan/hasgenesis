@@ -27,8 +27,10 @@ CREATE TABLE `users` (
   `password_users` varchar(45) NOT NULL,
   `mail_users` varchar(45) NOT NULL,
   `isAdmin` tinyint(1) DEFAULT '0',
+  `name_users` varchar(45) NOT NULL,
+  `surname_users` varchar(45) NOT NULL,
   PRIMARY KEY (`id_users`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -37,7 +39,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'12345','deneme@mail.com',0);
+INSERT INTO `users` VALUES (2,'12345','deneme2@mail.com',0,'user','surname');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -50,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-09-26 19:15:37
+-- Dump completed on 2024-09-26 20:20:33

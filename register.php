@@ -1,5 +1,5 @@
 <?php
-include 'database.php';
+include 'dB/database.php';
 include 'bootstrap.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {

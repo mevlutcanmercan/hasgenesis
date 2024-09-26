@@ -1,3 +1,33 @@
+<?php
+include 'dB/database.php';
+include 'bootstrap.php';
+
+session_start();
+
+$welcomeMessage = "";
+$logoutLink = "";
+$loginLink = "<a href='/hasgenesis/login.php' class='btn-login nav-link'>Giriş Yap</a>";
+$signupLink = "<a href='/hasgenesis/register.php' class='btn-register nav-link'>Kayıt Ol</a>";
+$profile = "";
+
+if (isset($_SESSION['id_users'])) {
+    $userID = $_SESSION['id_users'];
+
+    $userQuery = "SELECT * FROM users WHERE id_users= $userID";
+    $userResult = $conn->query($userQuery);
+
+    if ($userResult->num_rows > 0) {
+        $user = $userResult->fetch_assoc();
+        $name = $user['name_users']; 
+        $welcomeMessage = "<h1 id='hosgeldin' class='welcome-message'>Hoşgeldiniz, " . $name . "</h1>";
+       // $profile = "<a class='nav-link' href='/hasgenesis/profile.php'>Profil</a>";
+    }
+
+    $logoutLink = "<a class='nav-link' href='/hasgenesis/logout.php'>Çıkış Yap</a>";
+    $loginLink = ""; 
+    $signupLink = ""; 
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,14 +56,17 @@
                 <a class="nav-link" href="iletisim.php">ORGANİZASYONLAR</a>
                 <a class="nav-link" href="iletisim.php">BİZ KİMİZ ?</a>
             </div>
-            <div class="navbar-nav">
-                <a href="login.php" class="btn-login nav-link">Giriş Yap</a>
-                <a href="register.php" class="btn-register nav-link">Kayıt Ol</a>
+            <div class="navbar-nav">                        
+            <?php echo $welcomeMessage ; ?>
+            <?php echo $loginLink ;  ?>
+            <?php echo $signupLink ; ?>
             </div>
         </div>
     </div>
 </nav>
+               
 
+           
 <footer class="footer mt-auto py-2">
     <div class="footer-container text-center">
         <span class="text-muted">HAS GENESIS &copy; 2024. Tüm hakları saklıdır.</span>
