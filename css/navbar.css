@@ -9,7 +9,7 @@
     top: 0 !important;
     left: 0 !important;
     width: 100% !important;
-    background: linear-gradient(to bottom, rgba(129, 129, 129, 0.7) 90%, rgba(255, 0, 0, 0.7) 100%) !important; /* Gradient geçiş */
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.25) 80%, rgba(0, 0, 0, 0.80) 100%) !important; /* Gradient geçiş */
     padding: 0 !important;
     z-index: 1000 !important;
     transition: background-color 0.3s ease;
@@ -28,23 +28,26 @@
     display: block; /* Flex yerine block */
 }
 
-.navbar-brand img:hover {
-    transform: scale(1.1); /* %10 büyütme */
-}
+/* .navbar-brand img:hover {
+    transform: scale(1.1);  %10 büyütme 
+} */
 
 .navbar-brand {
     color: rgb(255, 255, 255) !important;
     font-weight: bold;
     font-size: 1.25rem;
+    margin: 10px;
+    margin-bottom: 15px;
+    border: 10px solid black !important;
 }
 
 .navbar-brand.header-text {
-    color: rgb(255, 255, 255) !important;
+    color: rgb(0, 0, 0) !important;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
-    padding: 8px 15px;
+    padding: 0px .25em ;
     border-radius: 4px;
     text-align: center;
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     transition: transform 0.3s ease, color 0.3s ease;
     
 }
@@ -62,15 +65,56 @@
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
     font-weight: bold;
     transition: transform 0.3s, background-color 0.3s, color 0.3s;
+    margin: 0 5px;
 }
 
 .navbar-nav .nav-link:hover {
-    color: black !important;
-    background-color: white;
+    color: rgb(255, 255, 255) !important;
+    background-color: rgb(56, 56, 56);
     transform: scale(1.05);
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s, background-color 0.3s, color 0.3s;
 }
+
+.btn-login {
+    color: white; 
+    background-color: #4CAF50;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+    border-radius: 5px;
+    border: none;
+    padding: 10px 20px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: transform 0.3s, background-color 0.3s, color 0.3s;
+    display: inline-block;
+    font-size: 1.10rem;
+    margin: 4px 10px 4px 2px;
+    cursor: pointer;
+}
+
+.btn-register {
+    color: white; 
+    background-color: #4CAF50;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+    border-radius: 5px;
+    border: none;
+    padding: 10px 20px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: transform 0.3s, background-color 0.3s, color 0.3s;
+    display: inline-block;
+    font-size: 1.10rem;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+.btn-login:hover, .btn-register:hover {
+    transform: scale(1.05);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    background-color: #3e8e41;
+    color: white;
+}
+
 
 .navbar-nav .nav-link.active {
     color: black !important;
@@ -86,33 +130,12 @@
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCI+PHBhdGggZmlsbD0ibm9uZSIgZD0iTTAsMGw4LDB2OGwwLDB6bTAsNGwtOiw4eiIvPjwvc3ZnPg==');
 }
 
+
+
 a.nav-link {
     margin: 0 5px;
 }
 
-@media (max-width: 768px) {
-    .navbar-brand.header-text {
-        display: none !important; /* Mobilde header-text sınıfını gizle */
-    }
 
-    .navbar-nav .nav-link.active {
-        color: black !important;
-        background-color: white;
-        width: 110%;
-        padding-left: 10px;
-        
-    
-    }
-
-   
-    
-
-    .navbar-collapse {
-        padding-bottom: 20px; /* Navbar'ı açtığınızda alt boşluk */
-    }
-
-    
-    
-}
 
 @import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
