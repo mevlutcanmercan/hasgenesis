@@ -109,6 +109,7 @@
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     background-color: #000000;
     color: white;
+    text-decoration: none;
 }
 
 .navbar-nav .nav-link.active {
