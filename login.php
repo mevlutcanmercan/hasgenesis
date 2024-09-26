@@ -1,5 +1,5 @@
 <?php
-include '/dB/database.php';
+include 'dB/database.php';
 include 'bootstrap.php';
 session_start();
 
@@ -18,9 +18,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
 
-        // Şifre kontrolü
         if ($userPassword == $row['password_users'] && $userMail == $row['mail_users']) {
-            // Giriş başarılı, oturumu başlat
+
             $_SESSION['id_users'] = $row['id_users'];
 
             // SweetAlert2 ile başarı mesajı göster ve yönlendir
@@ -206,10 +205,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="header">
             </div>
             <div class="input-box">
-                <input type="email" placeholder="Eposta Adresi" id="mail" name="eposta" required>
+                <input type="email" placeholder="Eposta Adresi" id="mail" name="mail_users" required>
             </div>
             <div class="input-box">
-                <input type="password" placeholder="Şifre" id="password" name="password" required>
+                <input type="password" placeholder="Şifre" id="password" name="password_users" required>
             </div>
             <button type="submit" class="btn">Giriş Yap</button>
         </form>
