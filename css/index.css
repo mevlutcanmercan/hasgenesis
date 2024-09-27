@@ -1,0 +1,100 @@
+
+
+/* Carousel öğeleri ve stil ayarları */
+.carousel {
+    margin-top: 5%; /* Carousel'in navbar altından başlaması */
+    width: 80%; /* Carousel'in genişliği, ekranın %80'ini kaplayacak */
+    margin-left: auto;
+    margin-right: auto; /* Carousel'i ortalar */
+}
+
+.carousel-item img {
+    height: 600px; /* Görsellerin boyutunu biraz küçülttüm */
+    object-fit: cover; /* Görselin kutuya düzgün sığması */
+    width: 100%; /* Görsellerin carousel genişliği kadar olması */ 
+}
+
+.carousel-caption {
+    font-weight: bold; /* Metin kalınlığı */
+    color: #fff; /* Metin rengi */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6); /* Metin gölgesi */
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+/* Başlık için ayrı stil */
+.carousel-caption h2 {
+    font-size: 2.5rem !important; /* Başlık boyutunu büyüttük */
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7); /* Başlık gölgesi */
+    margin: 0.10; /* Varsayılan marjı kaldırdık */
+    font-weight: bold;
+}
+
+/* Özet için stil */
+.carousel-caption p {
+    font-size: 1.25rem !important; /* Özetin boyutunu ayarladık */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Özet için gölge */
+}
+
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: rgba(0, 0, 0, 0.5); /* Önceki/Sonraki butonlarına stil */
+    border-radius: 50%;
+}
+
+.carousel-item a {
+    display: block;
+    text-decoration: none;
+}
+
+.carousel-item {
+    transition: transform 0.6s ease-in-out;
+}
+
+.carousel-item-next,
+.carousel-item-prev {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    transition: transform 0.6s ease-in-out;
+}
+
+.carousel-item-next {
+    transform: translateX(100%);
+}
+
+.carousel-item-prev {
+    transform: translateX(-100%);
+}
+
+.carousel-item-next.carousel-item-start,
+.carousel-item-prev.carousel-item-end {
+    transform: translateX(0);
+}
+
+.carousel-item-next.carousel-item-end {
+    transform: translateX(100%);
+}
+
+.carousel-item-prev.carousel-item-start {
+    transform: translateX(-100%);
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    filter: invert(1);
+}
+
+/* Carousel'in daha küçük ekranlarda daha iyi görünmesi için medya sorguları */
+@media (max-width: 768px) {
+    .carousel {
+        width: 95%; /* Küçük ekranlarda genişliği %95 yap */
+    }
+
+    .carousel-item img {
+        height: 400px; /* Küçük ekranlar için resim yüksekliğini azalt */
+    }
+}
