@@ -6,7 +6,7 @@ session_start();
 
 $welcomeMessage = "";
 $logoutLink = "";
-$loginLink = "<a href='/hasgenesis/login' class='btn-login'>Giriş Yap</a>";
+$loginLink = "<a href='/hasgenesis/login.php' class='btn-login'>Giriş Yap</a>";
  
 $profile = "";
 
@@ -93,7 +93,8 @@ if ($sliderResult->num_rows > 0) {
                 <a class="nav-link" href="iletisim.php">ORGANİZASYONLAR</a>
                 <a class="nav-link" href="iletisim.php">BİZ KİMİZ ?</a>
             </div>
-            <div class="navbar-nav">                        
+            <div class="navbar-nav"> 
+            <?php echo $logoutLink ; ?>                       
             <?php echo $welcomeMessage ; ?>
             <?php echo $loginLink ;  ?>
             </div>
