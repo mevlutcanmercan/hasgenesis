@@ -13,7 +13,7 @@
     <div class="wrapper">
         <form action="register.php" method="post">
         <div class="back-button">
-                <a href="login.php"><i class='bx bx-arrow-back' style="color: black;"></i></a>
+                <a href="login"><i class='bx bx-arrow-back' style="color: black;"></i></a>
             </div>
             <div class="logo"><img src="./images/logo-empty.png" alt=""></div>
             

@@ -123,13 +123,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <div class="remember-forgot">
                 <label><input type="checkbox" name="remember" class="checkbox-remember">Beni Hatırla</label>
-                <a href="forgotpassword.php">Şifremi Unuttum</a>
+                <a href="forgotpassword">Şifremi Unuttum</a>
             </div>
 
             <button type="submit" class="btn">Giriş Yap</button>
             
         </form>
-        <a href="register.php"><button type="submit" class="btn">Kayıt Ol</button></a>
+        <a href="register"><button type="submit" class="btn">Kayıt Ol</button></a>
     </div>
 
    
