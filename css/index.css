@@ -1,12 +1,17 @@
 
+body {
+    background-color: rgb(221, 221, 221) !important;
+}
 
 /* Carousel öğeleri ve stil ayarları */
 .carousel {
-    margin-top: 5%; /* Carousel'in navbar altından başlaması */
+    margin-top: 6%; /* Carousel'in navbar altından başlaması */
     width: 80%; /* Carousel'in genişliği, ekranın %80'ini kaplayacak */
     margin-left: auto;
     margin-right: auto; /* Carousel'i ortalar */
+    box-shadow: -10px 0px 15px rgba(0, 0, 0, 0.3), 10px 0px 15px rgba(0, 0, 0, 0.3); /* Sağa ve sola gölge */
 }
+
 
 .carousel-item img {
     height: 600px; /* Görsellerin boyutunu biraz küçülttüm */
@@ -98,3 +103,103 @@
         height: 400px; /* Küçük ekranlar için resim yüksekliğini azalt */
     }
 }
+
+
+/* ----------------------------------------------------------------------------------------------------------- */
+
+/* Güncel Haberler Başlık ve Kartlar */
+.text-center1{
+    text-align: center;
+    margin-bottom: 35px;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
+}
+.news-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Kartları ortala */
+    gap: 30px;
+}
+
+.news-card {
+    width: 23%; /* Kart genişliği (ekran genişliğine göre ayarlanır) */
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.news-card:hover {
+    transform: translateY(-10px); /* Kart hover olduğunda yukarıya doğru hafifçe yükselir */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 12px 24px rgba(0, 0, 0, 0.1); /* Daha belirgin bir gölge */
+}
+
+
+.news-card-img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-bottom: 1px solid #ddd;
+}
+
+.news-card-body {
+    padding: 15px;
+    text-align: center;
+}
+
+.news-card-title {
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.news-card-summary {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 20px;
+    min-height: 60px; /* Özetin yüksekliği */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Buton gri tonlarına göre stil */
+.news-card-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #6c757d;
+    color: #fff;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.news-card-btn:hover {
+    background-color: #5a6268;
+    text-decoration: none;
+    color: white;
+}
+
+/* Eğer haber yoksa gösterilecek mesaj */
+.no-news-message {
+    text-align: center;
+    font-size: 1.5rem;
+    color: #888;
+}
+
+/* Responsive Tasarım */
+@media (max-width: 992px) {
+    .news-card {
+        width: 48%; /* Daha küçük ekranlarda kart genişliği */
+        height: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .news-card {
+        width: 100%; /* Mobil cihazlarda kart genişliği tam olur */
+        height: auto;
+    }
+}
+
+/*--------------------------------------------------------------------------------------*/

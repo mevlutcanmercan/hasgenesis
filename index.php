@@ -64,6 +64,36 @@ if ($sliderResult->num_rows > 0) {
         </div>";
     }
 }
+
+
+// Veritabanından son 4 haberi çekmek için SQL sorgusu
+$newsQuery = "SELECT id, name, summary, image_path1 FROM news ORDER BY created_at DESC LIMIT 4";
+$newsResult = $conn->query($newsQuery);
+
+$newsCards = "";
+
+if ($newsResult->num_rows > 0) {
+    while($row = $newsResult->fetch_assoc()) {
+        $newsID = $row['id'];
+        $newsName = $row['name'];
+        $newsSummary = $row['summary'];
+        $imagePath = $row['image_path1'];
+
+        // Her bir haber için kart yapısını oluşturuyoruz
+        $newsCards .= "
+        <div class='news-card'>
+            <img src='$imagePath' alt='$newsName' class='news-card-img'>
+            <div class='news-card-body'>
+                <h5 class='news-card-title'>$newsName</h5>
+                <p class='news-card-summary'>$newsSummary</p>
+                <a href='news_details.php?id=$newsID' class='news-card-btn'>Devamını Oku</a>
+            </div>
+        </div>";
+    }
+} else {
+    // Eğer haber yoksa mesaj göster
+    $newsCards = "<p class='no-news-message'>Güncel haber yoktur.</p>";
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -77,6 +107,8 @@ if ($sliderResult->num_rows > 0) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+
+
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-light d-flex justify-content-between">
     <div class="container-fluid">
@@ -101,8 +133,12 @@ if ($sliderResult->num_rows > 0) {
         </div>
     </div>
 </nav>
+
+
+
+
                
-<!-- Carousel -->
+<!----------------------------------------------------------------Carousel------------------------------------------------------------------------------------- -->
 <div id="mainCarousel" class="carousel slide" data-bs-ride="carousel">
     <!-- Göstergeler -->
     <div class="carousel-indicators">
@@ -125,14 +161,46 @@ if ($sliderResult->num_rows > 0) {
     <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Next</span>
-    </button>
+    </button></div>
+<!----------------------------------------------------------------Carousel---------------------------------------------------------------------------------------->
+
+
+
+<!-- Güncel Haberler Başlığı -->
+<div class="container my-5">
+    <h2 class="text-center1">Haber Bülteni</h2>
+
+    <!-- Haber Kartları -->
+    <div class="news-cards-container">
+        <?php echo $newsCards; ?>
+    </div>
 </div>
-           
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!----------------------------------------------------------------Footer---------------------------------------------------------------------------------------->     
 <footer class="footer mt-auto py-2">
     <div class="footer-container text-center">
         <span class="text-muted">HAS GENESIS &copy; 2024. Tüm hakları saklıdır.</span>
     </div>
 </footer>
+<!----------------------------------------------------------------Footer---------------------------------------------------------------------------------------->
+
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
