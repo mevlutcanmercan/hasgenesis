@@ -16,7 +16,7 @@
     <div class="wrapper">
         <form action="sendmail.php" method="POST">  
             <div class="back-button">
-                <a href="login.php"><i class='bx bx-arrow-back' style="color: black;"></i></a>
+                <a href="login"><i class='bx bx-arrow-back' style="color: black;"></i></a>
             </div>
 
             <div class="logo"><img src="./images/logo-empty.png" alt=""></div>

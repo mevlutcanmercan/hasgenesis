@@ -7,6 +7,7 @@ session_start();
 $welcomeMessage = "";
 $logoutLink = "";
 $loginLink = "<a href='/hasgenesis/login.php' class='btn-login'>Giriş Yap</a>";
+ 
 $profile = "";
 
 if (isset($_SESSION['id_users'])) {

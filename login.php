@@ -85,7 +85,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <button type="submit" class="btn">Giriş Yap</button>
         </form>
-        <a href="register.php"><button type="button" class="btn">Kayıt Ol</button></a>
+        <a href="register.php"><button type="submit" class="btn">Kayıt Ol</button></a>
     </div>
 
     <!-- Bootstrap JS -->
