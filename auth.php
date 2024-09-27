@@ -1,36 +1,17 @@
 <?php
 
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-
 include 'dB/database.php';
 
-/**
- * Kullanıcının giriş yapmış olup olmadığını kontrol eder.
- * @return bool
- */
-function isLoggedIn() {
-    return isset($_SESSION['id_users']);
-}
-
-/**
- * Giriş yapmış kullanıcıları belirli sayfalara erişimden engeller.
- * @param string $redirectUrl Yönlendirme yapılacak URL
- */
-function preventAccessIfLoggedIn($redirectUrl = 'index.php') {
-    if (isLoggedIn()) {
+function preventAccessIfLoggedIn($redirectUrl = '/hasgenesis/index.php') {
+    if (isset($_SESSION['id_users'])) {
         header("Location: $redirectUrl");
         exit();
     }
 }
 
-/**
- * Giriş yapmamış kullanıcıları belirli sayfalara erişimden engeller.
- * @param string $redirectUrl Yönlendirme yapılacak URL
- */
-function requireLogin($redirectUrl = 'login.php') {
-    if (!isLoggedIn()) {
+// Giriş yapılmamış kullanıcıları engellemek için
+function requireLogin($redirectUrl = '/hasgenesis/login.php') {
+    if (!isset($_SESSION['id_users'])) {
         header("Location: $redirectUrl");
         exit();
     }

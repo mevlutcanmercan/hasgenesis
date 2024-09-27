@@ -1,14 +1,14 @@
+
 <?php
+include 'dB/database.php';
+include 'bootstrap.php';
 include 'auth.php';
-
-// Kullanıcı zaten giriş yapmışsa ana sayfaya yönlendir
-preventAccessIfLoggedIn('/hasgenesis/index.php'); 
-
-$error = '';
+session_start();
+preventAccessIfLoggedIn(); 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Formdan gelen verileri al
-    $userMail = trim($_POST['mail_users']);
+    $userMail = $_POST['mail_users'];
     $userPassword = $_POST['password_users'];
 
     // Veritabanında bu kullanıcıyı kontrol et
@@ -26,28 +26,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Şifre doğru, oturumu başlat
             $_SESSION['id_users'] = $id_users;
             session_regenerate_id(true);
+
+            // SweetAlert2 ile başarı mesajı göster ve yönlendir
             echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
             echo '<script>
                     Swal.fire({
                         icon: "success",
                         title: "Başarılı!",
                         text: "Giriş başarılı, ana sayfaya yönlendiriliyorsunuz...",
-                        showConfirmButton: false,
                         timer: 3000,
                         timerProgressBar: true,
-                        willClose: () => {
+                        showConfirmButton: false,
+                        didClose: () => {
                             window.location.href = "/hasgenesis/index.php";
                         }
                     });
                 </script>';
         } else {
-            $error = "Geçersiz şifre!";
+            // Hatalı giriş, SweetAlert2 ile kullanıcıya uyarı göster
+            echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
+            echo '<script>
+                    Swal.fire({
+                        icon: "error",
+                        title: "Hata!",
+                        text: "Hatalı şifre veya e-posta adresi!",
+                        confirmButtonText: "Tamam"
+                    });
+                </script>';
         }
     } else {
-        $error = "Kullanıcı bulunamadı!";
+        // Kullanıcı bulunamadı, SweetAlert2 ile kullanıcıya uyarı göster
+        echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
+        echo '<script>
+                Swal.fire({
+                    icon: "error",
+                    title: "Hata!",
+                    text: "Böyle bir kullanıcı bulunamadı!",
+                    confirmButtonText: "Tamam"
+                });
+            </script>';
     }
-
-    $stmt->close();
 }
 ?>
 <!DOCTYPE html>
