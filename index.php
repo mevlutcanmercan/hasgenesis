@@ -3,9 +3,6 @@ include 'dB/database.php';
 include 'bootstrap.php';
 
 session_start();
-
-$userID = $_SESSION['id_users'];
-
 // Carousel Veritabanından Verilerin Çekilmesi
 $sliderQuery = "SELECT * FROM main_page_sliders"; // Tablo adını güncelledik
 $sliderResult = $conn->query($sliderQuery);
