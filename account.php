@@ -4,7 +4,7 @@ include 'navbar.php';
 include 'bootstrap.php';
 session_start(); 
 $user_id = $_SESSION['id_users']; 
-
+// Giriş kontrolü
 // Kullanıcı bilgilerini al
 $stmt = $conn->prepare("SELECT mail_users, name_users, surname_users, telefon, birthday_users FROM users WHERE id_users = ?");
 $stmt->bind_param("i", $user_id);
