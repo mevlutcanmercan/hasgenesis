@@ -1,4 +1,8 @@
 <?php
+include 'dB/database.php';
+include 'bootstrap.php';
+include 'auth.php';
+requireLogin(); 
 $welcomeMessage = "";
 $logoutLink = "";
 $loginLink = "<a href='/hasgenesis/login.php' class='btn-login'>Giriş Yap</a>";
@@ -38,6 +42,8 @@ if (isset($_SESSION['id_users'])) {
                 <a class="nav-link" href="iletisim.php">BİZ KİMİZ ?</a>
             </div>
             <div class="navbar-nav"> 
+            <a href=""></a>
+            <i class="bi bi-person"></i>
             <?php echo $logoutLink ; ?>                       
             <?php echo $welcomeMessage ; ?>
             <?php echo $loginLink ;  ?>
