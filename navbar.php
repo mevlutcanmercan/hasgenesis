@@ -1,6 +1,7 @@
 <?php
 include 'dB/database.php';
 include 'bootstrap.php';
+$currentPage = basename($_SERVER['SCRIPT_NAME']);
 
 session_start();
 $welcomeMessage = "";
@@ -57,13 +58,13 @@ if (isset($_SESSION['id_users'])) {
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav mx-auto justify-content-center" id="nav-link-main">
-                <a class="nav-link active" aria-current="page" href="#">Ana Sayfa</a>
-                <a class="nav-link" href="projeler.php">HAS CREW</a>
-                <a class="nav-link" href="Medya.php">PROJELER</a>
-                <a class="nav-link" href="hakkimizda.php">HABER BÜLTENİ</a>
-                <a class="nav-link" href="iletisim.php">ORGANİZASYONLAR</a>
-                <a class="nav-link" href="iletisim.php">BİZ KİMİZ ?</a>
+        <div class="navbar-nav mx-auto justify-content-center" id="nav-link-main">
+                <a class="nav-link <?php echo ($currentPage == 'index.php') ? 'active' : ''; ?>" aria-current="page" href="index.php">Ana Sayfa</a>
+                <a class="nav-link <?php echo ($currentPage == 'projeler.php') ? 'active' : ''; ?>" href="projeler.php">HAS CREW</a>
+                <a class="nav-link <?php echo ($currentPage == 'Medya.php') ? 'active' : ''; ?>" href="Medya.php">PROJELER</a>
+                <a class="nav-link <?php echo ($currentPage == 'hakkimizda.php') ? 'active' : ''; ?>" href="hakkimizda.php">HABER BÜLTENİ</a>
+                <a class="nav-link <?php echo ($currentPage == 'iletisim.php') ? 'active' : ''; ?>" href="iletisim.php">ORGANİZASYONLAR</a>
+                <a class="nav-link <?php echo ($currentPage == 'whous.php') ? 'active' : ''; ?>" href="whous.php">BİZ KİMİZ?</a>
             </div>
             <div class="navbar-nav d-flex align-items-center">
                 <?php echo $profileDropdown; ?> 
