@@ -61,9 +61,12 @@ if ($newsResult->num_rows > 0) {
             <div class='news-card-body'>
                 <h5 class='news-card-title'>$newsName</h5>
                 <p class='news-card-summary'>$newsSummary</p>
+            </div>
+            <div class='news-card-footer'> <!-- Footer kısmı eklendi -->
                 <a href='news_details.php?id=$newsID' class='news-card-btn'>Devamını Oku</a>
             </div>
         </div>";
+
     }
 } else {
     // Eğer haber yoksa mesaj göster
@@ -111,7 +114,7 @@ if ($newsResult->num_rows > 0) {
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Next</span>
     </button></div>
-<!----------------------------------------------------------------Carousel---------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------------------->
 
 
 
