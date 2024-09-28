@@ -47,7 +47,7 @@ if (isset($_SESSION['id_users'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" href="css/navbar.css">
-    <title>Document</title>
+    
 </head>
 <body>
     
