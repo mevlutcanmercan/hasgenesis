@@ -19,7 +19,7 @@ if ($sliderResult->num_rows > 0) {
 
         // Eğer link 'http://' veya 'https://' ile başlamıyorsa, 'https://' ekle
         if (!preg_match('/^(http:\/\/|https:\/\/)/', $link)) {
-            $link = 'https://' . $link;
+            $link = 'https://' . $link; 
         }
 
         $activeClass = $firstItem ? 'active' : '';
@@ -82,7 +82,7 @@ if ($newsResult->num_rows > 0) {
     <title>Ana Sayfa</title>
     <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="css/index.css?v=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
 </head>
 <body>
 
@@ -134,6 +134,6 @@ if ($newsResult->num_rows > 0) {
 
 
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

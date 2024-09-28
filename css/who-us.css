@@ -1,127 +1,117 @@
-/* Body'nin arka planına sabit bir resim ekleme */
+/* Body için arka plan resmi ve ayarlar */
+
+*{
+    font-family: "Poppins", sans-serif;
+}
+
 body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Arial', sans-serif;
     background: url('../images/arkaplan.jpg') no-repeat center center fixed;
     background-size: cover;
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh; /* Tam ekran yüksekliği */
+    display: flex; /* Flexbox kullanarak container'ı ortalamak için */
+    justify-content: center; /* Yatay olarak ortalar */
+    align-items: center; /* Dikey olarak ortalar */
+}
+
+/* Ortadaki container */
+.who-us-container {
+    background-color: rgba(245, 245, 245, 0.7); /* Gri tonlarında transparan arka plan */
+    border-radius: 15px;
+    padding: 25px;
     display: flex;
-    justify-content: center;
     align-items: center;
-    min-height: 100vh; /* Sayfanın tamamını kaplayacak şekilde ayarlandı */
+    justify-content: space-between; /* Solda resim, sağda metin */
+    width: 80%;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Hafif gölge */
+    margin-top: 12%;
 }
 
-/* About Us container: İçeriğe göre yükseklik ayarlanır */
-.about-us-container {
-    width: 80%; /* Genişliği büyük tutuldu (sayfanın %80'i) */
-    min-height: 300px; /* Minimum yükseklik belirledik, daha fazla içerik varsa artar */
-    background: rgba(255, 255, 255, 0.5); /* Yarı saydam beyaz arka plan */
-    backdrop-filter: blur(10px); /* Arka plan blurlu */
-    border-radius: 20px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    opacity: 0; /* Başlangıçta görünmez */
-    transform: translateY(20px); /* Aşağıdan yukarı doğru kayma */
-    transition: opacity 1s ease-out, transform 1s ease-out; /* Geçiş animasyonu */
-    padding: 40px; /* İçerik alanı için padding eklendi */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column; /* İçerikler üst üste dizilir */
+/* Container üzerine gelince blur efekti */
+.who-us-container:hover {
+    backdrop-filter: blur(20px);
+    background-color: rgba(245, 245, 245, 0.7); /* Hover sırasında daha şeffaf */
 }
 
-.about-us-container:hover {
-    backdrop-filter: blur(20px); /* Üzerine gelindiğinde daha fazla blur */
-    transition: backdrop-filter 0.5s ease; /* Blur geçiş süresi */
+/* Soldaki resim */
+.who-us-container img {
+    max-width: 30%; /* Resmin boyutunu ayarladık */
+    border-radius: 10px;
+    margin-right: 45px; /* Resim ile metin arasında makul bir boşluk */
 }
 
-/* İçerik düzeni */
-.about-us-content {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
+/* Sağ taraftaki içerik */
+.who-us-content {
+    flex-grow: 1; /* İçeriğin kalan alanı kaplaması için */
+    text-align: left;
 }
 
-.about-us-left {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.about-us-logo {
-    width: 200px;
-    height: auto;
-}
-
-.about-us-right {
-    flex: 2;
-    padding-left: 30px;
-    display: flex; /* Flex ile düzenleme */
-    flex-direction: column; /* Dikey düzenleme */
-    justify-content: space-between; /* İki yandan yerleştirme */
-    text-align: justify; /* Metni her iki yana yasla */
-}
-
-.about-us-right h1 {
+/* Başlık */
+.who-us-content h1 {
     font-size: 2.5rem;
-    color: #2c3e50; /* Daha koyu bir renk */
+    font-weight: 700;
     margin-bottom: 20px;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4); /* Başlık için gölge efekti */
 }
 
-.about-us-right p {
-    font-size: 1.2rem;
+/* Açıklama metni */
+.who-us-content p {
+    font-size: 1.1rem;
     line-height: 1.6;
-    color: #34495e; /* Daha yumuşak bir mavi ton */
-    margin-bottom: 30px; /* Paragraf altındaki boşluk */
+    margin-bottom: 20px;
 }
 
 /* Sosyal medya ikonları */
 .social-icons {
-    position: relative; /* İkonların konumlandırılması */
-    margin-top: 20px; /* Yukarıdan boşluk bırakıldı */
-    align-self: flex-end; /* Sağ alt köşeye yerleştirme */
+    display: flex;
+    justify-content: flex-end; /* İkonları en sağa hizalar */
+    gap: 15px;
+    margin-top: 20px;
 }
 
-.social-icons a {
-    margin: 0 10px; /* İkonlar arasında boşluk */
-    font-size: 24px; /* İkon boyutu */
-    color: #333; /* İkon rengi */
-    transition: color 0.3s ease; /* Hover animasyonu */
+/* İkonlar üzerine gelince renk değişimi */
+.social-icons i {
+    font-size: 1.8rem;
+    color: #333;
+    transition: color 0.3s;
 }
 
-.social-icons a:hover {
-    color: #007bff; /* Hover rengi */
+.social-icons i:hover {
+    color: #007bff;
 }
 
-/* Responsive tasarım */
+/* Responsive düzen */
 @media (max-width: 768px) {
-    .about-us-content {
+    body {
+        height: auto;
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding-top: 100px; /* Navbar ile içerik arasındaki boşluğu artırdık */
+    }
+
+    .who-us-container {
         flex-direction: column;
         text-align: center;
-    }
-
-    .about-us-left,
-    .about-us-right {
         padding: 20px;
+        width: 90%; /* Mobilde biraz daha genişlik */
+        margin: 20px 25px; /* Mobilde üstten ve alttan boşluk */
     }
 
-    .about-us-right {
-        padding-left: 0; /* Sol padding'i kaldır */
-        text-align: center; /* Mobilde ortala */
+    .who-us-container img {
+        max-width: 80%;
+        margin-bottom: 20px;
+        margin-right: 0; /* Mobilde sağ boşluğu kaldırıyoruz */
     }
 
-    .about-us-logo {
-        width: 150px;
+    .who-us-content {
+        max-width: 100%;
     }
 
-    .about-us-right h1 {
-        font-size: 2rem;
-    }
-
-    .about-us-right p {
-        font-size: 1rem;
+    .social-icons {
+        justify-content: center;
+        margin-top: 20px;
     }
 }

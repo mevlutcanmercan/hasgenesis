@@ -1,6 +1,6 @@
 <?php
 include 'dB/database.php';
-include 'bootstrap.php';
+
 
 session_start();
 
@@ -45,11 +45,10 @@ if (isset($_SESSION['id_users'])) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/navbar.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <title>Document</title>
+    <link rel="shortcut icon" href="images/logo-has.png" type="image/x-icon">
 </head>
 <body>
     
@@ -61,13 +60,13 @@ if (isset($_SESSION['id_users'])) {
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav mx-auto justify-content-center" id="nav-link-main">
-                <a class="nav-link <?php echo ($currentPage == 'index.php') ? 'active' : ''; ?>" aria-current="page" href="index.php">Ana Sayfa</a>
-                <a class="nav-link <?php echo ($currentPage == 'projeler.php') ? 'active' : ''; ?>" href="projeler.php">HAS CREW</a>
-                <a class="nav-link <?php echo ($currentPage == 'Medya.php') ? 'active' : ''; ?>" href="Medya.php">PROJELER</a>
-                <a class="nav-link <?php echo ($currentPage == 'hakkimizda.php') ? 'active' : ''; ?>" href="hakkimizda.php">HABER BÜLTENİ</a>
-                <a class="nav-link <?php echo ($currentPage == 'iletisim.php') ? 'active' : ''; ?>" href="iletisim.php">ORGANİZASYONLAR</a>
-                <a class="nav-link <?php echo ($currentPage == 'whous.php') ? 'active' : ''; ?>" href="whous.php">BİZ KİMİZ?</a>
+            <div class="navbar-nav mx-auto justify-content-center" id="nav-link-main">
+                <a class="nav-link <?php echo ($currentPage == 'index.php') ? 'active' : ''; ?>" aria-current="page" href="index">Ana Sayfa</a>
+                <a class="nav-link <?php echo ($currentPage == 'hascrew.php') ? 'active' : ''; ?>" href="hascrew">HAS CREW</a>
+                <a class="nav-link <?php echo ($currentPage == 'projects.php') ? 'active' : ''; ?>" href="projects">PROJELER</a>
+                <a class="nav-link <?php echo ($currentPage == 'news.php') ? 'active' : ''; ?>" href="news">HABER BÜLTENİ</a>
+                <a class="nav-link <?php echo ($currentPage == 'organizations.php') ? 'active' : ''; ?>" href="organizations">ORGANİZASYONLAR</a>
+                <a class="nav-link <?php echo ($currentPage == 'whous.php') ? 'active' : ''; ?>" href="whous">BİZ KİMİZ ?</a>
             </div>
             <div class="navbar-nav d-flex align-items-center">
                 <?php echo $profileDropdown; ?> 
@@ -76,6 +75,25 @@ if (isset($_SESSION['id_users'])) {
         </div>
     </div>
 </nav>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const navbarToggle = document.querySelector('.navbar-toggler');
+    const navbarCollapse = document.querySelector('#navbarNavAltMarkup');
+
     
+
+    // Close navbar when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!navbarCollapse.contains(event.target) && !navbarToggle.contains(event.target)) {
+            navbarCollapse.classList.remove('show');
+        }
+    });
+});
+</script>
 </body>
 </html>
+
+

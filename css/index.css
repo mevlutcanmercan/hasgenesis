@@ -92,9 +92,15 @@ body {
 
 /* Carousel'in daha küçük ekranlarda daha iyi görünmesi için medya sorguları */
 @media (max-width: 768px) {
+
+
+    
     .carousel {
         width: 95%; /* Küçük ekranlarda genişliği %95 yap */
     }
+
+    
+    
 
     .carousel-item img {
         height: 400px; /* Küçük ekranlar için resim yüksekliğini azalt */
