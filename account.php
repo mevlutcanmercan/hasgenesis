@@ -1,13 +1,12 @@
 <?php
 include 'dB/database.php';
 include 'bootstrap.php';
-include 'auth.php';
-requireLogin(); 
+include 'navbar.php'; // Navbar burada include ediliyor
 
-$user_id = $_SESSION['user_id'];
+session_start(); // Kullanıcı oturum kontrolü
+$user_id = $_SESSION['id_users']; // Oturumdaki kullanıcı ID'sini al
 
-// Kullanıcı bilgilerini veritabanından çek
-$stmt = $conn->prepare("SELECT mail_users, name_users, surname_users, telefon, birthday_users FROM users WHERE id = ?");
+$stmt = $conn->prepare("SELECT mail_users, name_users, surname_users, telefon, birthday_users FROM users WHERE id_users = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $stmt->bind_result($email, $name, $surname, $telefon, $birthday);
@@ -19,23 +18,29 @@ $stmt->close();
 <head>
     <meta charset="UTF-8">
     <title>Hesap</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Boxicons -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <!-- Custom CSS -->
     <style>
         body {
             display: flex;
             min-height: 100vh;
             overflow-x: hidden;
         }
+        /* Navbar'ın sayfanın üst kısmında sabitlenmesi */
+        nav.navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        /* Sidebar alanı */
         .sidebar {
+            position: fixed;
+            top: 56px; /* Navbar yüksekliğine göre ayarlandı */
+            bottom: 0;
             min-width: 250px;
-            max-width: 250px;
-            background: #343a40;
+            background-color: #343a40;
             color: #fff;
-            transition: all 0.3s;
         }
         .sidebar .logo {
             padding: 20px;
@@ -57,14 +62,19 @@ $stmt->close();
             color: #fff;
         }
         .content {
-            flex: 1;
-            padding: 20px;
+            margin-left: 250px; /* Sidebar genişliğine göre ayarlanıyor */
+            padding: 70px 20px; /* Navbar ve yan boşluklar için ayarlandı */
             background: #f8f9fa;
+            flex: 1;
         }
+        /* Mobil cihazlar için düzenleme */
         @media (max-width: 768px) {
             .sidebar {
                 min-width: 100px;
                 max-width: 100px;
+            }
+            .content {
+                margin-left: 100px; /* Mobil cihazlar için daraltılıyor */
             }
             .sidebar .nav-link {
                 text-align: center;
@@ -77,6 +87,7 @@ $stmt->close();
     </style>
 </head>
 <body>
+
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="logo">
@@ -84,7 +95,6 @@ $stmt->close();
         </div>
         <nav class="mt-4">
             <a href="#profile" class="nav-link active" data-bs-toggle="tab"><i class='bx bxs-user'></i> <span>Profil</span></a>
-            <!-- Daha fazla sekme eklemek için buraya ekleyebilirsiniz -->
         </nav>
     </div>
 
@@ -107,16 +117,13 @@ $stmt->close();
                     </div>
                 </div>
             </div>
-            <!-- Diğer Sekmeler Buraya Eklenecek -->
         </div>
     </div>
 
     <!-- Bootstrap JS Bundle (includes Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Optional: Boxicons JS if needed -->
-    <script src='https://unpkg.com/boxicons@2.1.4/dist/boxicons.js'></script>
     <script>
-        // Sidebar active link handling
+        // Sidebar'da aktif linkin kontrol edilmesi
         const links = document.querySelectorAll('.sidebar .nav-link');
         links.forEach(link => {
             link.addEventListener('click', function() {
