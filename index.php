@@ -2,9 +2,6 @@
 include 'dB/database.php';
 include 'bootstrap.php';
 
-session_start();
-
-
 // ----------------------------------------------------------------
 
 // Carousel Veritabanından Verilerin Çekilmesi
