@@ -92,18 +92,31 @@ body {
 
 /* Carousel'in daha küçük ekranlarda daha iyi görünmesi için medya sorguları */
 @media (max-width: 768px) {
-
-
-    
+    .carousel-control-prev,
+    .carousel-control-next {
+        display: none; /* Butonları gizle */
+    }
     .carousel {
+        margin-top: 25% !important;
         width: 95%; /* Küçük ekranlarda genişliği %95 yap */
     }
 
-    
-    
-
     .carousel-item img {
-        height: 400px; /* Küçük ekranlar için resim yüksekliğini azalt */
+        height: auto; /* Küçük ekranlar için yükseklik esnek olsun */
+        max-height: 400px; /* Yüksekliği maksimum 400px yap */
+        object-fit: cover; /* Görsellerin doğru sığması için */
+    }
+
+    .carousel-caption {
+        padding: 10px; /* Mobilde daha az dolgu */
+    }
+
+    .carousel-caption h2 {
+        font-size: 1.5rem !important; /* Mobilde başlık boyutunu küçült */
+    }
+
+    .carousel-caption p {
+        font-size: 1rem !important; /* Mobilde özet boyutunu küçült */
     }
 }
 

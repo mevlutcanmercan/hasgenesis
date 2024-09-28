@@ -1,7 +1,7 @@
 <?php
 include 'dB/database.php';
-include 'bootstrap.php';
 include 'navbar.php';
+include 'bootstrap.php';
 
 // Carousel Veritabanından Verilerin Çekilmesi
 $sliderQuery = "SELECT * FROM main_page_sliders"; // Tablo adını güncelledik

@@ -55,7 +55,7 @@ if (isset($_SESSION['id_users'])) {
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-light d-flex justify-content-between">
     <div class="container-fluid">
-        <a class="navbar-brand header-text" href="#">HAS GENESIS</a>
+        <a class="navbar-brand header-text" href="index">HAS GENESIS</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
