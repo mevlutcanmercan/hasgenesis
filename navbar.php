@@ -28,7 +28,7 @@ if (isset($_SESSION['id_users'])) {
                 <i class='bi bi-person-circle' style='font-size: 24px;'></i> <!-- Profil ikonu -->
             </a>
             <ul class='dropdown-menu dropdown-menu-end' aria-labelledby='navbarDropdown'>
-                <li><a class='dropdown-item' href='#'>Profilim</a></li>
+                <li><a class='dropdown-item' href='/account.php'>Profilim</a></li>
                 <li><a class='dropdown-item' href='#'>Ayarlar</a></li>
                 <li><hr class='dropdown-divider'></li>
                 <li><a class='dropdown-item' href='/hasgenesis/logout.php'>Çıkış Yap</a></li>
