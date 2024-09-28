@@ -1,6 +1,7 @@
 <?php
 include 'dB/database.php';
 include 'bootstrap.php';
+include 'navbar.php';
 
 // ----------------------------------------------------------------
 
@@ -76,7 +77,7 @@ if ($newsResult->num_rows > 0) {
 }
 ?>
 
-<?php include 'navbar.php';?> 
+<?php ?> 
 
 <!DOCTYPE html>
 <html lang="en">
