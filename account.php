@@ -1,7 +1,7 @@
 <?php
 include 'dB/database.php';
 include 'navbar.php'; 
-
+include 'bootstrap.php';
 session_start(); 
 $user_id = $_SESSION['id_users']; 
 

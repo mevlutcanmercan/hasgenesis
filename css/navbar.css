@@ -86,22 +86,6 @@
     cursor: pointer;
 }
 
-.btn-register {
-    color: white !important; /* Yazı rengi beyaz */
-    background-color: #3d3d3d;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
-    border-radius: 5px;
-    border: none;
-    padding: 10px 20px;
-    text-decoration: none;
-    font-weight: bold;
-    transition: transform 0.3s, background-color 0.3s, color 0.3s;
-    display: inline-block;
-    font-size: 1rem;
-    margin: 4px 2px;
-    cursor: pointer;
-}
-
 .btn-login:hover, .btn-register:hover {
     transform: scale(1.05);
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
