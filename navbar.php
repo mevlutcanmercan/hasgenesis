@@ -22,17 +22,17 @@ if (isset($_SESSION['id_users'])) {
         $welcomeMessage = "<h1 id='hosgeldin' class='welcome-message'>Hoşgeldiniz, " . $name . "</h1>";
     }
 
-    // Profil ikonu ile açılır menü
+    // Profil ikonu ile açılır menü (Boxicons kullanarak)
     $profileDropdown = "
         <li class='nav-item dropdown'>
             <a class='nav-link dropdown-toggle' href='#' id='navbarDropdown' role='button' data-bs-toggle='dropdown' aria-expanded='false'>
-                <i class='bi bi-person-circle' style='font-size: 24px;'></i> <!-- Profil ikonu -->
+                <i class='bx bxs-user' style='font-size: 24px;'></i> 
             </a>
             <ul class='dropdown-menu dropdown-menu-end' aria-labelledby='navbarDropdown'>
-                <li><a class='dropdown-item' href='/account.php'>Profilim</a></li>
+                <li><a class='dropdown-item' href='account.php'>Profilim</a></li>
                 <li><a class='dropdown-item' href='#'>Ayarlar</a></li>
                 <li><hr class='dropdown-divider'></li>
-                <li><a class='dropdown-item' href='/hasgenesis/logout.php'>Çıkış Yap</a></li>
+                <li><a class='dropdown-item' href='logout.php'>Çıkış Yap</a></li>
             </ul>
         </li>
     ";
@@ -47,6 +47,8 @@ if (isset($_SESSION['id_users'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" href="css/navbar.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <title>Document</title>
 </head>
 <body>
@@ -74,6 +76,6 @@ if (isset($_SESSION['id_users'])) {
         </div>
     </div>
 </nav>
-
+    
 </body>
 </html>
