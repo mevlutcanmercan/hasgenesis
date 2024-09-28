@@ -143,7 +143,7 @@ body {
 .news-card-img {
     width: 100%;
     height: 180px; /* Resmin yüksekliği sabit */
-    object-fit: cover; /* Görseli kesmeden sığdırır */
+    object-fit: fixed; /* Görseli kesmeden sığdırır */
     border-bottom: 1px solid #ddd;
 }
 
