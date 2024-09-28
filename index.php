@@ -1,8 +1,7 @@
 <?php
 include 'dB/database.php';
 include 'bootstrap.php';
-
-// ----------------------------------------------------------------
+include 'navbar.php';
 
 // Carousel Veritabanından Verilerin Çekilmesi
 $sliderQuery = "SELECT * FROM main_page_sliders"; // Tablo adını güncelledik
@@ -75,8 +74,6 @@ if ($newsResult->num_rows > 0) {
     
 }
 ?>
-
-<?php include 'navbar.php';?> 
 
 <!DOCTYPE html>
 <html lang="en">
