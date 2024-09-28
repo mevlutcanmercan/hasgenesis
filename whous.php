@@ -18,7 +18,6 @@ $data = $result->fetch_all(MYSQLI_ASSOC); // Sonuçları al
     <title>Biz Kimiz</title>
     <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="css/who-us.css"> <!-- CSS dosyasına bağlantı -->
-    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css'> <!-- Boxicons -->
 </head>
 <body>
 
