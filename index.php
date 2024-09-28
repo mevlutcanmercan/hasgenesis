@@ -7,38 +7,18 @@ include 'bootstrap.php';
 $sliderQuery = "SELECT * FROM main_page_sliders"; // Tablo adını güncelledik
 $sliderResult = $conn->query($sliderQuery);
 
-$carouselItems = "";
-$firstItem = true;
+$slides = []; // Slaytları tutacak dizi
 
 if ($sliderResult->num_rows > 0) {
     while($row = $sliderResult->fetch_assoc()) {
-        $title = $row['title'];        // Başlık
-        $summary = $row['summary'];    // Özet
-        $imagePath = $row['image_path']; // Resim yolu
-        $link = $row['link'];          // Link
-
-        // Eğer link 'http://' veya 'https://' ile başlamıyorsa, 'https://' ekle
-        if (!preg_match('/^(http:\/\/|https:\/\/)/', $link)) {
-            $link = 'https://' . $link; 
-        }
-
-        $activeClass = $firstItem ? 'active' : '';
-        $firstItem = false;
-
-        // Her bir carousel-item dinamik olarak oluşturuluyor
-        $carouselItems .= "
-        <div class='carousel-item $activeClass'>
-            <a href='$link'>
-                <img src='$imagePath' class='d-block w-100' alt='$title'>  <!-- Resmin yolu kullanılıyor -->
-                <div class='carousel-caption d-none d-md-block'>
-                    <h2>$title</h2>
-                    <p>$summary</p>
-                </div>
-            </a>
-        </div>";
+        $slides[] = [
+            'title' => $row['title'],
+            'summary' => $row['summary'],
+            'image_path' => $row['image_path'],
+            'link' => $row['link']
+        ];
     }
 }
-
 
 // Veritabanından son 4 haberi çekmek için SQL sorgusu
 $newsQuery = "SELECT id, name, summary, image_path1 FROM news ORDER BY created_at DESC LIMIT 4";
@@ -65,13 +45,10 @@ if ($newsResult->num_rows > 0) {
                 <a href='news_details.php?id=$newsID' class='news-card-btn'>Devamını Oku</a>
             </div>
         </div>";
-
     }
 } else {
     // Eğer haber yoksa mesaj göster
     $newsCards = "<p class='no-news-message'>Güncel haber yoktur.</p>";
-
-    
 }
 ?>
 <!DOCTYPE html>
@@ -82,7 +59,6 @@ if ($newsResult->num_rows > 0) {
     <title>Ana Sayfa</title>
     <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="css/index.css?v=1.0">
-    
 </head>
 <body>
 
@@ -90,18 +66,23 @@ if ($newsResult->num_rows > 0) {
 <div id="mainCarousel" class="carousel slide" data-bs-ride="carousel">
     <!-- Göstergeler -->
     <div class="carousel-indicators">
-        <?php
-        $sliderCount = $sliderResult->num_rows; // Slider sayısını al
-        for ($i = 0; $i < $sliderCount; $i++) {
-            $activeClass = $i === 0 ? 'active' : ''; // İlk slayt için active sınıfı ekle
-            echo "<button type='button' data-bs-target='#mainCarousel' data-bs-slide-to='$i' class='$activeClass' aria-label='Slide " . ($i + 1) . "'></button>";
-        }
-        ?>
+        <?php foreach ($slides as $index => $slide): ?>
+            <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="<?= $index ?>" class="<?= $index === 0 ? 'active' : '' ?>" aria-label="Slide <?= $index + 1 ?>"></button>
+        <?php endforeach; ?>
     </div>
 
     <div class="carousel-inner">
-        <?php echo $carouselItems; ?>
+        <?php foreach ($slides as $index => $slide): ?>
+            <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>" data-url="<?= $slide['link'] ?>">
+                <img src="<?= $slide['image_path'] ?>" class="d-block w-100" alt="<?= htmlspecialchars($slide['title']) ?>">
+                <div class="carousel-caption d-md-block">
+                    <h2><?= htmlspecialchars($slide['title']) ?></h2>
+                    <p><?= htmlspecialchars($slide['summary']) ?></p>
+                </div>
+            </div>
+        <?php endforeach; ?>
     </div>
+
     <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Previous</span>
@@ -109,10 +90,21 @@ if ($newsResult->num_rows > 0) {
     <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Next</span>
-    </button></div>
+    </button>
+</div>
+
+<script>
+    // Carousel öğelerine tıklandığında yönlendirme yapılması
+    document.querySelectorAll('.carousel-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const url = this.getAttribute('data-url');
+            if (url) {
+                window.location.href = 'https://' + url; // URL'yi tam olarak değiştirme
+            }
+        });
+    });
+</script>
 <!------------------------------------------------------------------------------------------------------------------------------------------------------------->
-
-
 
 <!-- Güncel Haberler Başlığı -->
 <div class="container my-5">
@@ -131,9 +123,6 @@ if ($newsResult->num_rows > 0) {
     </div>
 </footer>
 <!----------------------------------------------------------------Footer---------------------------------------------------------------------------------------->
-
-
-
 
 </body>
 </html>

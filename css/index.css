@@ -12,8 +12,9 @@ body {
 }
 
 .carousel-item img {
-    height: 600px; /* Görsellerin boyutunu biraz küçülttüm */
-    object-fit: cover; /* Görselin kutuya düzgün sığması */
+     /* Görsellerin boyutunu biraz küçülttüm */
+    height: 720px;
+    object-fit: fixed; /* Görselin kutuya düzgün sığması */
     width: 100%; /* Görsellerin carousel genişliği kadar olması */ 
 }
 
@@ -53,6 +54,7 @@ body {
 
 .carousel-item {
     transition: transform 0.6s ease-in-out;
+    cursor: pointer;
 }
 
 .carousel-item-next,
@@ -92,6 +94,7 @@ body {
 
 /* Carousel'in daha küçük ekranlarda daha iyi görünmesi için medya sorguları */
 @media (max-width: 768px) {
+    
     .carousel-control-prev,
     .carousel-control-next {
         display: none; /* Butonları gizle */
@@ -103,29 +106,47 @@ body {
 
     .carousel-item img {
         height: auto; /* Küçük ekranlar için yükseklik esnek olsun */
-        max-height: 400px; /* Yüksekliği maksimum 400px yap */
+        height: 250px; /* Yüksekliği maksimum 400px yap */
         object-fit: cover; /* Görsellerin doğru sığması için */
     }
 
     .carousel-caption {
         padding: 10px; /* Mobilde daha az dolgu */
+        display: block;
     }
 
     .carousel-caption h2 {
-        font-size: 1.5rem !important; /* Mobilde başlık boyutunu küçült */
+        font-size: 1.0rem !important; /* Mobilde başlık boyutunu küçült */
+        margin: 0;
     }
 
     .carousel-caption p {
-        font-size: 1rem !important; /* Mobilde özet boyutunu küçült */
+        font-size: 0.6rem !important; /* Mobilde özet boyutunu küçült */
+        margin-bottom: 0;
+    }
+
+    .carousel-indicators {
+         bottom: 0px;
+         padding: 0;
+         display: inline-flex;/* Göstergeleri alttan biraz daha aşağı al */
+    }
+
+    .carousel-indicators button {
+        width: 10px !important; /* Göstergelerin genişliğini küçült */
+        height: 2px !important; /* Göstergelerin yüksekliğini küçült */
+         /* Göstergeler arasındaki boşluğu ayarla */
     }
 }
 
 /* ----------------------------------------------------------------------------------------------------------- */
 
 /* Güncel Haberler Başlık ve Kartlar */
+.my-5{
+    margin-top: 2rem !important;
+}
 .text-center1 {
     text-align: center;
-    margin-bottom: 35px;
+    margin-bottom: 25px;
     text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
 }
 
@@ -181,6 +202,7 @@ body {
     margin-bottom: 20px;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-align: justify;
     
 }
 
