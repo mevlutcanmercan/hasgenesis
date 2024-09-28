@@ -74,9 +74,6 @@ if ($newsResult->num_rows > 0) {
     
 }
 ?>
-
-<?php include 'navbar.php';?> 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>

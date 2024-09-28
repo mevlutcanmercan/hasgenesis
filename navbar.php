@@ -1,9 +1,10 @@
 <?php
 include 'dB/database.php';
 include 'bootstrap.php';
-$currentPage = basename($_SERVER['SCRIPT_NAME']);
 
 session_start();
+
+$currentPage = basename($_SERVER['SCRIPT_NAME']);
 $welcomeMessage = "";
 $logoutLink = "";
 $loginLink = "<a href='/hasgenesis/login.php' class='btn-login'>Giriş Yap</a>";
