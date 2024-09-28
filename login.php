@@ -1,4 +1,3 @@
-
 <?php
 include 'dB/database.php';
 include 'bootstrap.php';
@@ -75,14 +74,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Giriş Yap</title>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="/hasgenesis/css/login.css"> <!-- Stil dosyanızı ekleyin -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    
 </head>
 <body>
     <div class="ustkisim">
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     
     <div class="wrapper">
         <form action="login.php" method="post">
@@ -106,7 +105,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <a href="register.php"><button type="submit" class="btn">Kayıt Ol</button></a>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" ></script>
+    
 </body>
 </html>
