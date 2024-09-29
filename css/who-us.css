@@ -18,6 +18,7 @@ body {
 
 /* Ortadaki container */
 .who-us-container {
+    opacity: 0; /* Görünmez başlar */
     background-color: rgba(245, 245, 245, 0.7); /* Gri tonlarında transparan arka plan */
     border-radius: 15px;
     padding: 25px;
@@ -26,9 +27,16 @@ body {
     justify-content: space-between; /* Solda resim, sağda metin */
     width: 80%;
     backdrop-filter: blur(5px);
-    transition: all 0.3s ease;
+    transform: translateY(30px);
+    transition: all 0.8s ease;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Hafif gölge */
     margin-top: 12%;
+}
+
+
+.who-us-container.show {
+    opacity: 1; /* Görünür hale gelir */
+    transform: translateY(0); /* Normal pozisyonuna gelir */
 }
 
 /* Container üzerine gelince blur efekti */
@@ -47,7 +55,7 @@ body {
 /* Sağ taraftaki içerik */
 .who-us-content {
     flex-grow: 1; /* İçeriğin kalan alanı kaplaması için */
-    text-align: left;
+    text-align: justify; 
 }
 
 /* Başlık */
@@ -107,6 +115,7 @@ body {
     }
 
     .who-us-content {
+        text-align: center;
         max-width: 100%;
     }
 

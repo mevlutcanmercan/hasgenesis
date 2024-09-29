@@ -85,7 +85,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     <div class="wrapper">
         <form action="login.php" method="post">
-            <div class="logo"><img src="./images/logo-empty.png" alt=""></div>
+            <div class="logo"><img src="./images/logo-has.png" alt=""></div>
             <hr class="cizgi">
             <h1>Giriş Yap</h1>
             <div class="input-box">

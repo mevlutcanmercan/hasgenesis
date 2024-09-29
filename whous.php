@@ -34,14 +34,42 @@ $data = $result->fetch_all(MYSQLI_ASSOC); // Sonuçları al
             
             <!-- Sosyal medya ikonları -->
             <div class="social-icons">
-                <a href="#"><i class='bx bxl-facebook'></i></a>
-                <a href="#"><i class='bx bxl-twitter'></i></a>
-                <a href="#"><i class='bx bxl-instagram'></i></a>
-                <a href="#"><i class='bx bxl-linkedin'></i></a>
+                <a href="https://www.facebook.com/hasdownhill" target="_blank"><i class='bx bxl-facebook'></i></a>
+                <a href="https://www.instagram.com/hasdownhill/" target="_blank"><i class='bx bxl-instagram'></i></a>
             </div>
         </div>
     <?php endforeach; ?>
 </div>
+
+
+
+<script>
+// Sayfa yüklendiğinde çalışacak fonksiyon
+document.addEventListener('DOMContentLoaded', function() {
+    const whoUsContainer = document.querySelector('.who-us-container');
+
+    // Sayfa yüklendiğinde animasyonu başlat
+    function showWhoUsContainer() {
+        // Eğer who-us-container göründüyse, 'show' sınıfını ekle
+        const containerPosition = whoUsContainer.getBoundingClientRect().top;
+        const screenPosition = window.innerHeight / 1.3;
+
+        if (containerPosition < screenPosition) {
+            whoUsContainer.classList.add('show');
+        }
+    }
+
+    // Sayfa yüklendiğinde kontrol et
+    showWhoUsContainer();
+
+    // Sayfa kaydırıldığında da kontrol et
+    window.addEventListener('scroll', showWhoUsContainer);
+});
+</script>
+
+
+
+
 
 <footer class="footer mt-auto py-2">
     <div class="footer-container text-center">
