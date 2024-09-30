@@ -154,12 +154,79 @@ body {
 
 }
 
-
-
-
-
 .checkbox-remember {
     margin-right: 5px;
     display: inline-block;
+}
+/* Telefon input ve dropdown kutusunu düzenlemek için */
+.input-box .iti {
+    width: 100%;
+}
+
+.input-box input[type="tel"] {
+    padding-left: 50px; /* Bayrak ve kod için yeterli alan bırak */
+    height: 45px;
+    background: transparent;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 30px;
+    color: #000;
+    font-size: 16px;
+}
+
+.input-box .iti__flag-container {
+    position: absolute;
+    top: 0;
+    left: 10px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    z-index: 2; /* Daha yüksek z-index vererek öne getiriyoruz */
+}
+
+.input-box .iti__flag {
+    width: 18px; /* Küçük bayraklar için */
+    height: 12px;
+}
+
+.input-box .iti__selected-flag {
+    padding-right: 10px;
+}
+
+/* Dropdown kutusunun boyutunu küçültme */
+.iti__country-list {
+    background-color: white;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-size: 14px; /* Yazı boyutu */
+    width: 250px; /* Dropdown genişliği */
+    max-height: 200px; /* Maksimum yükseklik */
+    overflow-y: auto; /* Dikey kaydırma ekleyerek scroll yapılabilir */
+}
+
+.iti__country {
+    padding: 8px; /* Daha küçük padding */
+    cursor: pointer;
+}
+
+.iti__country:hover {
+    background-color: #f1f1f1;
+}
+
+.iti__country-name {
+    font-size: 14px;
+    color: black;
+}
+
+.iti__dial-code {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Bayrak ve telefon kutusu hizalaması */
+.input-box .iti__selected-dial-code {
+    margin-left: 10px;
+    font-size: 16px;
+    color: #333;
 }
 
