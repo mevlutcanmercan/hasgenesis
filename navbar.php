@@ -67,6 +67,7 @@ if (isset($_SESSION['id_users'])) {
                 <a class="nav-link <?php echo ($currentPage == 'news.php') ? 'active' : ''; ?>" href="news">HABER BÜLTENİ</a>
                 <a class="nav-link <?php echo ($currentPage == 'organizations.php') ? 'active' : ''; ?>" href="organizations">ORGANİZASYONLAR</a>
                 <a class="nav-link <?php echo ($currentPage == 'whous.php') ? 'active' : ''; ?>" href="whous">BİZ KİMİZ ?</a>
+                <a class="nav-link <?php echo ($currentPage == 'communication.php') ? 'active' : ''; ?>" href="communication">İLETİŞİM</a>
             </div>
             <div class="navbar-nav d-flex align-items-center">
                 <?php echo $profileDropdown; ?> 

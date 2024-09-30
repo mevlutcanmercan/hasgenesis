@@ -98,9 +98,9 @@ body {
 /* Buton Stili */
 .btn-primary {
     color: #fff;
-    background-color: #6c757d; /* Gri tonlarında buton rengi */
-    border-color: #6c757d;
-    width: 100%; /* Buton tam genişlikte olacak */
+    background-color: #515253; /* Gri tonlarında buton rengi */
+    border-color: #515253;
+    width: 50%; /* Buton tam genişlikte olacak */
     transition: background-color 0.3s ease, border-color 0.3s ease;
     padding: 10px; /* Butonun dikdörtgen görünmesi için */
     border-radius: 4px;
@@ -108,7 +108,7 @@ body {
 }
 
 .btn-primary:hover {
-    background-color: #5a6268; /* Daha koyu gri hover durumu */
+    background-color: #000000; /* Daha koyu gri hover durumu */
     border-color: #5a6268;
 }
 
@@ -122,16 +122,16 @@ body {
 .pagination-link {
     margin: 0 5px;
     padding: 10px 20px;
-    color: #6c757d;
+    color: #515253;
     text-decoration: none;
-    border: 1px solid #6c757d;
+    border: 1px solid #515253;
     border-radius: 5px;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .pagination-link:hover {
-    border-color:#000000;
-    background-color: #6c757d;
+    border-color:#3d3d3d;
+    background-color: #3d3d3d;
     color: white;
 }
 

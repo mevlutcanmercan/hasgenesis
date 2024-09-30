@@ -1,0 +1,198 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap");
+
+* {
+    font-family: "Poppins", sans-serif;
+    box-sizing: border-box; /* Tüm öğelerin kutu modelini daha iyi yönetmek için */
+    text-align: center;
+}
+
+html, body {
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    padding-top: 8%;
+    background-color: #f5f5f5;
+    background-image: url('../images/iletisimarkaplan.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+}
+
+.container {
+    max-width: 1200px !important; 
+    padding: 25px; 
+    background-color: rgba(129, 129, 129, 0.7) !important;
+    backdrop-filter: blur(5px);
+    border-radius: 15px;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease, backdrop-filter 0.6s ease;
+    color: white;   
+    display: flex; /* Flexbox düzeni */
+    flex-direction: column; /* Dikey düzen */
+    align-items: center; /* Elemanları yatayda ortala */
+    justify-content: flex-start; /* Elemanları üstten başlat */
+    min-height: 500px; /* Minimum yükseklik ayarlandı */
+    opacity: 1; /* Başlangıç opaklığı */
+    transform: translateY(0); /* Başlangıçta konum */
+    transition: backdrop-filter 0.5s ease, box-shadow 0.5s ease !important ; /* Fade-in geçişi */
+}
+
+.readonly-input {
+    background-color: #e9ecef;
+    color: #6c757d;
+    pointer-events: none; /* Bu alanları tıklanamaz yapar */
+    opacity: 0.7; /* Soluk görünüm */
+}
+
+.container:hover {
+    background-color: rgba(129, 129, 129, 0.7) !important; /* Arka plan rengi */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.459); /* Hafif gölge efekti */
+    backdrop-filter: blur(10px); /* Arka plan bulanıklığı */
+    transition: backdrop-filter 0.5s ease, box-shadow 0.5s ease !important ; /* Geçiş süresi eklendi */
+}
+
+h2 {
+    color: white;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.form-label {
+    color: white;
+    font-weight: bold;
+}
+
+.col-md-4 {
+    margin-top: 1%;
+}
+
+/* Resmi büyütmek ve ortalamak için stil ayarları */
+.col-md-4 img {
+    max-width: 200px; /* Resmin maksimum genişliği */
+    height: auto; /* Yüksekliği otomatik ayarlamak için */
+    display: block; /* Ortalamak için */
+    margin-left: auto; /* Ortalamak için */
+    margin-right: auto; /* Ortalamak için */
+}
+
+/* Masaüstü görünümü için logo boyutunu artır ve dikey ortala */
+@media (min-width: 769px) {
+    .col-md-4 img {
+        max-width: 180px; /* Masaüstü için logonun maksimum genişliğini artır */
+        margin-top: 20px; /* Yukarıda boşluk ekle */
+        margin-bottom: 20px; /* Aşağıda boşluk ekle */
+        align-self: center; /* Dikey ortalama */
+    }
+}
+
+.social-icons {
+    margin-top: 20px; /* İkonların üstündeki boşluk */
+    align-items: center; /* Dikey ortalama */
+}
+
+.social-icons a {
+    color: #333; /* İkonların başlangıç rengi */
+    font-size: 30px; /* İkon boyutu */
+    margin-right: 20px; /* İkonlar arasında boşluk */
+    transition: color 0.3s, transform 0.3s; /* Renk ve boyut geçişi */
+    text-decoration: none; /* Alt çizgiyi kaldır */
+}
+
+.social-icons a:last-child {
+    margin-right: 0; /* Son ikon için sağ boşluğu kaldır */
+}
+
+.social-icons a:hover {
+    color: #007bff; /* Hover durumunda renk değişimi */
+    transform: scale(1.2); /* Hover durumunda büyüme efekti */
+}
+
+/* Buton Stili */
+.btn-primary {
+    color: #fff;
+    background: linear-gradient(45deg, rgb(99, 99, 99), rgba(0, 0, 0, 1)); /* Hover durumunda daha belirgin renk geçişi */
+    border-color: #000000 !important;
+    width: 100%;
+    border: 2px solid #000000; /* Buton sınırı */
+    transition: background 0.8s ease, border-color 0.8s ease, color 0.8s ease, opacity 0.8s ease, transform 0.3s ease !important; /* Geçiş süreleri */
+    position: relative;
+    overflow: hidden; /* İçeriğin taşmasını engellemek */
+    opacity: 0.8; /* Varsayılan opaklık */
+    transform: scale(1); /* Varsayılan boyut */
+}
+
+/* Hover Durumu */
+.btn-primary:hover {
+    color: #fff;
+    background: linear-gradient(45deg, rgb(68, 68, 68), rgba(0, 0, 0, 1)); /* Hover durumunda daha belirgin renk geçişi */
+    border-color: #000000;
+    opacity: 1; /* Butonun hover durumundaki opaklığı */
+    transform: scale(1.01); /* Hover durumunda %5 büyüme */
+}
+
+.mb-3.checkbox-group {
+    margin-bottom: 15px;
+}
+
+.mb-3.checkbox-group input[type="checkbox"] {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.mb-3.checkbox-group label {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 10px; /* Checkbox ve yazı arasındaki boşluk */
+}
+
+.checkbox-group {
+    display: grid;
+    grid-template-columns: auto 1fr; /* Checkbox ve etiket arasındaki alan */
+    gap: 10px; /* Checkbox ile etiket arasındaki boşluk */
+    align-items: center; /* Her iki öğeyi de ortalar */
+}
+
+/* Responsive ayarlar */
+@media (max-width: 768px) {
+    body {
+        padding-top: 20%;
+    }
+
+    .container {
+        width: 85%; /* Ekranın ortasında olması için küçük paddin */
+        margin-bottom: 10px; /* Alt kısımda boşluk bırak */
+        min-height: auto; /* Minimum yükseklik yok */
+    }
+
+    .row.mb-3 {
+        text-align: center;
+        flex-direction: column; /* Her satırda tek sütun olacak şekilde düzenle */
+    }
+    
+    .row.mb-3 .col {
+        width: 100%; /* Her kutu tam genişlikte olsun */
+        margin-bottom: 15px; /* Kutular arasında boşluk bırak */
+    }
+
+    .container {
+        padding: 15px; /* Üstte ve altta biraz boşluk bırak */
+        margin-bottom: 15px; /* Alt kısımda boşluk bırak */
+    }
+}
+
+/* Masaüstü için ek düzenlemeler */
+@media (min-width: 769px) {
+    .container {
+        padding: 40px; /* Daha geniş alan için padding artırıldı */
+        justify-content: flex-start; /* Elemanları üstten başlat */
+        min-height: 500px; /* Minimum yükseklik ayarı güncellendi */
+        margin-bottom: 20px; /* Alt kısımda boşluk bırak */
+    }
+
+    h2 {
+        margin-top: 0; /* Başlık üstten taşmasın diye margin ayarlandı */
+    }
+}
