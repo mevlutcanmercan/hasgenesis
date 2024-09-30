@@ -29,12 +29,12 @@ body {
 .footer {
     width: 100%; /* Tam genişlik */
     background: linear-gradient(to right, 
-        rgb(0, 0, 0,0.9) 0%, 
-        rgba(0, 0, 0,0.9) 5%, 
-        rgba(184, 184, 184,0.9) 15%, 
-        rgba(210, 210, 210,0.9) 85%, 
-        rgba(0, 0, 0,0.9) 95%, 
-        rgba(32, 32, 32,0.9) 100%) !important; /* Yumuşak gradient geçişi */
+        rgb(0, 0, 0,0.7) 0%, 
+        rgba(0, 0, 0,0.7) 5%, 
+        rgba(184, 184, 184,0.8) 15%, 
+        rgba(210, 210, 210,0.8) 85%, 
+        rgba(0, 0, 0,0.7) 95%, 
+        rgba(32, 32, 32,0.7) 100%) !important; /* Yumuşak gradient geçişi */
     text-align: center; /* Metin hizalama */
     padding: 10px 0; /* Kenar boşluklarını ayarla */
     margin-top: auto; /* İçeriğin üstünde yer almasını sağlar */

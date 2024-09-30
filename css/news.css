@@ -1,0 +1,169 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap");
+
+* {
+    font-family: "Poppins", sans-serif;
+}
+
+html, body {
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    padding-top: 3%;
+    background-color: #f5f5f5;
+    background-image: url('../images/gri-arka-plan.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+}
+
+.container {
+    max-width: 1000px;
+}
+
+/* Kart Stili */
+.project-card {
+    border: 1px solid #ccc; /* Gri sınır */
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+    background-color: #ffffff; /* Beyaz arka plan */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 450px; /* Sabit kart yüksekliği */
+    position: relative;
+}
+
+.project-card:hover {
+    transform: scale(1.02);
+    border-color: #aaa;
+    box-shadow: 0 8px 15px rgba(128, 128, 128, 0.4), /* Grimsi yansıma */
+                0 12px 20px rgba(0, 0, 0, 0.2); /* Altına ekstra bir gölge */
+}
+
+/* Kart Resmi Stili */
+.project-card img {
+    width: 100%;
+    height: 180px;
+    object-fit:scale-down; /* Resmin kapsaması için */
+    background-color: #5a6268;
+    overflow: hidden;
+}
+
+/* Kart İçeriği */
+.project-card-body {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    flex-grow: 1;
+    overflow: hidden; /* Taşmayı önler */
+}
+
+.project-title {
+    text-align: center;
+    font-size: 1.3rem;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+/* Tarih Stili */
+.project-date {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #888; /* Gri tonunda */
+    margin-bottom: 10px; /* Tarih ile içerik arasına boşluk */
+}
+
+/* Özet ve Butonları İçeren Alt Kısım */
+.project-footer {
+    margin-top: auto; /* Kartın altına itmek için */
+    text-align: center; /* Butonu ortalamak için */
+}
+
+.project-summary {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 15px;
+    min-height: 100px; /* Özet metni için sabit bir yükseklik */
+    text-align: justify;
+    overflow: hidden; /* Taşmayı önler */
+}
+
+/* Buton Stili */
+.btn-primary {
+    color: #fff;
+    background-color: #6c757d; /* Gri tonlarında buton rengi */
+    border-color: #6c757d;
+    width: 100%; /* Buton tam genişlikte olacak */
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    padding: 10px; /* Butonun dikdörtgen görünmesi için */
+    border-radius: 4px;
+    margin-top: auto; /* Alt kısımda sabit dursun */
+}
+
+.btn-primary:hover {
+    background-color: #5a6268; /* Daha koyu gri hover durumu */
+    border-color: #5a6268;
+}
+
+/* Sayfalama Stili */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.pagination-link {
+    margin: 0 5px;
+    padding: 10px 20px;
+    color: #6c757d;
+    text-decoration: none;
+    border: 1px solid #6c757d;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.pagination-link:hover {
+    border-color:#000000;
+    background-color: #6c757d;
+    color: white;
+}
+
+.pagination-link.active {
+    border-color:#5a6268;
+
+    background-color: #6c757d;
+    color: white;
+    border-color: #6c757d;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    
+    .project-card img {
+        height: 175px; /* Kart içindeki resmin yüksekliği */
+    }
+    
+    .project-card {
+        height: auto; /* Küçük ekranlar için esnek yükseklik */
+        width: 75%; /* Kartların genişliği */
+        margin: 0 auto; /* Kartları ortaya almak için */
+    }
+    
+    .mb-4 {
+        margin-top: 30px; /* Kartlar arası boşluk */
+    }
+
+    /* Kartların ana kapsayıcısının esnekliği */
+    .row {
+        display: flex; /* Flexbox kullanarak esnek bir düzen oluştur */
+        flex-wrap: wrap; /* Kartların birden fazla satıra yayılmasına izin ver */
+        justify-content: center; /* Kartları yatayda ortalar */
+    }
+}

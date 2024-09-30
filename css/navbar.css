@@ -11,7 +11,7 @@
     top: 0 !important;
     left: 0 !important;
     width: 100% !important;
-    background: linear-gradient(to bottom, rgb(172, 172, 172) 80%, rgba(0, 0, 0, 0.80) 100%) !important; /* Gradient geçiş */
+    background: linear-gradient(to bottom, rgb(172, 172, 172,0.75) 80%, rgba(0, 0, 0, 0.80) 100%) !important; /* Gradient geçiş */
     padding: 0 !important;
     z-index: 1000 !important;
     transition: background-color 0.3s ease;

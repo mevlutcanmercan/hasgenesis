@@ -1,7 +1,9 @@
 body {
-    background-color: rgb(221, 221, 221) !important;
+    background-image: url('../images/gri-arka-plan.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
 }
-
 /* Carousel öğeleri ve stil ayarları */
 .carousel {
     margin-top: 6%; /* Carousel'in navbar altından başlaması */
@@ -14,7 +16,7 @@ body {
 .carousel-item img {
      /* Görsellerin boyutunu biraz küçülttüm */
     height: 720px;
-    object-fit: fixed; /* Görselin kutuya düzgün sığması */
+    object-fit: cover; /* Görselin kutuya düzgün sığması */
     width: 100%; /* Görsellerin carousel genişliği kadar olması */ 
 }
 
@@ -92,6 +94,35 @@ body {
     filter: invert(1);
 }
 
+@media (min-width: 768px) and (max-width: 1024px) {
+    body{
+        margin-top: 50px;
+    }
+    .carousel-item img {
+        /* Görsellerin boyutunu biraz küçülttüm */
+       height: 350px;
+       object-fit: cover; /* Görselin kutuya düzgün sığması */
+       width: 100%; /* Görsellerin carousel genişliği kadar olması */ 
+   }
+
+   .carousel-control-prev,
+    .carousel-control-next {
+        display: none; /* Butonları gizle */
+    }
+
+    .carousel-caption h2 {
+        font-size: 1.5rem !important; /* Mobilde başlık boyutunu küçült */
+        margin: 0;
+    }
+
+    .carousel-caption p {
+        font-size: 1rem !important; /* Mobilde özet boyutunu küçült */
+        margin-bottom: 0;
+    }
+   
+}
+
+
 /* Carousel'in daha küçük ekranlarda daha iyi görünmesi için medya sorguları */
 @media (max-width: 768px) {
     
@@ -136,7 +167,42 @@ body {
         height: 2px !important; /* Göstergelerin yüksekliğini küçült */
          /* Göstergeler arasındaki boşluğu ayarla */
     }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+    .carousel {
+        margin-top: 15%; /* Tabletlerde üst boşluğu azalt */
+        width: 90%; /* Tabletlerde genişliği %90 yap */
+    }
+
+    .carousel-item img {
+        height: auto; /* Yüksekliği esnek olsun */
+        height: 350px; /* Yüksekliği maksimum 350px yap */
+        object-fit: cover; /* Görsellerin doğru sığması için */
+    }
+
+    .carousel-caption {
+        padding: 15px; /* Tabletlerde daha fazla dolgu */
+    }
+
+    .carousel-caption h2 {
+        font-size: 1.5rem !important; /* Tabletlerde başlık boyutunu büyüt */
+    }
+
+    .carousel-caption p {
+        font-size: 1rem !important; /* Tabletlerde özet boyutunu büyüt */
+    }
+
+    .carousel-indicators {
+         bottom: 10px; /* Göstergelerin tabletlerdeki konumunu ayarla */
+    }
+
+    .carousel-indicators button {
+        width: 12px !important; /* Göstergelerin genişliğini artır */
+        height: 3px !important; /* Göstergelerin yüksekliğini artır */
+    }
 }
+}
+
 
 /* ----------------------------------------------------------------------------------------------------------- */
 
@@ -246,8 +312,15 @@ body {
 
 @media (max-width: 768px) {
     .news-card {
-        width: 100%; /* Mobil cihazlarda kart genişliği tam olur */
+        width: 80%; /* Mobil cihazlarda kart genişliği tam olur */
         height: auto; /* Mobil cihazlarda yükseklik esnek olabilir */
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .news-card {
+        width: 30%; /* Tabletlerde kart genişliği */
+        height: auto; /* Yükseklik esnek olabilir */
     }
 }
 

@@ -1,0 +1,66 @@
+/* Genel Stil */
+body {
+    padding-top: 3%;
+    background-color: #f5f5f5;
+    background-image: url('../images/gri-arka-plan.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+}
+
+.container {
+    border-radius: 20px;
+    padding: 20px;
+    background-color: #5555553a;
+    max-width: 1200px; /* Konteynerin genişliği */
+    margin: auto; /* Ortalamak için */
+}
+
+.slider-container {
+    margin-bottom: 35px;
+}
+
+.slider-image {
+    height: 450px; /* Slider görüntü yüksekliği */
+    object-fit: scale-down; /* Görüntüyü kapsayacak şekilde ayarla */
+}
+
+h2 {
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 2rem; /* Başlık boyutu */
+    color: #333; /* Başlık rengi */
+}
+
+p {
+    text-align: justify;
+    font-size: 1.1rem; /* Açıklama metni boyutu */
+    color: #3a3a3a; /* Metin rengi */
+    line-height: 1.5; /* Satır yüksekliği */
+    margin-top: 15px; /* Üstten boşluk */
+}
+
+
+
+/* Mobil Stil */
+@media (max-width: 768px) {
+    .slider-container {
+        margin-top: 50px;
+    }
+    .slider-image {
+        height: 300px; /* Mobildeki slider görüntü yüksekliği */
+    }
+
+    h2 {
+        font-size: 1.5rem; /* Mobilde başlık boyutunu azalt */
+    }
+
+    p {
+        font-size: 0.9rem; /* Mobilde açıklama metni boyutunu azalt */
+    }
+    
+    .container {
+        padding: 0 15px; /* Mobilde konteynerin sağ ve sol boşluğunu artır */
+    }
+}
