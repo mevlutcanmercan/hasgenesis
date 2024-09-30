@@ -149,6 +149,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </script>
 <?php endif; ?>
 
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Sayfa yüklendiğinde içerikleri fade-in efektiyle göster
+        const container = document.querySelector('.container');
+        container.style.opacity = 0; // Başlangıç opaklığı 0
+        container.style.transform = 'translateY(20px)'; // Başlangıçta biraz aşağıda
+        setTimeout(() => {
+            container.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            container.style.opacity = 1; // Yavaşça görünür hale getir
+            container.style.transform = 'translateY(0)'; // Aşağıdan yukarı doğru kaydır
+        }, 100); // 100ms gecikme ile
+    });
+</script>
+
 <footer class="footer mt-auto py-2">
     <div class="footer-container text-center">
         <span class="text-muted">HAS GENESIS &copy; 2024. Tüm hakları saklıdır.</span>

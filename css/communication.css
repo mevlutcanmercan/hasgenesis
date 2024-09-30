@@ -35,6 +35,9 @@ body {
     align-items: center; /* Elemanları yatayda ortala */
     justify-content: flex-start; /* Elemanları üstten başlat */
     min-height: 500px; /* Minimum yükseklik ayarlandı */
+    opacity: 1; /* Başlangıç opaklığı */
+    transform: translateY(0); /* Başlangıçta konum */
+    transition: backdrop-filter 0.5s ease, box-shadow 0.5s ease !important ; /* Fade-in geçişi */
 }
 
 .readonly-input {
@@ -47,7 +50,8 @@ body {
 .container:hover {
     background-color: rgba(129, 129, 129, 0.7) !important; /* Arka plan rengi */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.459); /* Hafif gölge efekti */
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px); /* Arka plan bulanıklığı */
+    transition: backdrop-filter 0.5s ease, box-shadow 0.5s ease !important ; /* Geçiş süresi eklendi */
 }
 
 h2 {
@@ -61,8 +65,8 @@ h2 {
     font-weight: bold;
 }
 
-.col-md-4{
-    margin-top: 1%;;
+.col-md-4 {
+    margin-top: 1%;
 }
 
 /* Resmi büyütmek ve ortalamak için stil ayarları */
@@ -83,8 +87,6 @@ h2 {
         align-self: center; /* Dikey ortalama */
     }
 }
-
-
 
 .social-icons {
     margin-top: 20px; /* İkonların üstündeki boşluk */
