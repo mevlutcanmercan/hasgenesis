@@ -181,6 +181,8 @@ body {
     display: flex;
     align-items: center;
     z-index: 2; /* Daha yüksek z-index vererek öne getiriyoruz */
+    top: 7%;
+    left: 5%;
 }
 
 .input-box .iti__flag {
@@ -189,7 +191,7 @@ body {
 }
 
 .input-box .iti__selected-flag {
-    padding-right: 10px;
+    padding-right: 12px;
 }
 
 /* Dropdown kutusunun boyutunu küçültme */

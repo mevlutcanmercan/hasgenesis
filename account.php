@@ -5,10 +5,10 @@ include 'bootstrap.php';
 $user_id = $_SESSION['id_users']; 
 // Giriş kontrolü
 // Kullanıcı bilgilerini al
-$stmt = $conn->prepare("SELECT mail_users, name_users, surname_users, telefon, birthday_users FROM users WHERE id_users = ?");
+$stmt = $conn->prepare("SELECT mail_users, name_users, surname_users, telefon, birthday_users, isAdmin FROM users WHERE id_users = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
-$stmt->bind_result($email, $name, $surname, $telefon, $birthday);
+$stmt->bind_result($email, $name, $surname, $telefon, $birthday, $isAdmin);
 $stmt->fetch();
 $stmt->close();
 
@@ -88,6 +88,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
         <nav class="nav flex-column">
             <a href="#profile" class="nav-link active" data-bs-toggle="tab"><i class='bx bxs-user'></i> Profil</a>
             <a href="#change-password" class="nav-link" data-bs-toggle="tab"><i class='bx bxs-lock'></i> Şifre Değiştir</a>
+                    <!-- Admin Tab: Eğer kullanıcı admin ise göster -->
+        <?php if ($isAdmin == 1): ?>
+            <a href="#admin-panel" class="nav-link" data-bs-toggle="tab"><i class='bx bxs-shield'></i> Admin Paneli</a>
+        <?php endif; ?>
             <a href="#settings" class="nav-link" data-bs-toggle="tab"><i class='bx bxs-cog'></i> Ayarlar</a>
             <a href="#logout" class="nav-link"><i class='bx bxs-log-out'></i> Çıkış Yap</a>
         </nav>
@@ -155,6 +159,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
                     <button type="submit" name="change_password" class="btn btn-primary">Şifreyi Güncelle</button>
                 </form>
             </div>
+            
+                    <!-- Admin Panel Tab -->
+        <?php if ($isAdmin == 1): ?>
+        <div class="tab-pane fade" id="admin-panel">
+            <h2>Admin Paneli</h2>
+            <p>Bu alan sadece adminlere özeldir. Buraya admin işlevleri ekleyebilirsiniz.</p>
+        </div>
+        <?php endif; ?>
+
             <!-- Settings Tab -->
             <div class="tab-pane fade" id="settings">
                 <h2>Ayarlar</h2>
