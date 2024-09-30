@@ -4,8 +4,10 @@ body {
     background-attachment: fixed;
     background-size: cover;
 }
+
 /* Carousel öğeleri ve stil ayarları */
 .carousel {
+    background-color: #ffffff00;
     margin-top: 6%; /* Carousel'in navbar altından başlaması */
     width: 80%; /* Carousel'in genişliği, ekranın %80'ini kaplayacak */
     margin-left: auto;
@@ -14,10 +16,9 @@ body {
 }
 
 .carousel-item img {
-     /* Görsellerin boyutunu biraz küçülttüm */
-    height: 720px;
+    height: 720px; /* Görsellerin boyutunu biraz küçültüm */
     object-fit: cover; /* Görselin kutuya düzgün sığması */
-    width: 100%; /* Görsellerin carousel genişliği kadar olması */ 
+    width: 100%; /* Görsellerin carousel genişliği kadar olması */
 }
 
 .carousel-caption {
@@ -33,7 +34,7 @@ body {
 .carousel-caption h2 {
     font-size: 2.5rem !important; /* Başlık boyutunu büyüttük */
     text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7); /* Başlık gölgesi */
-    margin: 0.10; /* Varsayılan marjı kaldırdık */
+    margin: 0; /* Varsayılan marjı kaldırdık */
     font-weight: bold;
 }
 
@@ -94,20 +95,16 @@ body {
     filter: invert(1);
 }
 
+/* Tablet ve Mobil Görünüm */
 @media (min-width: 768px) and (max-width: 1024px) {
-    body{
+    body {
         margin-top: 50px;
     }
+    
     .carousel-item img {
-        /* Görsellerin boyutunu biraz küçülttüm */
-       height: 350px;
-       object-fit: cover; /* Görselin kutuya düzgün sığması */
-       width: 100%; /* Görsellerin carousel genişliği kadar olması */ 
-   }
-
-   .carousel-control-prev,
-    .carousel-control-next {
-        display: none; /* Butonları gizle */
+        height: 350px; /* Görsellerin boyutunu biraz küçültüm */
+        object-fit: cover; /* Görselin kutuya düzgün sığması */
+        width: 100%; /* Görsellerin carousel genişliği kadar olması */
     }
 
     .carousel-caption h2 {
@@ -119,17 +116,10 @@ body {
         font-size: 1rem !important; /* Mobilde özet boyutunu küçült */
         margin-bottom: 0;
     }
-   
 }
-
 
 /* Carousel'in daha küçük ekranlarda daha iyi görünmesi için medya sorguları */
 @media (max-width: 768px) {
-    
-    .carousel-control-prev,
-    .carousel-control-next {
-        display: none; /* Butonları gizle */
-    }
     .carousel {
         margin-top: 25% !important;
         width: 95%; /* Küçük ekranlarda genişliği %95 yap */
@@ -137,7 +127,7 @@ body {
 
     .carousel-item img {
         height: auto; /* Küçük ekranlar için yükseklik esnek olsun */
-        height: 250px; /* Yüksekliği maksimum 400px yap */
+        height: 250px; /* Yüksekliği maksimum 250px yap */
         object-fit: cover; /* Görsellerin doğru sığması için */
     }
 
@@ -157,59 +147,22 @@ body {
     }
 
     .carousel-indicators {
-         bottom: 0px;
-         padding: 0;
-         display: inline-flex;/* Göstergeleri alttan biraz daha aşağı al */
+        bottom: 0px;
+        padding: 0;
+        display: inline-flex; /* Göstergeleri alttan biraz daha aşağı al */
     }
 
     .carousel-indicators button {
         width: 10px !important; /* Göstergelerin genişliğini küçült */
         height: 2px !important; /* Göstergelerin yüksekliğini küçült */
-         /* Göstergeler arasındaki boşluğu ayarla */
-    }
-
-    @media (min-width: 768px) and (max-width: 1024px) {
-    .carousel {
-        margin-top: 15%; /* Tabletlerde üst boşluğu azalt */
-        width: 90%; /* Tabletlerde genişliği %90 yap */
-    }
-
-    .carousel-item img {
-        height: auto; /* Yüksekliği esnek olsun */
-        height: 350px; /* Yüksekliği maksimum 350px yap */
-        object-fit: cover; /* Görsellerin doğru sığması için */
-    }
-
-    .carousel-caption {
-        padding: 15px; /* Tabletlerde daha fazla dolgu */
-    }
-
-    .carousel-caption h2 {
-        font-size: 1.5rem !important; /* Tabletlerde başlık boyutunu büyüt */
-    }
-
-    .carousel-caption p {
-        font-size: 1rem !important; /* Tabletlerde özet boyutunu büyüt */
-    }
-
-    .carousel-indicators {
-         bottom: 10px; /* Göstergelerin tabletlerdeki konumunu ayarla */
-    }
-
-    .carousel-indicators button {
-        width: 12px !important; /* Göstergelerin genişliğini artır */
-        height: 3px !important; /* Göstergelerin yüksekliğini artır */
     }
 }
-}
-
-
-/* ----------------------------------------------------------------------------------------------------------- */
 
 /* Güncel Haberler Başlık ve Kartlar */
-.my-5{
+.my-5 {
     margin-top: 2rem !important;
 }
+
 .text-center1 {
     text-align: center;
     margin-bottom: 25px;
@@ -226,26 +179,29 @@ body {
 .news-card {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start; /* İçeriği üstten başlayacak şekilde hizalar */
     width: 23%; /* Kart genişliği */
-    height: 500px; /* Kart yüksekliği sabit */
-    background-color: #f8f9fa;
-    border: 1px solid #ddd;
+    min-height: 500px; /* Kart yüksekliğini sabitle */
+    background: linear-gradient(rgba(202, 202, 202, 0.8), rgba(202, 202, 202, 0.5)); /* Geçişli arka plan */
+    border: 5px solid transparent; /* Kenar boşluğu başlangıçta şeffaf */
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; /* Kenar rengi geçişi için eklenmiş */
+    border: 5px solid rgba(0, 0, 0, 0.644);
 }
 
 .news-card:hover {
+    border-color: rgba(0, 0, 0, 0.8); /* Kenar rengi değiştirir */
     transform: translateY(-10px); /* Kart hover olduğunda yukarıya doğru hafifçe yükselir */
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 12px 24px rgba(0, 0, 0, 0.1); /* Daha belirgin bir gölge */
+    
 }
 
 .news-card-img {
     width: 100%;
     height: 200px; /* Resmin yüksekliği sabit */
-    object-fit: fixed; /* Corrected property value */
+    object-fit: scale-down; /* Resmin doğru bir şekilde görünmesi için */
     border-bottom: 1px solid #ddd;
 }
 
@@ -253,23 +209,29 @@ body {
     padding: 15px;
     text-align: center;
     flex-grow: 1; /* İçerik alanı esneyerek kartın geri kalanını kaplar */
-    
+    display: flex; /* Flexbox düzenini aktif et */
+    flex-direction: column; /* Dikey yönde yerleştir */
+    justify-content: flex-start; /* İçeriği yukarıdan başlat */
 }
 
 .news-card-title {
     font-size: 1.25rem;
     margin-bottom: 10px;
     color: #333;
+    font-weight: bolder;
 }
 
 .news-card-summary {
     font-size: 1rem;
-    color: #666;
-    margin-bottom: 20px;
+    color: #3f3f3f;
+    margin-bottom: 10px;
     overflow: hidden;
     text-overflow: ellipsis;
-    text-align: justify;
-    
+    text-align:center;
+    font-weight: 500;
+    word-spacing: -0.2px; /* Kelimeler arasındaki boşlukları azalt */
+    letter-spacing: -0.2px; /* Harfler arasındaki boşlukları azalt */
+
 }
 
 /* Footer kısmı */
@@ -306,13 +268,13 @@ body {
 @media (max-width: 992px) {
     .news-card {
         width: 48%; /* Daha küçük ekranlarda kart genişliği */
-        height: 400px; /* Kart yüksekliği sabit kalır */
+        height: auto; /* Kart yüksekliği esnek kalır */
     }
 }
 
 @media (max-width: 768px) {
     .news-card {
-        width: 80%; /* Mobil cihazlarda kart genişliği tam olur */
+        width: 95%; /* Mobil cihazlarda kart genişliği tam olur */
         height: auto; /* Mobil cihazlarda yükseklik esnek olabilir */
     }
 }
@@ -323,5 +285,3 @@ body {
         height: auto; /* Yükseklik esnek olabilir */
     }
 }
-
-/*--------------------------------------------------------------------------------------*/
