@@ -144,11 +144,11 @@
                 <i class='bx bxs-lock-alt' style="color:black"></i>
             </div>
             <div class="input-box">
-                <input type="text" name="name_users" placeholder="Adınız" required>
+                <input type="text" name="name_users" id="name_users" placeholder="Adınız" required>
                 <i class='bx bxs-user' style="color:black"></i>
             </div>
             <div class="input-box">
-                <input type="text" name="surname_users" placeholder="Soyadınız" required>
+                <input type="text" name="surname_users" id="surname_users" placeholder="Soyadınız" required>
                 <i class='bx bxs-user' style="color:black"></i>
             </div>
             <div class="input-box">
@@ -172,5 +172,6 @@
     
     <!-- Register.js -->
     <script src="/hasgenesis/js/register.js"></script>
+
 </body>
 </html>

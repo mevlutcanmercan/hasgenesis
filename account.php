@@ -67,8 +67,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/account.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <title>Account</title>
     <style>
         .edit-icon {
@@ -94,8 +92,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
         <?php if ($isAdmin == 1): ?>
             <a href="#admin-panel" class="nav-link" data-bs-toggle="tab"><i class='bx bxs-shield'></i> Admin Paneli</a>
         <?php endif; ?>
-            <a href="#settings" class="nav-link" data-bs-toggle="tab"><i class='bx bxs-cog'></i> Ayarlar</a>
-            <a href="#logout" class="nav-link"><i class='bx bxs-log-out'></i> Çıkış Yap</a>
         </nav>
     </div>
 
@@ -166,20 +162,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
         <?php if ($isAdmin == 1): ?>
         <div class="tab-pane fade" id="admin-panel">
             <h2>Admin Paneli</h2>
-            <p>Bu alan sadece adminlere özeldir. Buraya admin işlevleri ekleyebilirsiniz.</p>
+            <p>zort.</p>
         </div>
         <?php endif; ?>
 
-            <!-- Settings Tab -->
-            <div class="tab-pane fade" id="settings">
-                <h2>Ayarlar</h2>
-                <p>Buraya ayarlar bilgileri gelecek...</p>
-            </div>
-            <!-- Logout Tab -->
-            <div class="tab-pane fade" id="logout">
-                <h2>Çıkış Yap</h2>
-                <p>Çıkış yapmak için tıklayın...</p>
-            </div>
+           
         </div>
     </div>
 
@@ -198,7 +185,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
         }
     </script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
     <script>
         // Profil güncelleme mesajı
         <?php if ($updateMessage === 'success'): ?>

@@ -51,3 +51,19 @@ console.log(fullPhoneNumber); // Tam numara (örneğin: +905xxxxxxxxx)
 
     });
 });
+
+// İlk harfleri büyük yapan fonksiyon
+function capitalizeFirstLetters(input) {
+    return input.replace(/\b\w/g, function (char) {
+        return char.toUpperCase();
+    });
+}
+
+// Ad ve soyad alanları için 'input' eventine listener ekle
+document.getElementById('name_users').addEventListener('input', function () {
+    this.value = capitalizeFirstLetters(this.value);
+});
+
+document.getElementById('surname_users').addEventListener('input', function () {
+    this.value = capitalizeFirstLetters(this.value);
+});
