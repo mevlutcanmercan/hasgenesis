@@ -42,3 +42,51 @@ body {
     width: 100%;
     max-width: 1000px;
 }
+
+/* Sidebar daraltılmış durum için */
+.sidebar.collapsed {
+    min-width: 80px;
+    max-width: 80px;
+    text-align: center;
+}
+
+.sidebar.collapsed .nav-link {
+    text-align: center;
+    font-size: 0.8rem;
+    padding: 15px 0;
+}
+
+.sidebar.collapsed .nav-link i {
+    font-size: 1.5rem;
+}
+
+.sidebar.collapsed .nav-link span {
+    display: none; 
+}
+
+.content {
+    margin-left: 300px;
+    transition: margin-left 0.3s ease;
+}
+
+.content.collapsed {
+    margin-left: 80px; 
+}
+.btnCollapse {
+    position:relative;
+    right: -160px;
+    top: 10px;
+    z-index: -1;
+    font-size: 2rem;
+    cursor: pointer;
+    background-color: #fff;
+    color: #ff2121;
+    border:  #343a40;
+    padding: 5px 10px;
+    border-radius: 11px 11px 11px 11px;
+    transition: right 0.3s ease;
+}
+
+.sidebar.collapsed .btnCollapse {
+    right: -40px;
+}

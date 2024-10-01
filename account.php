@@ -84,6 +84,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
     <div class="sidebar">
         <div class="logo text-center mb-4">
             <img src="/hasgenesis/images/logo-empty.png" alt="Logo" style="width: 80%;">
+             <!-- Sidebar toggle butonu -->
+        <button id="toggle-sidebar" class="btnCollapse"><i class='bx bx-collapse-horizontal'></i></button>
         </div>
         <nav class="nav flex-column">
             <a href="#profile" class="nav-link active" data-bs-toggle="tab"><i class='bx bxs-user'></i> Profil</a>
@@ -212,5 +214,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
             swal("Hata!", "Şifre değiştirilirken bir hata oluştu.", "error");
         <?php endif; ?>
     </script>
+    <script>
+    // Sidebar'ı daraltma/genişletme fonksiyonu
+    document.getElementById('toggle-sidebar').addEventListener('click', function() {
+        const sidebar = document.querySelector('.sidebar');
+        const content = document.querySelector('.content');
+        const btnCollapse = document.querySelector('.btnCollapse');
+        
+        sidebar.classList.toggle('collapsed');
+        content.classList.toggle('collapsed');
+        btnCollapse.classList.toggle('collapsed');
+    });
+</script>
+
 </body>
 </html>
