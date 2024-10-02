@@ -1,20 +1,36 @@
 <?php
+// Veritabanı bağlantısını yap
 include 'dB/database.php';
 include 'navbar.php';
 include 'bootstrap.php';
 
+// Hata raporlamasını aç
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 // Haber ID'sini al
 $newsId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+echo "Haber ID: " . $newsId; // Alınan ID'yi kontrol etmek için eklenmiştir.
 
 // ID'ye göre haber detaylarını al
 $newsQuery = "SELECT id, name, summary, text, image_path1, image_path2, image_path3, created_at FROM news WHERE id = ?";
 $stmt = $conn->prepare($newsQuery);
+
+if (!$stmt) {
+    echo "Sorgu hazırlama hatası: " . $conn->error;
+    exit;
+}
+
 $stmt->bind_param("i", $newsId);
 $stmt->execute();
-$newsResult = $stmt->get_result();
-$news = $newsResult->fetch_assoc();
 
-if (!$news) {
+// Sonuçları elde et
+$stmt->store_result(); // Sonuçları sakla
+$stmt->bind_result($id, $name, $summary, $text, $image_path1, $image_path2, $image_path3, $created_at);
+$stmt->fetch(); // Verileri çek
+
+// Eğer haber bulunamazsa
+if (!$id) {
     echo "<p>Haber bulunamadı.</p>";
     exit;
 }
@@ -39,9 +55,9 @@ if (!$news) {
                 <?php
                 // Slider için resimleri al
                 $images = [
-                    $news['image_path1'],
-                    $news['image_path2'],
-                    $news['image_path3'],
+                    $image_path1,
+                    $image_path2,
+                    $image_path3,
                 ];
 
                 foreach ($images as $index => $image) {
@@ -66,8 +82,8 @@ if (!$news) {
     </div>
 
     <!-- Haber Başlığı ve İçeriği -->
-    <h2 class="mt-4"><?php echo htmlspecialchars($news['name']); ?></h2>
-    <p class="mt-2"><?php echo nl2br(htmlspecialchars($news['text'])); ?></p> <!-- Burada summary yerine text kullanıldı -->
+    <h2 class="mt-4"><?php echo htmlspecialchars($name); ?></h2>
+    <p class="mt-2"><?php echo nl2br(htmlspecialchars($text)); ?></p> <!-- Burada summary yerine text kullanıldı -->
 </div>
 
 <footer class="footer mt-auto py-2">

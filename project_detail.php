@@ -1,7 +1,12 @@
 <?php
+// Veritabanı bağlantısını yap
 include 'dB/database.php';
 include 'navbar.php';
 include 'bootstrap.php';
+
+// Hata raporlamasını aç
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 // Proje ID'sini al
 $projectId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
@@ -9,24 +14,33 @@ $projectId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 // Proje bilgilerini al
 $projectQuery = "SELECT name, text, image_path1, image_path2, image_path3, image_path4, image_path5 FROM projects WHERE id = ?";
 $stmt = $conn->prepare($projectQuery);
+
+if (!$stmt) {
+    echo "Sorgu hazırlama hatası: " . $conn->error;
+    exit;
+}
+
 $stmt->bind_param("i", $projectId);
 $stmt->execute();
-$result = $stmt->get_result();
-$project = $result->fetch_assoc();
+
+// Sonuçları elde et
+$stmt->store_result(); // Sonuçları sakla
+$stmt->bind_result($name, $text, $image_path1, $image_path2, $image_path3, $image_path4, $image_path5);
+$stmt->fetch(); // Verileri çek
 
 // Eğer proje bulunamazsa hata mesajı göster
-if (!$project) {
+if (!$name) {
     echo "<h2>Proje bulunamadı.</h2>";
     exit;
 }
 
 // Proje resimlerini bir diziye al
 $images = [];
-if (!empty($project['image_path1'])) $images[] = $project['image_path1'];
-if (!empty($project['image_path2'])) $images[] = $project['image_path2'];
-if (!empty($project['image_path3'])) $images[] = $project['image_path3'];
-if (!empty($project['image_path4'])) $images[] = $project['image_path4'];
-if (!empty($project['image_path5'])) $images[] = $project['image_path5'];
+if (!empty($image_path1)) $images[] = $image_path1;
+if (!empty($image_path2)) $images[] = $image_path2;
+if (!empty($image_path3)) $images[] = $image_path3;
+if (!empty($image_path4)) $images[] = $image_path4;
+if (!empty($image_path5)) $images[] = $image_path5;
 ?>
 
 <!DOCTYPE html>
@@ -37,12 +51,11 @@ if (!empty($project['image_path5'])) $images[] = $project['image_path5'];
     <title>Proje Detayları</title>
     <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="css/project_detail.css"> <!-- Özel CSS dosyası -->
-    
 </head>
 <body>
 
 <div class="container mt-5">
-    <h2 class="text-center mb-4"><?php echo htmlspecialchars($project['name']); ?></h2>
+    <h2 class="text-center mb-4"><?php echo htmlspecialchars($name); ?></h2>
 
     <!-- Carousel -->
     <div id="projectCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -69,7 +82,7 @@ if (!empty($project['image_path5'])) $images[] = $project['image_path5'];
     <!-- Proje Özeti -->
     <div class="project-text mt-4">
         <h4>Proje Detayları</h4>
-        <p><?php echo nl2br(htmlspecialchars($project['text'])); ?></p>
+        <p><?php echo nl2br(htmlspecialchars($text)); ?></p>
     </div>
 </div>
 
