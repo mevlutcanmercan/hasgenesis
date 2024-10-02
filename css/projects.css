@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
 * {
     font-family: "Poppins", sans-serif;
@@ -10,8 +10,11 @@ html, body {
     padding: 0;
 }
 
+
+
+
 body {
-    padding-top: 3%;
+    padding-top: 5% !important;
     background-color: #f5f5f5;
     background-image: url('../images/gri-arka-plan.jpg');
     background-repeat: no-repeat;
@@ -24,9 +27,77 @@ body {
     max-width: 1000px;
 }
 
+.Header h2{
+    
+        font-weight: bolder;
+        text-align: center;
+        margin-bottom: 2%;
+        font-size: 2rem;
+    
+}
+
+.carousel {
+    width: 90%; /* Slider width set to 90% */
+    max-width: 1200px; /* Maximum width */
+    margin: 0 auto; /* Center align */
+}
+
+.carousel-item img {
+    height: 40vh; /* Slider image height 40% of view height */
+    object-fit: scale-down;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    
+    
+}
+
+
+
+.project-info {
+    background: linear-gradient(135deg,#00000094, #8f8f8f9c, #85858591, #00000094);
+    border-radius: 10px;
+    margin: 5%;
+    margin-top: 0%;
+    margin-bottom: 2%;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.486);
+    transition: transform 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease;
+}
+
+.project-info:hover {
+    backdrop-filter: blur(20px);
+    border-color: #aaa;
+    box-shadow: 0 8px 15px rgba(128, 128, 128, 0.4), 
+                0 12px 20px rgba(0, 0, 0, 0.2);
+}
+
+.project-info h2 {
+    font-weight: bolder;
+    text-align: center;
+    margin-top: 1%;
+    font-size: 2rem;
+}
+
+.project-info p {
+    text-align: justify;
+    margin: 2%;
+    font-size: 1.3rem;
+}
+
+
 
 /* Kart Stili */
-.project-card {
+.card-img-top{
+    width: 100%;
+    height: 180px;
+    max-height: 180px;
+    object-fit:scale-down; /* Resmin kapsaması için */
+    background: linear-gradient(135deg, #8f8f8f9c, #85858591);
+    overflow: hidden;
+}
+
+.card.mb-4{
     border: 1px solid #ccc; /* Gri sınır */
     border-radius: 8px;
     overflow: hidden;
@@ -36,37 +107,29 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 450px; /* Sabit kart yüksekliği */
+    height: 500px; /* Sabit kart yüksekliği */
     position: relative;
 }
 
-.project-card:hover {
+
+.card.mb-4:hover{
     backdrop-filter: blur(20px);
     border-color: #aaa;
     box-shadow: 0 8px 15px rgba(128, 128, 128, 0.4), /* Grimsi yansıma */
                 0 12px 20px rgba(0, 0, 0, 0.2); /* Altına ekstra bir gölge */
 }
 
-/* Kart Resmi Stili */
-.project-card img {
-    width: 100%;
-    height: 180px;
-    object-fit:scale-down; /* Resmin kapsaması için */
-    background: linear-gradient(135deg, #8f8f8f9c, #85858591);
-    overflow: hidden;
-}
 
-/* Kart İçeriği */
-.project-card-body {
+
+
+.card-body{
     padding: 15px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
-    flex-grow: 1;
     overflow: hidden; /* Taşmayı önler */
 }
 
-.project-title {
+.card-title{
     text-align: center;
     font-size: 1.3rem;
     font-weight: bolder;
@@ -74,21 +137,7 @@ body {
     color: #333;
 }
 
-/* Tarih Stili */
-.project-date {
-    text-align: center;
-    font-size: 0.9rem;
-    color: #4b4b4b; /* Gri tonunda */
-    margin-bottom: 10px; /* Tarih ile içerik arasına boşluk */
-}
-
-/* Özet ve Butonları İçeren Alt Kısım */
-.project-footer {
-    margin-top: auto; /* Kartın altına itmek için */
-    text-align: center; /* Butonu ortalamak için */
-}
-
-.project-summary {
+.card-text{
     font-size: 0.9rem;
     color: #313131;
     margin-bottom: 15px;
@@ -97,6 +146,14 @@ body {
     overflow: hidden; /* Taşmayı önler */
     font-weight: 600;
 }
+
+.project-date {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #4b4b4b; /* Gri tonunda */
+    margin-bottom: 10px; /* Tarih ile içerik arasına boşluk */
+}
+
 
 /* Buton Stili */
 .btn-primary {
@@ -108,10 +165,14 @@ body {
     padding: 10px; /* Butonun dikdörtgen görünmesi için */
     border-radius: 4px;
     margin-top: auto; /* Alt kısımda sabit dursun */
+    position: absolute; /* Buton konumunu sabitlemek için */
+    bottom: 15px; /* Alt kenardan 15px uzaklık */
+    left: 50%; /* Butonu ortalamak için */
+    transform: translateX(-50%); /* Butonu tam ortalamak için */
 }
 
 .btn-primary:hover {
-    background-color: #000000; /* Daha koyu gri hover durumu */
+    background-color: #3f3f3f; /* Daha koyu gri hover durumu */
     border-color: #5a6268;
 }
 
@@ -133,23 +194,25 @@ body {
 }
 
 .pagination-link:hover {
-    border-color:#3d3d3d;
+    border-color: #3d3d3d;
     background-color: #3d3d3d;
     color: white;
 }
 
 .pagination-link.active {
-    border-color:#5a6268;
-
-    background: linear-gradient(135deg, #8f8f8f, #858585, #000000a1);
-    color: white;
     border-color: #6c757d;
+    background-color: #6c757d;
+    color: white;
 }
 
 /* Responsive */
 @media (max-width: 1200px) {
-    
-    .project-card img {
+
+    body{
+        padding-top: 20% !important; /* Başlık ve üst kısımların ekrandaki yüzdelik oranı */
+    }
+
+    .project-card-img {
         height: 175px; /* Kart içindeki resmin yüksekliği */
     }
     
@@ -176,3 +239,10 @@ body {
         justify-content: center; /* Kartları yatayda ortalar */
     }
 }
+@media (orientation: landscape) {
+    body {
+        padding-top: 7% !important;
+    }
+}
+
+

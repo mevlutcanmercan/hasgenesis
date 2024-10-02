@@ -1,0 +1,47 @@
+/* project_details.css */
+
+* {
+    font-family: "Poppins", sans-serif;
+}
+
+html, body {
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+
+body {
+    padding-top: 3%;
+    background-color: #f5f5f5;
+    background-image: url('../images/gri-arka-plan.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+}
+
+
+
+.container {
+    border-radius: 20px;
+    padding: 20px;
+    max-width: 1200px; /* Konteynerin genişliği */
+    margin: auto; /* Ortalamak için */
+}
+
+.carousel-item img {
+    height: 400px; /* İsteğe bağlı yükseklik */
+    max-width: 800px;
+    margin: auto; /* Resmin ortalamasını korur */
+    object-fit: scale-down; /* Resmin orantısını korur */
+}
+
+.project-text {
+    text-align: justify;
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2%;
+}
