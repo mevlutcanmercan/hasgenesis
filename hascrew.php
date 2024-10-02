@@ -38,7 +38,6 @@ if ($result->num_rows > 0) {
         background-color: #f0f0f0;
         margin: 0;
         overflow-x: hidden;
-        padding-top: 200px;
     }
     .swiper-container {
         width: 80%;
