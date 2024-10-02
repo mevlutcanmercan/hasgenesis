@@ -79,7 +79,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Kayıt Ol</title>
-    <link rel="stylesheet" href="/hasgenesis/css/login.css?v=1.0">
+    <link rel="stylesheet" href="css/login.css?v=1.0">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- intl-tel-input CSS -->
@@ -98,7 +98,7 @@
             <div class="back-button">
                 <a href="login.php"><i class='bx bx-arrow-back' style="color: black;"></i></a>
             </div>
-            <div class="logo"><img src="/hasgenesis/images/logo-has.png" alt="Logo"></div>
+            <div class="logo"><img src="images/logo-has.png" alt="Logo"></div>
             <hr class="cizgi">
             <h1>Kayıt Ol</h1>
             

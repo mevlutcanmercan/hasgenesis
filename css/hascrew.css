@@ -1,64 +1,157 @@
+    body {
+        display: flex!important;
+        flex-direction: column!important;
+        align-items: center!important;
+        background-color: #f0f0f0 !important;
+        margin: 0!important;
+        overflow-x: hidden!important;
+        padding-top: 50px!important;
+        height: 100vh!important;
+    }
+    .swiper-container {
+        width: 80%!important;
+        height: 400px!important; /* Slider yüksekliği */
+        margin-bottom: 20px!important; /* Slider ve detaylar arasında boşluk */
+        margin-top: 6%!important;
+    }
 
-.slider {
-    padding-top: 10%;
-    position: relative;
-    width: 80%;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
 
-.slides {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-}
+    .swiper-slide {
+        display: flex!important;
+        justify-content: center!important;
+        align-items: center!important;
+        opacity: 0.5!important; /* Küçük slide'lar için başlangıç opaklığı */
+        transform: scale(0.8)!important; /* Küçük slide'lar için ölçek */
+        transition: all 0.3s ease!important; /* Geçiş animasyonu */
+        border-radius: 15px!important; /* Kenar yuvarlama */
+        overflow: hidden!important; /* Taşmayı önlemek için */
+        position: relative!important; /* Hover resmi için gerekli */
+    }
+    .swiper-slide-active {
+        opacity: 1!important; /* Aktif slide için tam opaklık */
+        transform: scale(1.2) !important; /* Aktif slide için daha büyük ölçek */
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3)!important; /* Gölgelendirme efekti */
+        z-index: 1 !important; /* Aktif slide'ın üstündeki diğer slide'ların gözükmesi için */
+    }
 
-.slide {
-    transition: all 1s ease-in-out;
-    opacity: 0.5;
-    width: 30%;
-    transform: scale(1);
-    margin: 0 15px;
-    text-align: center;
-}
+    .swiper-slide img {
+        width: 100%;
+        border-radius: 15px; /* Resim kenar yuvarlama */
+        transition: transform 0.3s ease; /* Resim geçişi */
+    }
 
-.slide.active {
-    width: 80%;
-    opacity: 1;
-    transform: scale(1);
-}
+    .swiper-slide:hover img {
+        transform: scale(1.05); /* Hover efekti */
+    }
 
-.slide img {
-    width: 100%;
-    border-radius: 10px;
-}
+    .info {
+        position: absolute; /* Bilgi kısmını resmin üzerine yerleştirmek için */
+        bottom: 10px; /* Resmin alt kısmında */
+        color: white; /* Yazı rengi beyaz */
+        background-color: rgba(0, 0, 0, 0.7); /* Koyu arka plan */
+        padding: 10px;
+        border-radius: 5px; /* Kenar yuvarlama */
+        display: flex;
+        justify-content: center; 
+    }
 
-.info h2 {
-    font-size: 18px;
-    margin-top: 10px;
-}
+    .details {
+        text-align: left; /* Yazı hizalaması sola */
+        width: 80%; /* Detay kısmının genişliği */
+        background: white; /* Arka plan rengi */
+        border-radius: 10px; /* Kenar yuvarlama */
+        padding: 15px; /* İç boşluk */
+        display: none; /* Başlangıçta gizli */
+        word-wrap: break-word; /* Uzun kelimeleri aşağıya sarmala */
+        overflow-wrap: break-word;
+        overflow-y: auto;
+        margin-top: 3%;
+        margin-bottom: 1%;
+    }
 
-button {
-    background-color: transparent;
-    border: none;
-    font-size: 30px;
-    cursor: pointer;
-    user-select: none;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-}
+    .details img {
+        width: 100px; /* Resim genişliği */
+        height: auto; /* Yüksekliği otomatik ayarlama */
+        margin: 10px; /* Resimler arası boşluk */
+        border-radius: 10px; /* Resim kenar yuvarlama */
+        transition: transform 0.3s ease; /* Hover sırasında büyütme efekti */
+        cursor: pointer; /* Tıklanabilir olduğunu göster */
+    }
 
-button.prev {
-    left: -50px;
-}
+    .image-preview-container {
+        display: inline-block!important;
+        position: relative!important;
+        margin: 0 10px!important; /* Resimler arası yatay boşluk */
+    }
 
-button.next {
-    right: -50px;
-}
+    .swiper-button-next,
+    .swiper-button-prev {
+        color: #333!important; /* Buton rengi */
+    }
 
+    .swiper-button-next:after,
+    .swiper-button-prev:after {
+        font-size: 30px!important; /* Buton yazı boyutu */
+    }
+
+    .swiper-pagination-bullet {
+        background: #333; /* Sayfa numarası rengi */
+        opacity: 0.5; /* Sayfa numarası başlangıç opaklığı */
+    }
+
+    .swiper-pagination-bullet-active {
+        opacity: 1; /* Aktif sayfa numarası opaklığı */
+    }
+
+    /* Modal stili */
+    #image-modal {
+        display: none; /* Başlangıçta gizli */
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8); /* Koyu arka plan */
+        justify-content: center;
+        align-items: center;
+    }
+
+    #image-modal img {
+        max-width: 90%;
+        max-height: 90%;
+    }
+
+    #image-modal .close {
+        position: absolute;
+        top: 20px;
+        right: 40px;
+        color: white;
+        font-size: 40px;
+        cursor: pointer;
+    }
+
+    .name-and-social {
+        display: flex;
+        align-items: center;
+        gap: 15px; /* İkonlarla isim arasındaki boşluk */
+    }
+
+    .name-and-social h3 {
+        margin: 0; /* İsim başlığının varsayılan boşluğunu kaldır */
+    }
+
+    .social-icons {
+        display: flex;
+        gap: 10px; /* Sosyal medya ikonları arasındaki boşluk */
+    }
+
+    .social-icons a {
+        color: #333;
+        font-size: 20px;
+        transition: color 0.3s;
+    }
+
+    .social-icons a:hover {
+        color: #007bff; /* Hover sırasında maviye dönebilir */
+    }
