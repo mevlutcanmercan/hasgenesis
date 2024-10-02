@@ -10,7 +10,13 @@ $result = $conn->query($query);
 $crewMembers = [];
 if ($result->num_rows > 0) {
     while($row = $result->fetch_assoc()) {
-        $images = array_filter([$row['detailsImagePath'], $row['detailsImagePath2'], $row['detailsImagePath3'], $row['detailsImagePath4'], $row['detailsImagePath5']]); // Boş olmayan resimleri al
+        $images = array_filter([
+            $row['detailsImagePath'], 
+            $row['detailsImagePath2'], 
+            $row['detailsImagePath3'], 
+            $row['detailsImagePath4'], 
+            $row['detailsImagePath5']
+        ]); // Boş olmayan resimleri al
         $row['images'] = $images; // Resim dizisini ekle
         $crewMembers[] = $row;
     }
@@ -26,25 +32,27 @@ if ($result->num_rows > 0) {
     <link rel="stylesheet" href="css/footer.css"> <!-- Stil dosyanız burada -->
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
     <title>Has Crew</title>
-   
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
 <style>
     body {
         display: flex;
-        justify-content: center;
+        flex-direction: column;
         align-items: center;
-        height: 100vh;
         background-color: #f0f0f0;
         margin: 0;
         overflow-x: hidden;
+        padding-top: 50px;
+        height: 100vh;
     }
     .swiper-container {
         width: 80%;
         height: 400px; /* Slider yüksekliği */
         margin-bottom: 20px; /* Slider ve detaylar arasında boşluk */
-        margin-top: 10%;
+        margin-top: 6%;
     }
+
 
     .swiper-slide {
         display: flex;
@@ -57,7 +65,6 @@ if ($result->num_rows > 0) {
         overflow: hidden; /* Taşmayı önlemek için */
         position: relative; /* Hover resmi için gerekli */
     }
-
     .swiper-slide-active {
         opacity: 1; /* Aktif slide için tam opaklık */
         transform: scale(1.2) !important; /* Aktif slide için daha büyük ölçek */
@@ -82,13 +89,12 @@ if ($result->num_rows > 0) {
         background-color: rgba(0, 0, 0, 0.7); /* Koyu arka plan */
         padding: 10px;
         border-radius: 5px; /* Kenar yuvarlama */
+        display: flex;
         justify-content: center; 
-        display: flex;  
     }
 
     .details {
         text-align: left; /* Yazı hizalaması sola */
-        margin: 20px;
         width: 80%; /* Detay kısmının genişliği */
         background: white; /* Arka plan rengi */
         border-radius: 10px; /* Kenar yuvarlama */
@@ -97,6 +103,8 @@ if ($result->num_rows > 0) {
         word-wrap: break-word; /* Uzun kelimeleri aşağıya sarmala */
         overflow-wrap: break-word;
         overflow-y: auto;
+        margin-top: 3%;
+        margin-bottom: 1%;
     }
 
     .details img {
@@ -160,13 +168,45 @@ if ($result->num_rows > 0) {
         font-size: 40px;
         cursor: pointer;
     }
+
+    .name-and-social {
+        display: flex;
+        align-items: center;
+        gap: 15px; /* İkonlarla isim arasındaki boşluk */
+    }
+
+    .name-and-social h3 {
+        margin: 0; /* İsim başlığının varsayılan boşluğunu kaldır */
+    }
+
+    .social-icons {
+        display: flex;
+        gap: 10px; /* Sosyal medya ikonları arasındaki boşluk */
+    }
+
+    .social-icons a {
+        color: #333;
+        font-size: 20px;
+        transition: color 0.3s;
+    }
+
+    .social-icons a:hover {
+        color: #007bff; /* Hover sırasında maviye dönebilir */
+    }
 </style>
 
 <!-- Swiper Slider -->
 <div class="swiper-container">
     <div class="swiper-wrapper">
         <?php foreach ($crewMembers as $member): ?>
-        <div class="swiper-slide" data-id="<?php echo $member['id']; ?>" data-details="<?php echo htmlspecialchars($member['memberDetail']); ?>" data-images="<?php echo htmlspecialchars(json_encode($member['images'])); ?>">
+        <div class="swiper-slide" 
+            data-id="<?php echo $member['id']; ?>" 
+            data-details="<?php echo htmlspecialchars($member['memberDetail']); ?>" 
+            data-images="<?php echo htmlspecialchars(json_encode($member['images'])); ?>"
+            data-instagram="<?php echo htmlspecialchars($member['instagram']); ?>"
+            data-twitter="<?php echo htmlspecialchars($member['twitter']); ?>"
+            data-linkedin="<?php echo htmlspecialchars($member['linkedin']); ?>"
+        >
             <img src="<?php echo $member['sliderImagePath']; ?>" alt="<?php echo htmlspecialchars($member['memberName']); ?>">
             <div class="info">
                 <h2><?php echo htmlspecialchars($member['memberName']); ?></h2>
@@ -181,9 +221,13 @@ if ($result->num_rows > 0) {
 
 <!-- Detay Kısmı: Hover Resimler için -->
 <div class="details" id="details">
-    <h3 id="member-name"></h3>
+    <div class="name-and-social">
+        <h3 id="member-name"></h3>
+        <div class="social-icons" id="social-icons">
+            <!-- Sosyal medya ikonları dinamik olarak eklenecek -->
+        </div>
+    </div>
     <p id="member-detail"></p>
-
     <div id="member-images">
         <!-- Detay resimleri burada dinamik olarak oluşturulacak -->
     </div>
@@ -198,75 +242,106 @@ if ($result->num_rows > 0) {
 <!-- Swiper JS -->
 <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 <script>
-const swiper = new Swiper('.swiper-container', {
-    loop: true,
-    slidesPerView: 3,
-    spaceBetween: 30,
-    centeredSlides: true,
-    pagination: {
-        el: '.swiper-pagination',
-        clickable: true,
-    },
-    navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-    },
-    on: {
-        init: function () {
-            const initialSlide = this.slides[this.activeIndex];
-            updateDetails(initialSlide);
+    const swiper = new Swiper('.swiper-container', {
+        loop: true,
+        slidesPerView: 3,
+        spaceBetween: 30,
+        centeredSlides: true,
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
         },
-        slideChangeTransitionStart: function () {
-            const activeSlide = this.slides[this.activeIndex];
-            updateDetails(activeSlide);
-        }
-    }
-});
-
-function updateDetails(activeSlide) {
-    const memberName = activeSlide.querySelector('.info h2').innerText;
-    const memberDetail = activeSlide.dataset.details;
-    const memberImages = JSON.parse(activeSlide.dataset.images);
-
-    document.getElementById('member-name').innerText = memberName;
-    document.getElementById('member-detail').innerText = memberDetail;
-
-    const imagesContainer = document.getElementById('member-images');
-    imagesContainer.innerHTML = ''; // Önceki resimleri temizle
-    memberImages.forEach((image) => {
-        if (image) {
-            const containerDiv = document.createElement('div');
-            containerDiv.classList.add('image-preview-container');
-
-            const imgElement = document.createElement('img');
-            imgElement.src = image;
-            imgElement.alt = "Detail of " + memberName;
-            imgElement.classList.add('detail-image');
-            imgElement.onclick = function () {
-                openModal(image);
-            };
-
-            containerDiv.appendChild(imgElement);
-            imagesContainer.appendChild(containerDiv);
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        on: {
+            init: function () {
+                const initialSlide = this.slides[this.activeIndex];
+                updateDetails(initialSlide);
+            },
+            slideChangeTransitionStart: function () {
+                const activeSlide = this.slides[this.activeIndex];
+                updateDetails(activeSlide);
+            }
         }
     });
 
-    document.getElementById('details').style.display = 'block';
-    // Sayfanın kaymasını engellemek için scrollIntoView kaldırıldı
-}
+    function updateDetails(activeSlide) {
+        const memberName = activeSlide.querySelector('.info h2').innerText;
+        const memberDetail = activeSlide.dataset.details;
+        const memberImages = JSON.parse(activeSlide.dataset.images);
+        const instagram = activeSlide.dataset.instagram;
+        const twitter = activeSlide.dataset.twitter;
+        const linkedin = activeSlide.dataset.linkedin;
 
-function openModal(imageSrc) {
-    const modal = document.getElementById('image-modal');
-    const modalImg = document.getElementById('modal-image');
-    modalImg.src = imageSrc;
-    modal.style.display = 'flex';
-}
+        document.getElementById('member-name').innerText = memberName;
+        document.getElementById('member-detail').innerText = memberDetail;
 
-function closeModal() {
-    const modal = document.getElementById('image-modal');
-    modal.style.display = 'none';
-}
+        const socialIconsContainer = document.getElementById('social-icons');
+        socialIconsContainer.innerHTML = ''; // Önceki ikonları temizle
+
+        if (instagram) {
+            const a = document.createElement('a');
+            a.href = `https://www.instagram.com/${instagram}`;
+            a.target = '_blank';
+            a.innerHTML = '<i class="fab fa-instagram"></i>';
+            socialIconsContainer.appendChild(a);
+        }
+
+        if (twitter) {
+            const a = document.createElement('a');
+            a.href = `https://twitter.com/${twitter}`;
+            a.target = '_blank';
+            a.innerHTML = '<i class="fab fa-twitter"></i>';
+            socialIconsContainer.appendChild(a);
+        }
+
+        if (linkedin) {
+            const a = document.createElement('a');
+            a.href = `https://www.linkedin.com/in/${linkedin}`;
+            a.target = '_blank';
+            a.innerHTML = '<i class="fab fa-linkedin"></i>';
+            socialIconsContainer.appendChild(a);
+        }
+
+        const imagesContainer = document.getElementById('member-images');
+        imagesContainer.innerHTML = ''; // Önceki resimleri temizle
+        memberImages.forEach((image) => {
+            if (image) {
+                const containerDiv = document.createElement('div');
+                containerDiv.classList.add('image-preview-container');
+
+                const imgElement = document.createElement('img');
+                imgElement.src = image;
+                imgElement.alt = "Detail of " + memberName;
+                imgElement.classList.add('detail-image');
+                imgElement.onclick = function () {
+                    openModal(image);
+                };
+
+                containerDiv.appendChild(imgElement);
+                imagesContainer.appendChild(containerDiv);
+            }
+        });
+
+        document.getElementById('details').style.display = 'block';
+        // Sayfanın kaymasını engellemek için scrollIntoView kaldırıldı
+    }
+
+    function openModal(imageSrc) {
+        const modal = document.getElementById('image-modal');
+        const modalImg = document.getElementById('modal-image');
+        modalImg.src = imageSrc;
+        modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('image-modal');
+        modal.style.display = 'none';
+    }
 </script>
+
 <footer class="footer mt-auto py-2">
     <div class="footer-container text-center">
         <span class="text-muted">HAS GENESIS &copy; 2024. Tüm hakları saklıdır.</span>

@@ -39,10 +39,10 @@
             } else {
                 $stmt_check_email->bind_param("s", $email);
                 $stmt_check_email->execute();
-                $result = $stmt_check_email->get_result();
-                $row = $result->fetch_assoc();
-                $email_count = $row['count'];
+                $stmt_check_email->bind_result($email_count);
+                $stmt_check_email->fetch();
                 $stmt_check_email->close();
+                
                 
                 if ($email_count > 0) {       
                     $error = "E-posta zaten kullanılıyor.";
