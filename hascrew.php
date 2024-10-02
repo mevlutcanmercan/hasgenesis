@@ -205,7 +205,7 @@ if ($result->num_rows > 0) {
             data-images="<?php echo htmlspecialchars(json_encode($member['images'])); ?>"
             data-instagram="<?php echo htmlspecialchars($member['instagram']); ?>"
             data-twitter="<?php echo htmlspecialchars($member['twitter']); ?>"
-            data-linkedin="<?php echo htmlspecialchars($member['linkedin']); ?>"
+            data-youtube="<?php echo htmlspecialchars($member['youtube']); ?>"
         >
             <img src="<?php echo $member['sliderImagePath']; ?>" alt="<?php echo htmlspecialchars($member['memberName']); ?>">
             <div class="info">
@@ -273,7 +273,7 @@ if ($result->num_rows > 0) {
         const memberImages = JSON.parse(activeSlide.dataset.images);
         const instagram = activeSlide.dataset.instagram;
         const twitter = activeSlide.dataset.twitter;
-        const linkedin = activeSlide.dataset.linkedin;
+        const youtube = activeSlide.dataset.youtube;
 
         document.getElementById('member-name').innerText = memberName;
         document.getElementById('member-detail').innerText = memberDetail;
@@ -297,9 +297,9 @@ if ($result->num_rows > 0) {
             socialIconsContainer.appendChild(a);
         }
 
-        if (linkedin) {
+        if (youtube) {
             const a = document.createElement('a');
-            a.href = `https://www.linkedin.com/in/${linkedin}`;
+            a.href = `https://www.youtube.com/${youtube}`;
             a.target = '_blank';
             a.innerHTML = '<i class="fab fa-youtube"></i>';
             socialIconsContainer.appendChild(a);
