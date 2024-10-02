@@ -279,7 +279,7 @@ if ($result->num_rows > 0) {
         document.getElementById('member-detail').innerText = memberDetail;
 
         const socialIconsContainer = document.getElementById('social-icons');
-        socialIconsContainer.innerHTML = ''; // Önceki ikonları temizle
+        socialIconsContainer.innerHTML = ''; 
 
         if (instagram) {
             const a = document.createElement('a');
@@ -301,7 +301,7 @@ if ($result->num_rows > 0) {
             const a = document.createElement('a');
             a.href = `https://www.linkedin.com/in/${linkedin}`;
             a.target = '_blank';
-            a.innerHTML = '<i class="fab fa-linkedin"></i>';
+            a.innerHTML = '<i class="fab fa-youtube"></i>';
             socialIconsContainer.appendChild(a);
         }
 

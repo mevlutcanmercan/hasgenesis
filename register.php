@@ -171,7 +171,7 @@
  
     
     <!-- Register.js -->
-    <script src="/hasgenesis/js/register.js"></script>
+    <script src="/js/register.js"></script>
 
 </body>
 </html>
