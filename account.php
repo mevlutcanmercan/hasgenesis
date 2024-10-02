@@ -63,6 +63,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
     } else {
     }
 }
+
+// Bisiklet markalarını almak için
+$brands_query = "SELECT id, brandName FROM brands";
+$brands_result = $conn->query($brands_query);
+
+// Bisiklet ekleme işlemi
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_bicycle'])) {
+    $brand_id = $_POST['brand'];
+    $front_travel = $_POST['front_travel'];
+    $rear_travel = $_POST['rear_travel'];
+
+    $insert_bike_stmt = $conn->prepare("INSERT INTO bicycles (brand, front_travel, rear_travel, user_id) VALUES (?, ?, ?, ?)");
+    $insert_bike_stmt->bind_param("iiii", $brand_id, $front_travel, $rear_travel, $user_id);
+
+    if ($insert_bike_stmt->execute()) {
+        $bikeMessage = 'success'; // Başarı durumu
+    } else {
+        $bikeMessage = 'error'; // Hata durumu
+    }
+    $insert_bike_stmt->close();
+    header("Location: account.php");
+    exit();
+}
+
+// Kullanıcının eklediği bisikletleri çekmek için
+$user_bikes_query = "SELECT b.id, br.brandName, b.front_travel, b.rear_travel 
+                     FROM bicycles b
+                     JOIN brands br ON b.brand = br.id
+                     WHERE b.user_id = ?";
+$user_bikes_stmt = $conn->prepare($user_bikes_query);
+$user_bikes_stmt->bind_param("i", $user_id);
+$user_bikes_stmt->execute();
+$user_bikes_result = $user_bikes_stmt->get_result();
+
 ?>
 
 <!DOCTYPE html>
@@ -92,6 +126,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
         <nav class="nav flex-column">
             <a href="#profile" class="nav-link active" data-bs-toggle="tab"><i class='bx bxs-user'></i> Profil</a>
             <a href="#change-password" class="nav-link" data-bs-toggle="tab"><i class='bx bxs-lock'></i> Şifre Değiştir</a>
+            <a href="#bicycle" class="nav-link" data-bs-toggle="tab"><i class="bi bi-bicycle"></i> Bisikletlerim </a>
+
                     <!-- Admin Tab: Eğer kullanıcı admin ise göster -->
         <?php if ($isAdmin == 1): ?>
             <a href="#admin-panel" class="nav-link" data-bs-toggle="tab"><i class='bx bxs-shield'></i> Admin Paneli</a>
@@ -161,7 +197,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
                     <button type="submit" name="change_password" class="btn btn-primary">Şifreyi Güncelle</button>
                 </form>
             </div>
-            
+                    
+                    <div class="tab-pane fade" id="bicycle">
+            <h2>Bisikletlerim</h2>
+
+                <!-- Bisiklet Ekleme Formu -->
+        <form method="POST" action="" id="bicycleForm">
+            <div class="mb-3">
+                <label for="brand" class="form-label">Bisiklet Markası</label>
+                <select class="form-control" id="brand" name="brand" required>
+                    <option value="" disabled selected>Marka Seçin</option>
+                    <?php while ($row = $brands_result->fetch_assoc()): ?>
+                        <option value="<?php echo $row['id']; ?>"><?php echo $row['brandName']; ?></option>
+                    <?php endwhile; ?>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="front_travel" class="form-label">Ön Süspansiyon (mm)</label>
+                <input type="number" class="form-control" id="front_travel" name="front_travel" min="80" max="220" required>
+                <small>Ön süspansiyon 80 ile 220 mm arasında olmalıdır.</small>
+            </div>
+            <div class="mb-3">
+                <label for="rear_travel" class="form-label">Arka Süspansiyon (mm)</label>
+                <input type="number" class="form-control" id="rear_travel" name="rear_travel" min="80" max="220" required>
+                <small>Arka süspansiyon 80 ile 220 mm arasında olmalıdır.</small>
+            </div>
+            <button type="submit" name="add_bicycle" class="btn btn-primary">Bisikleti Ekle</button>
+        </form>
+
+            <!-- Kullanıcının Eklediği Bisikletler -->
+            <h3>Eklenen Bisikletler</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Marka</th>
+                        <th>Ön Süspansiyon (mm)</th>
+                        <th>Arka Süspansiyon (mm)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($bike = $user_bikes_result->fetch_assoc()): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($bike['brandName']); ?></td>
+                            <td><?php echo htmlspecialchars($bike['front_travel']); ?></td>
+                            <td><?php echo htmlspecialchars($bike['rear_travel']); ?></td>
+                        </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+        </div>
+
+
                     <!-- Admin Panel Tab -->
         <?php if ($isAdmin == 1): ?>
         <div class="tab-pane fade" id="admin-panel">
@@ -175,6 +261,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
     </div>
 
     <script>
+
+                    // Bisiklet ekleme mesajları
+        <?php if ($bikeMessage === 'success'): ?>
+            swal("Başarılı!", "Bisiklet başarıyla eklendi.", "success");
+        <?php elseif ($bikeMessage === 'error'): ?>
+            swal("Hata!", "Bisiklet eklenirken bir hata oluştu.", "error");
+        <?php endif; ?>
+
+            document.getElementById('bicycleForm').addEventListener('submit', function(event) {
+        const frontTravel = document.getElementById('front_travel').value;
+        const rearTravel = document.getElementById('rear_travel').value;
+
+        if (frontTravel < 80 || frontTravel > 220) {
+            alert("Ön süspansiyon 80 ile 220 mm arasında olmalıdır.");
+            event.preventDefault(); // Formun gönderilmesini engeller
+        }
+
+        if (rearTravel < 80 || rearTravel > 220) {
+            alert("Arka süspansiyon 80 ile 220 mm arasında olmalıdır.");
+            event.preventDefault(); // Formun gönderilmesini engeller
+        }
+    });
+
+
         // Profil düzenleme fonksiyonu
         function toggleEditProfile() {
             const profileInfo = document.getElementById('profile-info');
