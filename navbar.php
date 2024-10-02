@@ -49,11 +49,21 @@ if (isset($_SESSION['id_users'])) {
     <link rel="stylesheet" href="css/navbar.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="shortcut icon" href="images/logo-has.png" type="image/x-icon">
+
+    <style>
+        
+        
+
+
+    </style>
 </head>
+
 <body>
+
+
     
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light d-flex justify-content-between">
+<nav class="navbar navbar-expand-xl navbar-light d-flex justify-content-between">
     <div class="container-fluid">
         <a class="navbar-brand header-text" href="index">HAS GENESIS</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">

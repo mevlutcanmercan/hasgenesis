@@ -2,6 +2,10 @@
 include 'dB/database.php';
 include 'navbar.php'; 
 include 'bootstrap.php';
+include 'auth.php';
+
+requireLogin();
+
 $user_id = $_SESSION['id_users']; 
 // Giriş kontrolü
 // Kullanıcı bilgilerini al

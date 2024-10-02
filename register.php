@@ -1,6 +1,8 @@
 <?php
     include 'auth.php';
     include 'bootstrap.php';
+
+    session_start();
     
     // Kullanıcı zaten giriş yapmışsa erişimi engelle
     preventAccessIfLoggedIn(); 
