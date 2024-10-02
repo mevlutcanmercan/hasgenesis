@@ -79,11 +79,12 @@ if ($result->num_rows > 0) {
     .info {
         position: absolute; /* Bilgi kısmını resmin üzerine yerleştirmek için */
         bottom: 10px; /* Resmin alt kısmında */
-        left: 10px; /* Soldan bir miktar içeride */
         color: white; /* Yazı rengi beyaz */
         background-color: rgba(0, 0, 0, 0.7); /* Koyu arka plan */
         padding: 10px;
         border-radius: 5px; /* Kenar yuvarlama */
+        justify-content: center; 
+        display: flex;  
     }
 
     .details {
@@ -95,11 +96,12 @@ if ($result->num_rows > 0) {
         padding: 15px; /* İç boşluk */
         display: none; /* Başlangıçta gizli */
         word-wrap: break-word; /* Uzun kelimeleri aşağıya sarmala */
-        overflow-wrap: break-word; /* Taşan yazıları sarmala */
+        overflow-wrap: break-word;
+        overflow-y: auto;
     }
 
     .details img {
-        width: 200px; /* Resim genişliği */
+        width: 100px; /* Resim genişliği */
         height: auto; /* Yüksekliği otomatik ayarlama */
         margin: 10px; /* Resimler arası boşluk */
         border-radius: 10px; /* Resim kenar yuvarlama */
@@ -197,74 +199,74 @@ if ($result->num_rows > 0) {
 <!-- Swiper JS -->
 <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 <script>
-    const swiper = new Swiper('.swiper-container', {
-        loop: true,
-        slidesPerView: 3,
-        spaceBetween: 30,
-        centeredSlides: true,
-        pagination: {
-            el: '.swiper-pagination',
-            clickable: true,
+const swiper = new Swiper('.swiper-container', {
+    loop: true,
+    slidesPerView: 3,
+    spaceBetween: 30,
+    centeredSlides: true,
+    pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+    },
+    navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+    },
+    on: {
+        init: function () {
+            const initialSlide = this.slides[this.activeIndex];
+            updateDetails(initialSlide);
         },
-        navigation: {
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
-        },
-        on: {
-            init: function () {
-                const initialSlide = this.slides[this.activeIndex];
-                updateDetails(initialSlide);
-            },
-            slideChangeTransitionStart: function () {
-                const activeSlide = this.slides[this.activeIndex];
-                updateDetails(activeSlide);
-            }
+        slideChangeTransitionStart: function () {
+            const activeSlide = this.slides[this.activeIndex];
+            updateDetails(activeSlide);
+        }
+    }
+});
+
+function updateDetails(activeSlide) {
+    const memberName = activeSlide.querySelector('.info h2').innerText;
+    const memberDetail = activeSlide.dataset.details;
+    const memberImages = JSON.parse(activeSlide.dataset.images);
+
+    document.getElementById('member-name').innerText = memberName;
+    document.getElementById('member-detail').innerText = memberDetail;
+
+    const imagesContainer = document.getElementById('member-images');
+    imagesContainer.innerHTML = ''; // Önceki resimleri temizle
+    memberImages.forEach((image) => {
+        if (image) {
+            const containerDiv = document.createElement('div');
+            containerDiv.classList.add('image-preview-container');
+
+            const imgElement = document.createElement('img');
+            imgElement.src = image;
+            imgElement.alt = "Detail of " + memberName;
+            imgElement.classList.add('detail-image');
+            imgElement.onclick = function () {
+                openModal(image);
+            };
+
+            containerDiv.appendChild(imgElement);
+            imagesContainer.appendChild(containerDiv);
         }
     });
 
-    function updateDetails(activeSlide) {
-        const memberName = activeSlide.querySelector('.info h2').innerText;
-        const memberDetail = activeSlide.dataset.details;
-        const memberImages = JSON.parse(activeSlide.dataset.images);
+    document.getElementById('details').style.display = 'block';
+    // Sayfanın kaymasını engellemek için scrollIntoView kaldırıldı
+}
 
-        document.getElementById('member-name').innerText = memberName;
-        document.getElementById('member-detail').innerText = memberDetail;
+function openModal(imageSrc) {
+    const modal = document.getElementById('image-modal');
+    const modalImg = document.getElementById('modal-image');
+    modalImg.src = imageSrc;
+    modal.style.display = 'flex';
+}
 
-        const imagesContainer = document.getElementById('member-images');
-        imagesContainer.innerHTML = ''; // Önceki resimleri temizle
-        memberImages.forEach((image) => {
-            if (image) {
-                const containerDiv = document.createElement('div');
-                containerDiv.classList.add('image-preview-container');
-
-                const imgElement = document.createElement('img');
-                imgElement.src = image;
-                imgElement.alt = "Detail of " + memberName;
-                imgElement.classList.add('detail-image');
-                imgElement.onclick = function () {
-                    openModal(image);
-                };
-
-                containerDiv.appendChild(imgElement);
-                imagesContainer.appendChild(containerDiv);
-            }
-        });
-
-        document.getElementById('details').style.display = 'block';
-        document.getElementById('details').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function openModal(imageSrc) {
-        const modal = document.getElementById('image-modal');
-        const modalImg = document.getElementById('modal-image');
-        modalImg.src = imageSrc;
-        modal.style.display = 'flex';
-    }
-
-    function closeModal() {
-        const modal = document.getElementById('image-modal');
-        modal.style.display = 'none';
-    }
+function closeModal() {
+    const modal = document.getElementById('image-modal');
+    modal.style.display = 'none';
+}
 </script>
 <footer class="footer mt-auto py-2">
     <div class="footer-container text-center">
