@@ -35,24 +35,24 @@
     }
 
     .swiper-slide img {
-        width: 100%;
-        border-radius: 15px; /* Resim kenar yuvarlama */
-        transition: transform 0.3s ease; /* Resim geçişi */
+        width: 100% !important;
+        border-radius: 15px !important; /* Resim kenar yuvarlama */
+        transition: transform 0.3s ease !important; /* Resim geçişi */
     }
 
     .swiper-slide:hover img {
-        transform: scale(1.05); /* Hover efekti */
+        transform: scale(1.05) !important; /* Hover efekti */
     }
 
     .info {
-        position: absolute; /* Bilgi kısmını resmin üzerine yerleştirmek için */
-        bottom: 10px; /* Resmin alt kısmında */
-        color: white; /* Yazı rengi beyaz */
-        background-color: rgba(0, 0, 0, 0.7); /* Koyu arka plan */
+        position: absolute !important; /* Bilgi kısmını resmin üzerine yerleştirmek için */
+        bottom: 10px !important; /* Resmin alt kısmında */
+        color: white !important; /* Yazı rengi beyaz */
+        background-color: rgba(0, 0, 0, 0.7) !important; /* Koyu arka plan */
         padding: 10px;
-        border-radius: 5px; /* Kenar yuvarlama */
-        display: flex;
-        justify-content: center; 
+        border-radius: 5px !important; /* Kenar yuvarlama */
+        display: flex !important;
+        justify-content: center !important; 
     }
 
     .details {
