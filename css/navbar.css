@@ -112,6 +112,12 @@ a.nav-link {
     margin: 0 5px;
 }
 
+@media (max-width: 768px) {
+    .btn-login {
+        margin-bottom: 7%
+    }
 
+    
+}
 
 @import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');

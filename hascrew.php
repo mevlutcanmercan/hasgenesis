@@ -69,6 +69,7 @@ if ($result->num_rows > 0) {
             <!-- Sosyal medya ikonları dinamik olarak eklenecek -->
         </div>
     </div>
+    <hr class="name-hr">
     <p id="member-detail"></p>
     <div id="member-images">
         <!-- Detay resimleri burada dinamik olarak oluşturulacak -->

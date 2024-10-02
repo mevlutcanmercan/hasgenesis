@@ -246,3 +246,23 @@ body {
 }
 
 
+/* Genel Scrollbar Stili */
+::-webkit-scrollbar {
+    width: 10px; /* Scrollbar genişliği */
+    z-index: 1000;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.055); /* Scrollbar'ın arka plan rengi */
+    border-radius: 10px; /* Kenar yuvarlama */
+}
+
+::-webkit-scrollbar-thumb {
+    background: #424242; /* Kaydırıcı butonunun rengi */
+    border-radius: 10px; /* Kenar yuvarlama */
+}
+
+/* Scrollbar Hover Durumu */
+::-webkit-scrollbar-thumb:hover {
+    background: #000000b2; /* Hover durumunda kaydırıcı butonunun rengi */
+}
