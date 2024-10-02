@@ -22,7 +22,7 @@ if ($result->num_rows > 0) {
     }
 }
 ?>
-
+<!-- düzetme -->
 <!DOCTYPE html>
 <html lang="tr">
 <head>
