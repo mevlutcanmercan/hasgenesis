@@ -106,10 +106,22 @@ if ($result->num_rows > 0) {
             slideChangeTransitionStart: function () {
                 const activeSlide = this.slides[this.activeIndex];
                 updateDetails(activeSlide);
-            }
+            },
+            
         }
     });
-
+    document.querySelectorAll('.swiper-slide').forEach(slide => {
+    slide.addEventListener('click', function() {
+        const clickedIndex = this.getAttribute('data-swiper-slide-index'); // Tıklanan slide'ın indeksini al
+        const currentIndex = swiper.realIndex; // Aktif (orta) slide'ın indeksini al
+        
+        if (clickedIndex > currentIndex) {
+            swiper.slideNext(); // Sağda ise sağa kaydır
+        } else if (clickedIndex < currentIndex) {
+            swiper.slidePrev(); // Solda ise sola kaydır
+        }
+    });
+});
     function updateDetails(activeSlide) {
         const memberName = activeSlide.querySelector('.info h2').innerText;
         const memberDetail = activeSlide.dataset.details;
@@ -183,6 +195,7 @@ if ($result->num_rows > 0) {
         const modal = document.getElementById('image-modal');
         modal.style.display = 'none';
     }
+    
 </script>
 
 <footer class="footer mt-auto py-2">

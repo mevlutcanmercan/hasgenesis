@@ -283,8 +283,8 @@ $user_bikes_result = $user_bikes_stmt->get_result();
             event.preventDefault(); // Formun gönderilmesini engeller
         }
     });
-
-
+</script>
+    <script>
         // Profil düzenleme fonksiyonu
         function toggleEditProfile() {
             const profileInfo = document.getElementById('profile-info');
