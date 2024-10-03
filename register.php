@@ -96,14 +96,14 @@
 -->
 <body>
     <div class="wrapper">
-        <form action="register.php" method="post">
+        <form action="register.php" method="post" onsubmit="return validatePassword()">
             <div class="back-button">
                 <a href="login.php"><i class='bx bx-arrow-back' style="color: black;"></i></a>
             </div>
             <div class="logo"><img src="images/logo-has.png" alt="Logo"></div>
             <hr class="cizgi">
             <h1>Kayıt Ol</h1>
-            
+
             <!-- Hata mesajlarını SweetAlert ile göster -->
             <?php if ($error): ?>
                 <script>
@@ -117,7 +117,7 @@
                     });
                 </script>
             <?php endif; ?>
-            
+
             <!-- Başarı mesajını SweetAlert ile göster -->
             <?php if ($success): ?>
                 <script>
@@ -136,44 +136,58 @@
                     });
                 </script>
             <?php endif; ?>
-            
+
             <div class="input-box">
                 <input type="email" name="mail_users" placeholder="Eposta Adresi" required>
-                <i class='bx bxs-user' style="color:black"></i>
+                <i class='bx bxs-user' style="color:black;"></i>
             </div>
             <div class="input-box">
-                <input type="password" name="password_users" placeholder="Şifre" required>
+                <input type="password" id="password" name="password_users" placeholder="Şifre" required>
                 <i class='bx bxs-lock-alt' style="color:black"></i>
+                <small id="password-error" style="color:red; display:none;">Şifre en az 7 karakter olmalı ve harf+sayı içermelidir.</small>
             </div>
             <div class="input-box">
                 <input type="text" name="name_users" id="name_users" placeholder="Adınız" required>
-                <i class='bx bxs-user' style="color:black"></i>
+                <i class='bx bxs-user' style="color:black;"></i>
             </div>
             <div class="input-box">
                 <input type="text" name="surname_users" id="surname_users" placeholder="Soyadınız" required>
-                <i class='bx bxs-user' style="color:black"></i>
+                <i class='bx bxs-user' style="color:black;"></i>
             </div>
             <div class="input-box">
                 <input type="tel" id="telefon" name="telefon" placeholder="Telefon" required>
-                <i class='bx bxs-phone' style="color:black"></i>
+                <i class='bx bxs-phone' style="color:black;"></i>
             </div>
             <div class="input-box">
                 <input type="date" name="birthday_users" placeholder="Doğum Tarihi" required>
-                <i class='bx bxs-calendar' style="color:black"></i>
+                <i class='bx bxs-calendar' style="color:black;"></i>
             </div>
             <button type="submit" class="btn">Kayıt Ol</button>
         </form>
     </div>
-    
+
     <!-- jQuery ve intl-tel-input -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"></script>
-    
- 
-    
+
     <!-- Register.js -->
     <script src="js/register.js"></script>
+    <script>
+        function validatePassword() {
+            const password = document.getElementById('password').value;
+            const passwordError = document.getElementById('password-error');
+            const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{7,}$/;
+
+            if (!passwordPattern.test(password)) {
+                passwordError.style.display = 'block'; // Hata mesajını göster
+                return false; // Formun gönderilmesini engeller
+            } else {
+                passwordError.style.display = 'none'; // Hata mesajını gizler
+                return true; // Formun gönderilmesine izin verir
+            }
+        }
+    </script>
 
 </body>
 </html>

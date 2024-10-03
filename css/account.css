@@ -2,91 +2,154 @@ body {
     display: flex;
     min-height: 100vh;
     margin: 0;
+    font-family: 'Roboto', sans-serif; /* Modern font ailesi */
+    background-color: #f0f0f5; /* Daha açık bir arka plan rengi */
+    overflow-x: hidden; /* Taşmayı önlemek için */
 }
+
 .sidebar {
-    min-width: 250px;
+    margin-top: 80px;
+    min-width: 10%;
     max-width: 250px;
-    background: #343a40;
+    background-color: #2d2d2d; /* Daha koyu ve modern bir arka plan */
     color: #fff;
-    transition: all 0.3s;
     position: fixed;
     height: 100vh;
     padding-top: 6%;
+    transform: translateX(0);
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1); /* Hafif gölge ekleme */
 }
+
 .sidebar .nav-link {
     color: #fff;
     display: block;
     padding: 15px 20px;
     text-decoration: none;
+    font-size: 1.1em; /* Yazıları biraz büyüt */
+    transition: background 0.3s, color 0.3s; /* Yumuşak geçiş */
+    border-radius: 5px; /* Köşeleri yumuşat */
 }
+
 .sidebar .nav-link:hover {
-    background: #495057;
+    background: #ff5a5f; /* Kırmızı hover rengi */
     color: #fff;
+    box-shadow: 0 4px 10px rgba(255, 90, 95, 0.3); /* Hover gölge efekti */
 }
+
 .content {
-    margin-left: 250px;
+    margin-left: 200px;
     flex: 1;
     padding: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: margin-left 0.3s ease;
+
 }
+
 .tab-content {
     width: 60%;
     max-width: 800px;
     background: #fff;
-    padding: 20px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    height: 60%;
-    width: 100%;
-    max-width: 1000px;
+    padding: 30px; /* Daha geniş padding */
+    box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1); /* Daha belirgin kutu gölgesi */
+    border-radius: 12px; /* Köşeleri biraz daha fazla yuvarlat */
+    transition: box-shadow 0.3s ease; /* Yumuşak geçiş */
 }
 
-/* Sidebar daraltılmış durum için */
-.sidebar.collapsed {
-    min-width: 80px;
-    max-width: 80px;
-    text-align: center;
+.tab-content:hover {
+    box-shadow: 0px 12px 20px rgba(0, 0, 0, 0.2); /* Hover'da gölgeyi güçlendir */
 }
 
-.sidebar.collapsed .nav-link {
-    text-align: center;
-    font-size: 0.8rem;
-    padding: 15px 0;
-}
-
-.sidebar.collapsed .nav-link i {
-    font-size: 1.5rem;
-}
-
-.sidebar.collapsed .nav-link span {
-    display: none; 
-}
-
-.content {
-    margin-left: 300px;
-    transition: margin-left 0.3s ease;
-}
-
-.content.collapsed {
-    margin-left: 80px; 
-}
-.btnCollapse {
-    position:relative;
-    right: -160px;
-    top: 10px;
-    z-index: -1;
-    font-size: 2rem;
+/* Toggle butonu stili */
+.toggle-icon {
+    position: fixed !important;
+    top: 100px;
+    left: 230px;
+    font-size: 30px;
+    color: #ff5a5f; /* Modern bir kırmızı renk */
     cursor: pointer;
-    background-color: #fff;
-    color: #ff2121;
-    border:  #343a40;
-    padding: 5px 10px;
-    border-radius: 11px 11px 11px 11px;
-    transition: right 0.3s ease;
+    transition: left 0.3s ease, color 0.3s ease;
+    z-index: 1000;
 }
 
-.sidebar.collapsed .btnCollapse {
-    right: -40px;
+.toggle-icon:hover {
+    color: #ff7f50; /* Hover'da renk değişimi */
+}
+
+.logo img {
+    position: relative;
+    bottom: 70px;
+    max-width: 70%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* Mobil Cihazlar İçin CSS */
+@media (max-width: 768px) {
+    body {
+        display: flex;
+        min-height: 100vh;
+        margin: 0;
+        overflow-x: hidden; /* Taşmayı önlemek için */
+    }
+
+    /* Sidebar ayarları */
+    .sidebar {
+        position: fixed; /* Sidebar'ı sabitle */
+        background-color: #111111cb;
+        color: #fff;
+        height: 100vh;
+        min-width: 200px;
+        max-width: 200px;
+        transform: translateX(-100%); /* Başlangıçta sidebar gizli */
+        z-index: 999; /* Sidebar'ın her şeyin üstünde kalmasını sağla */
+    }
+
+    .logo img {
+        position: static;
+        max-width: 50%;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+        text-align: center;
+        padding: 0px 0;
+    }
+    .content {
+        margin-left: 0;
+        width: 100%;
+        padding: 10px;
+    }
+
+    /* Toggle butonu ayarları */
+    .toggle-icon {
+        position: relative; /* Butonu sabit tut */
+        top: 100px; /* Navbar altında kalması için */
+        left: 10px; /* Sidebar kapalıyken ikon sola yaklaşacak */
+        z-index: 1001; /* Sidebar'dan bir katman üstte */
+        transition: left 0.3s ease;
+    }
+
+    .tab-content {
+        width: 100%;
+        padding: 10px;
+    }
+
+    /* Sidebar açıldığında genişliği kaplaması için ayarlar */
+    .sidebar.show {
+        transform: translateX(0);
+    }
+
+    /* Sidebar açıldığında buton biraz daha sola yaklaşacak */
+    .sidebar.show + .toggle-icon {
+        left:10px !important; /* Sidebar açıldığında buton sağa gitmesini önlemek için */
+    }
+
+    /* Sidebar kapanınca content'in sola kayması */
+    .sidebar.closed + .content {
+        margin-left: 0; /* Sidebar kapalıyken content sola kayar */
+    }
 }
