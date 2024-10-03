@@ -208,9 +208,9 @@ $user_bikes_result = $user_bikes_stmt->get_result();
                 <a href="#bicycle" class="nav-link" data-bs-toggle="tab"><i class='bx bx-trip'></i> Bisikletlerim</a>
 
                 <!-- Admin Tab: Eğer kullanıcı admin ise göster -->
-                <?php if ($isAdmin == 1): ?>
-                    <a href="#admin-panel" class="nav-link" data-bs-toggle="tab"><i class='bx bxs-shield'></i> Admin Paneli</a>
-                <?php endif; ?>
+                            <?php if ($isAdmin == 1): ?>
+                <a href="admin/adminmainpage.php" class="nav-link"><i class='bx bxs-shield'></i> Admin Paneli</a>
+            <?php endif; ?>
             </nav>
         </div>
 
@@ -333,14 +333,6 @@ $user_bikes_result = $user_bikes_stmt->get_result();
                     </tbody>
                 </table>
             </div>
-
-            <!-- Admin Panel Tab -->
-            <?php if ($isAdmin == 1): ?>
-            <div class="tab-pane fade" id="admin-panel">
-                <h2>Admin Paneli</h2>
-                <p>Burada admin paneli için içerik olacak.</p>
-            </div>
-            <?php endif; ?>
         </div>
     </div>
                 <script>
