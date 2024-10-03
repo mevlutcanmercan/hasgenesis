@@ -1,0 +1,104 @@
+/* styles.css */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-image: url('../../images/adminarkaplan.jpg');
+    background-repeat: no-repeat; /* Resmin tekrar etmemesi */
+    background-attachment: fixed; /* Arka planın sabit kalması */
+    background-size: cover; /* Arka plan resmini kapsayıcı olarak ayarla */
+    background-position: center; /* Arka plan resmini ortala */
+}
+
+.toggle-icon {
+    position: fixed; /* Sabit pozisyon */
+    top: 20px;
+    left: 270px; /* Sidebar genişliği + boşluk */
+    font-size: 30px;
+    color: #000000;
+    cursor: pointer;
+    transition: left 0.3s ease;
+    z-index: 1000; /* Diğer öğelerin üzerinde görünmesi için yüksek z-index */
+}
+
+.sidebar {
+    height: 100%;
+    width: 250px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #111111cb;
+    padding-top: 20px;
+    transition: transform 0.3s ease; /* Kayma animasyonu için */
+}
+
+.logo-container {
+    text-align: center;
+    padding: 0px 0; /* Üst ve alt boşluk */
+}
+
+.logo-container img {
+    max-width: 60%; /* Logoyu orantılı şekilde küçültmek için */
+    height: auto;
+    display: block;
+    margin: 0 auto; /* Merkezi hizalamak için */
+}
+
+.sidebar h2 {
+    color: #000000;
+    text-align: center;
+    background-color: #8b8b8b;
+    padding: 10px;
+}
+
+.menu ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.menu ul li {
+    padding: 8px;
+}
+
+.menu ul li a {
+    text-decoration: none;
+    font-weight: bold;
+    color: #fff;
+    display: block;
+    padding: 10px;
+    border-bottom: 1px solid #333;
+    transition: background 0.5s ease, color 0.5s ease; /* Geçiş süreleri */
+    border-radius: 5px;
+}
+
+.menu ul li a:hover {
+    background: linear-gradient(45deg, rgb(145, 145, 145), rgb(65, 65, 65)); /* Arka plan geçişi */
+    color: #fff;
+    transition: background 0.5s ease;
+}
+
+.menu ul li a.active {
+    background: linear-gradient(45deg, rgb(145, 145, 145), rgb(65, 65, 65));
+}
+
+.content {
+    margin-left: 250px;
+    padding: 20px;
+}
+
+.sidebar .menu ul li.cikisyap {
+    position: absolute;
+    bottom: 15px;
+    width: calc(100% - 30px);
+    margin-bottom: 20px;
+}
+
+.sidebar .menu ul li.cikisyap a {
+    background-color: #383838;
+    transition: background-color 0.5s ease;
+}
+
+.sidebar .menu ul li.cikisyap a:hover {
+    background-color: rgb(145, 145, 145);
+}
