@@ -1,0 +1,108 @@
+body {
+    
+    color: #fff; /* Metin rengi beyaz */
+    
+}
+
+.content {
+    border-radius: 8px;
+    padding: 20px;
+    justify-items: center;
+}
+
+h2 {
+    color: #fff; /* Başlık beyaz */
+    margin-top: 3%;
+    text-align: center; /* Başlık ortalanmış */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid #444; /* Tablo kenarları koyu gri */
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    color: #fff; /* Metin rengi beyaz */
+    font-weight: bold; /* Metin kalın */
+}
+
+th {
+    background-color: #333; /* Başlık arka plan rengi koyu gri */
+}
+
+tr:nth-child(even) {
+    background-color: #555; /* Çift satırlar için arka plan rengi koyu gri */
+}
+
+tr:nth-child(odd) {
+    background-color: #444; /* Tek satırlar için arka plan rengi biraz daha açık gri */
+}
+
+tr:hover {
+    background-color: #666; /* Satır üzerine gelindiğinde arka plan rengi açık gri */
+}
+
+form {
+    margin-top: 20px; /* Formun üst boşluğu */
+    text-align: center; /* Formun ortalanması */
+}
+
+input[type="submit"] {
+    background-color: #dc3545; /* Silme butonu arka plan rengi kırmızı */
+    color: white; /* Silme butonu yazı rengi beyaz */
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px; /* Köşeleri yuvarlat */
+}
+
+input[type="submit-delete"]:hover {
+    background-color: #c82333; /* Silme butonu üzerine gelindiğinde rengi */
+}
+
+input[type="submit-delete"] {
+    margin-top: 10px;
+    text-align: center;
+    background-color: #dc3545; /* Silme butonu arka plan rengi kırmızı */
+    color: white; /* Silme butonu yazı rengi beyaz */
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px; /* Köşeleri yuvarlat */
+}
+
+input[type="submit"]:hover {
+    background-color: #c82333; /* Silme butonu üzerine gelindiğinde rengi */
+}
+.pagination-container {
+    text-align: center; /* Sayfalama bağlantılarının ortalanması */
+    margin-top: 20px; /* Sayfalama üst boşluğu */
+}
+
+.pagination-link {
+    display: inline-block; /* Dikey düzenleme */
+    margin: 0 5px; /* Kenar boşluğu */
+    padding: 10px 15px; /* İç boşluk */
+    background-color: #007bff; /* Sayfalama bağlantı rengi */
+    color: #fff; /* Yazı rengi beyaz */
+    text-decoration: none; /* Alt çizgi yok */
+    border-radius: 5px; /* Köşeleri yuvarlat */
+}
+
+.pagination-link:hover {
+    background-color: #0056b3; /* Üzerine gelindiğinde rengi */
+}
+
+.pagination-link.active {
+    background-color: #0056b3; /* Aktif sayfa rengi */
+    pointer-events: none; /* Aktif sayfada tıklanamaz */
+}
+
+

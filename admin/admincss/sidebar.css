@@ -1,64 +1,76 @@
 /* styles.css */
+* {
+    font-family: "Poppins", sans-serif; /* Genel font ayarı */
+}
 
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-image: url('../../images/adminarkaplan.jpg');
+    background-image: url('../../images/admin-background.jpg');
     background-repeat: no-repeat; /* Resmin tekrar etmemesi */
     background-attachment: fixed; /* Arka planın sabit kalması */
     background-size: cover; /* Arka plan resmini kapsayıcı olarak ayarla */
     background-position: center; /* Arka plan resmini ortala */
 }
 
+/* Toggle ikon ayarları */
 .toggle-icon {
+    margin-left: 2%;
     position: fixed; /* Sabit pozisyon */
-    top: 20px;
-    left: 270px; /* Sidebar genişliği + boşluk */
-    font-size: 30px;
-    color: #000000;
+    top: 2%; /* %2 üstten boşluk */
+    font-size: 2vw; /* Ekran boyutuna göre ayarlanmış font boyutu */
+    color: #ffffff;
     cursor: pointer;
     transition: left 0.3s ease;
     z-index: 1000; /* Diğer öğelerin üzerinde görünmesi için yüksek z-index */
 }
 
+/* Sidebar ayarları */
 .sidebar {
-    height: 100%;
-    width: 250px;
     position: fixed;
-    top: 0;
-    left: 0;
-    background-color: #111111cb;
-    padding-top: 20px;
-    transition: transform 0.3s ease; /* Kayma animasyonu için */
+    width: 15%; /* %15 genişlik */
+    height: 100%;
+    background-color: #000000ee; /* Sidebar arka plan rengi */
+    transition: transform 0.3s ease; /* Geçiş animasyonu */
+    transform: translateX(-100%); /* Başlangıçta kapalı */
+    
 }
 
+/* Logo konteyner ayarları */
 .logo-container {
     text-align: center;
-    padding: 0px 0; /* Üst ve alt boşluk */
+    padding: 0; /* Üst ve alt boşluk */
 }
 
+/* Logo boyutlandırması */
 .logo-container img {
     max-width: 60%; /* Logoyu orantılı şekilde küçültmek için */
     height: auto;
     display: block;
     margin: 0 auto; /* Merkezi hizalamak için */
+    margin-bottom: 5%; /* %5 alt boşluk */
+    margin-top: 5%; /* %5 üst boşluk */
 }
 
+/* Sidebar başlık ayarları */
 .sidebar h2 {
     color: #000000;
     text-align: center;
     background-color: #8b8b8b;
-    padding: 10px;
+    padding: 1%; /* %1 padding */
+    font-weight: bolder;
+    font-size: 1.5vw; /* Ekran boyutuna göre ayarlanmış başlık boyutu */
 }
 
-.menu ul {
+/* Menü ayarları */
+.menu ul { 
     list-style-type: none;
     padding: 0;
 }
 
 .menu ul li {
-    padding: 8px;
+    padding: 2%; /* %2 padding */
 }
 
 .menu ul li a {
@@ -66,32 +78,34 @@ body {
     font-weight: bold;
     color: #fff;
     display: block;
-    padding: 10px;
-    border-bottom: 1px solid #333;
-    transition: background 0.5s ease, color 0.5s ease; /* Geçiş süreleri */
+    padding: 3%; /* %3 padding */
+    border-bottom: 2px solid #333;
+    transition: background 0.5s ease, color 0.5s ease !important; /* Geçiş süreleri */
     border-radius: 5px;
 }
 
+/* Menü bağlantısı hover durumu */
 .menu ul li a:hover {
     background: linear-gradient(45deg, rgb(145, 145, 145), rgb(65, 65, 65)); /* Arka plan geçişi */
     color: #fff;
-    transition: background 0.5s ease;
+    transition: background 0.5s ease !important;
 }
 
 .menu ul li a.active {
     background: linear-gradient(45deg, rgb(145, 145, 145), rgb(65, 65, 65));
 }
 
+/* İçerik alanı */
 .content {
-    margin-left: 250px;
-    padding: 20px;
+    padding: 2%; /* %2 padding */
 }
 
+/* Çıkış yap butonu ayarları */
 .sidebar .menu ul li.cikisyap {
     position: absolute;
-    bottom: 15px;
-    width: calc(100% - 30px);
-    margin-bottom: 20px;
+    bottom: 2%; /* %2 alt boşluk */
+    width: calc(100% - 10%); /* %10 boşluk bırak */
+    margin-bottom: 5%; /* %5 alt boşluk */
 }
 
 .sidebar .menu ul li.cikisyap a {
@@ -99,6 +113,31 @@ body {
     transition: background-color 0.5s ease;
 }
 
+/* Çıkış yap butonu hover durumu */
 .sidebar .menu ul li.cikisyap a:hover {
     background-color: rgb(145, 145, 145);
+}
+
+/* Mobil ve küçük ekranlar için medya sorgusu */
+@media (max-width: 1050px) {
+
+    .toggle-icon{
+        margin-left: 5%;
+    }
+    .sidebar {
+        width: 25%; /* Küçük ekranlar için genişlik %25 olur */
+    }
+
+    .toggle-icon {
+        font-size: 5vw; /* Küçük ekranlarda ikon boyutu büyütülür */
+    }
+
+    .sidebar h2 {
+        font-size: 2.5vw; /* Başlık boyutu küçültülür */
+    }
+
+    .menu ul li a {
+        font-size: 1.2rem; /* Menü bağlantı boyutu küçültülür */
+        padding: 10px; /* Menü bağlantı padding'i ayarlanır */
+    }
 }
