@@ -1,10 +1,15 @@
+
+* {
+    font-family: "Poppins", sans-serif;
+}
+
+
 body {
-    
     color: #fff; /* Metin rengi beyaz */
-    
 }
 
 .content {
+    z-index: -1000;
     border-radius: 8px;
     padding: 20px;
     justify-items: center;
@@ -14,6 +19,37 @@ h2 {
     color: #fff; /* Başlık beyaz */
     margin-top: 3%;
     text-align: center; /* Başlık ortalanmış */
+}
+
+/* Genel stil ayarları */
+select {
+    margin-right: 5px;
+    font-weight: 700;
+    width: 200px; /* Genişlik */
+    padding: 5px; /* İç boşluk */
+    border: 2px solid #000000; /* Kenar rengi */
+    border-radius: 5px; /* Kenar yuvarlama */
+    background-color: #fff; /* Arka plan rengi */
+    color: #333; /* Metin rengi */
+    font-size: 16px; /* Yazı boyutu */
+    transition: border-color 0.3s; /* Kenar rengi geçişi */
+}
+
+/* Focus (odaklanma) durumunda stil */
+select:focus {
+    border: 2px solid #000000; /* Odaklanma rengi */
+    outline: none; /* Varsayılan kenar çizgisini kaldır */
+}
+
+/* Seçenekler için stil */
+option {
+    font-weight: 700;
+    padding: 10px; /* İç boşluk */
+}
+
+/* Hover durumu için stil (fare üzerine geldiğinde) */
+select:hover {
+    border: 2px solid #000000; /* Hover rengi */
 }
 
 table {
@@ -63,24 +99,14 @@ input[type="submit"] {
     border-radius: 5px; /* Köşeleri yuvarlat */
 }
 
-input[type="submit-delete"]:hover {
-    background-color: #c82333; /* Silme butonu üzerine gelindiğinde rengi */
-}
-
-input[type="submit-delete"] {
+#buton2 {
     margin-top: 10px;
-    text-align: center;
-    background-color: #dc3545; /* Silme butonu arka plan rengi kırmızı */
-    color: white; /* Silme butonu yazı rengi beyaz */
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 5px; /* Köşeleri yuvarlat */
 }
 
 input[type="submit"]:hover {
     background-color: #c82333; /* Silme butonu üzerine gelindiğinde rengi */
 }
+
 .pagination-container {
     text-align: center; /* Sayfalama bağlantılarının ortalanması */
     margin-top: 20px; /* Sayfalama üst boşluğu */
@@ -106,3 +132,162 @@ input[type="submit"]:hover {
 }
 
 
+/* pop-up penceresi */
+
+/* Modal penceresi için stil */
+/* Modal penceresi için stil */
+.modal {
+    display: none; /* Başlangıçta gizli */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.7); /* Arkaya daha koyu karanlık bir katman */
+}
+
+/* Modal içeriği için stil */
+/* Modal içeriği için stil */
+.modal-content {
+    font-family: "Poppins", sans-serif; /* Font değiştirildi */
+    background-color: #ffffff;
+    margin: 10% auto;
+    padding: 30px; /* İç boşluk artırıldı */
+    border: 3px solid #ff0000; /* Kenar rengi */
+    width: 80%;
+    max-width: 600px;
+    border-radius: 12px; /* Daha yuvarlak köşeler */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* Kenar gölgesi eklendi */
+    transition: all 0.3s ease; /* Geçiş efekti eklendi */
+    word-wrap: break-word; /* Uzun kelimelerin taşmasını önler */
+    overflow-wrap: break-word; /* Uzun kelimelerin taşmasını önler (tarayıcı uyumluluğu) */
+    white-space: normal; /* Normalde yazının taşmasını önler */
+}
+Kulla
+
+/* Modal mesajı için stil */
+.modal-message {
+    font-family: Arial, sans-serif; /* Yazı tipi */
+    color: #333; /* Metin rengi */
+    max-height: 300px; /* Maksimum yükseklik ayarlandı */
+    overflow-y: auto; /* Dikey kaydırma çubuğu */
+}
+
+.modal-message h3 {
+    color: #000; /* Başlık rengi */
+    margin-bottom: 15px; /* Başlık altındaki boşluk */
+    font-size: 24px; /* Başlık boyutu artırıldı */
+    text-align: center; /* Başlık ortalandı */
+}
+
+.modal-message p {
+    margin: 10px 0; /* Paragraflar arası boşluk */
+    line-height: 1.6; /* Satır yüksekliği artırıldı */
+}
+
+.modal-message strong {
+    font-weight: 900; /* Kalın yazı */
+    color: #000; /* Başlıklar için renk */
+}
+
+/* Kapatma butonu için stil */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #dc3545; /* Hover durumu için farklı renk */
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+.modal.show .modal-content {
+    opacity: 1; /* Görünür hale getir */
+    transform: translateY(0); /* Yerine otursun */
+}
+
+.modal.show {
+    display: block; /* Modal gösterildiğinde bloğa çevir */
+}
+
+
+ /* Modal için stil */
+ .modal {
+    display: none; /* Başlangıçta gizli */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4); /* Arkaya karanlık bir katman */
+    animation: fadeIn 0.5s; /* Yavaşça görünme efekti */
+}
+
+.modal-content {
+    font-family: "Poppins", sans-serif;
+    background-color: #ffffff;
+    margin: 2% auto;
+    padding: 20px;
+    border: 3px solid #363636;
+    width: 100%;
+    max-width: 900px;
+    border-radius: 10px;
+    color: #000; /* Modal içeriği için metin rengi */
+    opacity: 0; /* Başlangıçta görünmez */
+    transform: translateY(-20px); /* Yukarıdan gelme efekti */
+    animation: slideIn 0.5s forwards; /* Yavaşça açılma efekti */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.email-button {
+    background-color: #007bff; /* Arka plan rengi mavi */
+    color: #fff; /* Yazı rengi beyaz */
+    border: none; /* Kenar yok */
+    padding: 10px 15px; /* İç boşluk */
+    border-radius: 5px; /* Köşeleri yuvarlat */
+    cursor: pointer; /* İmleç üzerine geldiğinde işaretçi */
+    font-size: 16px; /* Yazı boyutu */
+    display: flex; /* Flexbox ile simge ve metni yan yana hizalamak için */
+    align-items: center; /* Dikey ortalama */
+    transition: background-color 0.3s; /* Arka plan rengi geçişi */
+}
+
+.email-button i {
+    margin-right: 8px; /* Simge ve metin arasında boşluk */
+}
+
+.email-button:hover {
+    background-color: #0056b3; /* Üzerine gelindiğinde arka plan rengi */
+}

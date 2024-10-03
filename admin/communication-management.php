@@ -39,6 +39,7 @@ $offset = ($page - 1) * $messagesPerPage;
 $query = "SELECT * FROM communication";
 $filters = [];
 
+// Kullanıcı mesajı filtresi
 if ($is_user_filter !== null) {
     if ($is_user_filter == 1) {
         $filters[] = "is_user = 1"; // Kullanıcı mesajları
@@ -47,10 +48,12 @@ if ($is_user_filter !== null) {
     }
 }
 
+// Konuya göre filtreleme
 if ($topic_filter !== null && $topic_filter !== "") {
     $filters[] = "topic = '$topic_filter'"; // Konuya göre filtreleme
 }
 
+// Eğer filtre varsa sorguya ekle
 if (!empty($filters)) {
     $query .= " WHERE " . implode(' AND ', $filters);
 }
@@ -66,12 +69,50 @@ $topics_result = $conn->query("SELECT DISTINCT topic FROM communication");
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1024">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>İletişim Yönetimi</title>
-    <link rel="stylesheet" href="admincss/communication-management.css"> <!-- CSS dosyası -->
+    <link rel="stylesheet" href="admincss/communication-management.css">
+    <style>
+        
+    </style>
+    <script>
+        // Modalı açmak için fonksiyon
+        function openModal(messageId) {
+            const modal = document.getElementById('myModal');
+            modal.style.display = "block"; // Modalı aç
+
+            // Mesaj ID'sine göre veriyi al ve göster
+            fetch('get_message.php?id=' + messageId)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('modal-message-content').innerHTML = data;
+                });
+        }
+
+        // Modalı kapatmak için fonksiyon
+        function closeModal() {
+            const modal = document.getElementById('myModal');
+            modal.style.display = "none"; // Modalı kapat
+        }
+
+        // Modal dışına tıklanırsa kapat
+        window.onclick = function (event) {
+            const modal = document.getElementById('myModal');
+            if (event.target == modal) {
+                closeModal(); // Dış alana tıklanırsa modalı kapat
+            }
+        }
+
+        // E-posta gönderme fonksiyonu
+    function sendEmail(email) {
+        const subject = encodeURIComponent("Has Genesis Hk."); // E-posta konusu
+        const body = encodeURIComponent("Merhaba,\n\n"); // E-posta içeriği
+        window.location.href = `mailto:${email}?subject=${subject}&body=${body}`; // E-posta istemcisini aç
+    }
+    </script>
 </head>
 <body>
 
@@ -93,8 +134,8 @@ $topics_result = $conn->query("SELECT DISTINCT topic FROM communication");
         <select name="topic" id="topic">
             <option value="">Tümü</option>
             <?php while ($topic = $topics_result->fetch_assoc()) { ?>
-                <option value="<?php echo $topic['topic']; ?>" <?php echo $topic_filter == $topic['topic'] ? 'selected' : ''; ?>>
-                    <?php echo $topic['topic']; ?>
+                <option value="<?php echo htmlspecialchars($topic['topic']); ?>" <?php echo $topic_filter == $topic['topic'] ? 'selected' : ''; ?>>
+                    <?php echo htmlspecialchars($topic['topic']); ?>
                 </option>
             <?php } ?>
         </select>
@@ -106,8 +147,8 @@ $topics_result = $conn->query("SELECT DISTINCT topic FROM communication");
             <thead>
                 <tr>
                     <th>Seç</th>
-                    <th>Ad</th>
-                    <th>Soyad</th>
+                    <th>İsim</th>
+                    <th>Soyisim</th>
                     <th>Şirket</th>
                     <th>Konu</th>
                     <th>Telefon Numarası</th>
@@ -118,27 +159,27 @@ $topics_result = $conn->query("SELECT DISTINCT topic FROM communication");
             </thead>
             <tbody>
                 <?php while ($row = $result->fetch_assoc()) { ?>
-                    <tr>
-                        <td><input type="checkbox" name="delete_ids[]" value="<?php echo $row['id']; ?>"></td>
-                        <td><?php echo $row['name']; ?></td>
-                        <td><?php echo $row['surname']; ?></td>
-                        <td><?php echo $row['company']; ?></td>
-                        <td><?php echo $row['topic']; ?></td>
-                        <td><?php echo $row['phone_number']; ?></td>
-                        <td><?php echo $row['mail']; ?></td>
+                    <tr style="cursor: pointer;" onclick="openModal(<?php echo $row['id']; ?>)">
+                        <td><input type="checkbox" name="delete_ids[]" value="<?php echo $row['id']; ?>" onclick="event.stopPropagation();"></td>
+                        <td><?php echo htmlspecialchars($row['name']); ?></td>
+                        <td><?php echo htmlspecialchars($row['surname']); ?></td>
+                        <td><?php echo htmlspecialchars($row['company']); ?></td>
+                        <td><?php echo htmlspecialchars($row['topic']); ?></td>
+                        <td><?php echo htmlspecialchars($row['phone_number']); ?></td>
+                        <td><?php echo htmlspecialchars($row['mail']); ?></td>
                         <td>
-                            <?php 
+                            <?php
                             // Mesajın sadece bir kısmını göster
-                            echo mb_strimwidth($row['text'], 0, 50, '...'); 
+                            echo mb_strimwidth(htmlspecialchars($row['text']), 0, 50, '...');
                             ?>
                         </td>
-                        <td><?php echo $row['created_at']; ?></td>
+                        <td><?php echo htmlspecialchars($row['created_at']); ?></td>
                     </tr>
                 <?php } ?>
             </tbody>
         </table>
 
-        <input type="submit-delete" value="Seçilenleri Sil" onclick="return confirm('Seçilen mesajları silmek istediğinize emin misiniz?');">
+        <input id="buton2" type="submit" value="Seçilenleri Sil" onclick="return confirm('Seçilen mesajları silmek istediğinize emin misiniz?');">
     </form>
 
     <div class="pagination-container">
@@ -148,9 +189,7 @@ $topics_result = $conn->query("SELECT DISTINCT topic FROM communication");
         <?php endif; ?>
 
         <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-            <a href="communication-management.php?page=<?php echo $i; ?>" class="btn btn-outline-primary pagination-link <?php if ($i == $page) echo 'active'; ?>">
-                <?php echo $i; ?>
-            </a>
+            <a href="communication-management.php?page=<?php echo $i; ?>" class="btn btn-outline-primary pagination-link <?php if ($i == $page) echo 'active'; ?>"><?php echo $i; ?></a>
         <?php endfor; ?>
 
         <?php if ($page < $totalPages): ?>
@@ -158,6 +197,26 @@ $topics_result = $conn->query("SELECT DISTINCT topic FROM communication");
         <?php endif; ?>
     </div>
 </div>
+
+<!-- Modal Penceresi -->
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <div id="modal-message-content"></div>
+    </div>
+</div>
+
+<script>
+    // Modal penceresinin açılması ve kapanması
+    document.addEventListener('DOMContentLoaded', function () {
+        var modal = document.getElementById('myModal');
+        var closeButton = document.getElementsByClassName('close')[0];
+
+        closeButton.onclick = function () {
+            modal.style.display = "none";
+        }
+    });
+</script>
 
 </body>
 </html>
