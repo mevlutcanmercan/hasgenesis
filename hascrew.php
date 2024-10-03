@@ -112,13 +112,12 @@ if ($result->num_rows > 0) {
     });
     document.querySelectorAll('.swiper-slide').forEach(slide => {
     slide.addEventListener('click', function() {
-        const clickedIndex = this.getAttribute('data-swiper-slide-index'); // Tıklanan slide'ın indeksini al
+        const clickedIndex = parseInt(this.getAttribute('data-swiper-slide-index')); // Tıklanan slide'ın gerçek indeksini al
         const currentIndex = swiper.realIndex; // Aktif (orta) slide'ın indeksini al
         
-        if (clickedIndex > currentIndex) {
-            swiper.slideNext(); // Sağda ise sağa kaydır
-        } else if (clickedIndex < currentIndex) {
-            swiper.slidePrev(); // Solda ise sola kaydır
+        // Tıklanan slide aktif slide değilse kaydır
+        if (clickedIndex !== currentIndex) {
+            swiper.slideToLoop(clickedIndex); // Doğrudan tıklanan slide'a git
         }
     });
 });

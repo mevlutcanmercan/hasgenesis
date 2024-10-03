@@ -50,12 +50,6 @@ if (isset($_SESSION['id_users'])) {
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="shortcut icon" href="images/logo-has.png" type="image/x-icon">
 
-    <style>
-        
-        
-
-
-    </style>
 </head>
 
 <body>

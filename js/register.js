@@ -67,3 +67,18 @@ document.getElementById('name_users').addEventListener('input', function () {
 document.getElementById('surname_users').addEventListener('input', function () {
     this.value = capitalizeFirstLetters(this.value);
 });
+
+function validatePassword() {
+    const password = document.getElementById('password').value;
+    const passwordError = document.getElementById('password-error');
+    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{7,}$/;
+
+    if (!passwordPattern.test(password)) {
+        passwordError.style.display = 'block'; // Hata mesajını göster
+        return false; // Formun gönderilmesini engeller
+    } else {
+        passwordError.style.display = 'none'; // Hata mesajını gizler
+        alert('Şifre uygun, form gönderiliyor!'); // Bu kısmı test için ekleyebilirsin
+        return true;
+    }
+}

@@ -75,7 +75,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
         $_SESSION['message'] = "error|Mevcut şifre yanlış.";
     }
 
-    // JavaScript ile yönlendirme
     echo "<script>
         window.onload = function() {
             setTimeout(function() {
@@ -105,7 +104,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_bicycle'])) {
     }
     $insert_bike_stmt->close();
 
-    // JavaScript ile yönlendirme
     echo "<script>
         window.onload = function() {
             setTimeout(function() {
@@ -115,6 +113,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_bicycle'])) {
     </script>";
 }
 
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_bicycle'])) {
+    $bike_id = $_POST['bike_id'];
+
+    $delete_bike_stmt = $conn->prepare("DELETE FROM bicycles WHERE id = ? AND user_id = ?");
+    $delete_bike_stmt->bind_param("ii", $bike_id, $user_id);
+
+    if ($delete_bike_stmt->execute()) {
+        $_SESSION['message'] = "success|Bisiklet başarıyla silindi!";
+    } else {
+        $_SESSION['message'] = "error|Bisiklet silinirken bir hata oluştu.";
+    }
+    $delete_bike_stmt->close();
+
+    // JavaScript ile yönlendirme
+    echo "<script>
+        window.onload = function() {
+            setTimeout(function() {
+                window.location.href = 'account.php';
+            }, 500);
+        };
+    </script>";
+}
 // Kullanıcının eklediği bisikletleri çekmek için
 $user_bikes_query = "SELECT b.id, br.brandName, b.front_travel, b.rear_travel 
                      FROM bicycles b
@@ -133,6 +154,7 @@ $user_bikes_result = $user_bikes_stmt->get_result();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/account.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"> <!-- Boxicons -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Account</title>
     <style>
@@ -175,23 +197,27 @@ $user_bikes_result = $user_bikes_stmt->get_result();
         </script>
     <?php endif; ?>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="logo text-center mb-4">
-            <img src="/images/logo-empty.png" alt="Logo" style="width: 80%;">
-            <button id="toggle-sidebar" class="btnCollapse"><i class='bx bx-collapse-horizontal'></i></button>
-        </div>
-        <nav class="nav flex-column">
-            <a href="#profile" class="nav-link active" data-bs-toggle="tab"><i class='bx bxs-user'></i> Profil</a>
-            <a href="#change-password" class="nav-link" data-bs-toggle="tab"><i class='bx bxs-lock'></i> Şifre Değiştir</a>
-            <a href="#bicycle" class="nav-link" data-bs-toggle="tab"><i class="bi bi-bicycle"></i> Bisikletlerim</a>
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <img src="images/logo-has.png" alt="Admin Logo">
+        </div>     
+               <nav class="nav flex-column">
+                <a href="#profile" class="nav-link active" data-bs-toggle="tab"><i class='bx bxs-user'></i> Profil</a>
+                <a href="#change-password" class="nav-link" data-bs-toggle="tab"><i class='bx bxs-lock'></i> Şifre Değiştir</a>
+                <a href="#bicycle" class="nav-link" data-bs-toggle="tab"><i class='bx bx-trip'></i> Bisikletlerim</a>
 
-            <!-- Admin Tab: Eğer kullanıcı admin ise göster -->
-            <?php if ($isAdmin == 1): ?>
-                <a href="#admin-panel" class="nav-link" data-bs-toggle="tab"><i class='bx bxs-shield'></i> Admin Paneli</a>
-            <?php endif; ?>
-        </nav>
-    </div>
+                <!-- Admin Tab: Eğer kullanıcı admin ise göster -->
+                <?php if ($isAdmin == 1): ?>
+                    <a href="#admin-panel" class="nav-link" data-bs-toggle="tab"><i class='bx bxs-shield'></i> Admin Paneli</a>
+                <?php endif; ?>
+            </nav>
+        </div>
+
+                <!-- Toggle Icon (Sidebar aç/kapa) -->
+        <div class="toggle-icon" id="toggle-icon" >
+            <i class='bx bx-chevrons-left' ></i> <!-- Sol ok ikonu (açık) -->
+        </div>
 
     <!-- Main Content -->
     <div class="content">
@@ -234,26 +260,27 @@ $user_bikes_result = $user_bikes_stmt->get_result();
                     </form>
                 </div>
             </div>
+        <!-- Change Password Tab -->
+        <div class="tab-pane fade" id="change-password">
+            <h2>Şifre Değiştir</h2>
+            <form method="POST" action="" onsubmit="return validateChangePassword()">
+                <div class="mb-3">
+                    <label for="current_password" class="form-label">Mevcut Şifre</label>
+                    <input type="password" class="form-control" id="current_password" name="current_password" required>
+                </div>
+                <div class="mb-3">
+                    <label for="new_password" class="form-label">Yeni Şifre</label>
+                    <input type="password" class="form-control" id="new_password" name="new_password" required>
+                    <small id="new-password-error" style="color:red; display:none;">Şifre en az 7 karakter olmalı ve harf+sayı içermelidir.</small>
+                </div>
+                <div class="mb-3">
+                    <label for="confirm_password" class="form-label">Yeni Şifreyi Onayla</label>
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                </div>
+                <button type="submit" name="change_password" class="btn btn-primary">Değiştir</button>
+            </form>
+        </div>
 
-            <!-- Change Password Tab -->
-            <div class="tab-pane fade" id="change-password">
-                <h2>Şifre Değiştir</h2>
-                <form method="POST" action="">
-                    <div class="mb-3">
-                        <label for="current_password" class="form-label">Mevcut Şifre</label>
-                        <input type="password" class="form-control" id="current_password" name="current_password" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="new_password" class="form-label">Yeni Şifre</label>
-                        <input type="password" class="form-control" id="new_password" name="new_password" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="confirm_password" class="form-label">Yeni Şifreyi Onayla</label>
-                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-                    </div>
-                    <button type="submit" name="change_password" class="btn btn-primary">Değiştir</button>
-                </form>
-            </div>
 
             <!-- Bicycles Tab -->
             <div class="tab-pane fade" id="bicycle">
@@ -268,14 +295,16 @@ $user_bikes_result = $user_bikes_stmt->get_result();
                             <?php endwhile; ?>
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <label for="front_travel">Ön Süspansiyon Yolu (mm)</label>
-                        <input type="number" class="form-control" id="front_travel" name="front_travel" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="rear_travel">Arka Süspansiyon Yolu (mm)</label>
-                        <input type="number" class="form-control" id="rear_travel" name="rear_travel" required>
-                    </div>
+                            <div class="mb-3">
+                <label for="front_travel" class="form-label">Ön Süspansiyon (mm)</label>
+                <input type="number" class="form-control" id="front_travel" name="front_travel" min="80" max="220" required>
+                <small>Ön süspansiyon 80 ile 220 mm arasında olmalıdır.</small>
+            </div>
+            <div class="mb-3">
+                <label for="rear_travel" class="form-label">Arka Süspansiyon (mm)</label>
+                <input type="number" class="form-control" id="rear_travel" name="rear_travel" min="80" max="220" required>
+                <small>Arka süspansiyon 80 ile 220 mm arasında olmalıdır.</small>
+            </div>
                     <button type="submit" name="add_bicycle" class="btn btn-primary">Bisiklet Ekle</button>
                 </form>
                 <h3>Eklediğiniz Bisikletler</h3>
@@ -293,6 +322,12 @@ $user_bikes_result = $user_bikes_stmt->get_result();
                                 <td><?php echo htmlspecialchars($bike['brandName']); ?></td>
                                 <td><?php echo htmlspecialchars($bike['front_travel']); ?></td>
                                 <td><?php echo htmlspecialchars($bike['rear_travel']); ?></td>
+                                <td>
+                                <form method="POST" action="">
+                                    <input type="hidden" name="bike_id" value="<?php echo $bike['id']; ?>">
+                                    <button type="submit" name="delete_bicycle" class="btn btn-danger" onclick="return confirm('Bu bisikleti silmek istediğinize emin misiniz?')">Sil</button>
+                                </form>
+                            </td>
                             </tr>
                         <?php endwhile; ?>
                     </tbody>
@@ -308,7 +343,28 @@ $user_bikes_result = $user_bikes_stmt->get_result();
             <?php endif; ?>
         </div>
     </div>
+                <script>
+                     // Şifre Değiştirme Formu için Şifre Doğrulaması
+    function validateChangePassword() {
+        const newPassword = document.getElementById('new_password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+        const newPasswordError = document.getElementById('new-password-error');
+        const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{7,}$/;
 
+        if (!passwordPattern.test(newPassword)) {
+            newPasswordError.style.display = 'block';
+            newPasswordError.textContent = "Şifre en az 7 karakter olmalı ve harf+sayı içermelidir.";
+            return false;
+        } else if (newPassword !== confirmPassword) {
+            newPasswordError.style.display = 'block';
+            newPasswordError.textContent = "Yeni şifreler uyuşmuyor.";
+            return false;
+        } else {
+            newPasswordError.style.display = 'none';
+            return true;
+        }
+    }
+                </script>
     <script>
         function toggleEditProfile() {
             var profileInfo = document.getElementById('profile-info');
@@ -322,22 +378,48 @@ $user_bikes_result = $user_bikes_stmt->get_result();
             }
         }
     </script>
+<script>
+    const toggleSidebarBtn = document.getElementById('toggle-icon');
+    const sidebar = document.getElementById('sidebar');
+    const content = document.querySelector('.content');
+    let isOpen = true;
+
+    toggleSidebarBtn.addEventListener('click', () => {
+        if (isOpen) {
+            sidebar.style.transform = 'translateX(-100%)';
+            toggleSidebarBtn.style.left = '10px'; // Sidebar kapandığında buton sola yaklaşır
+            content.style.marginLeft = '0';
+            toggleSidebarBtn.innerHTML = "<i class='bx bx-chevrons-right'></i>";
+        } else {
+            sidebar.style.transform = 'translateX(0)';
+            if (window.innerWidth <= 768) {
+                toggleSidebarBtn.style.left = '210px'; // Mobilde buton çok sağa gitmesin
+            } else {
+                toggleSidebarBtn.style.left = '270px'; // Masaüstü için normal mesafe
+            }
+            content.style.marginLeft = '250px';
+            toggleSidebarBtn.innerHTML = "<i class='bx bx-chevrons-left'></i>";
+        }
+        isOpen = !isOpen;
+    });
+</script>
 
 <script>
-    document.getElementById('toggle-sidebar').addEventListener('click', function() {
-        var sidebar = document.querySelector('.sidebar');
-        sidebar.classList.toggle('collapsed');
+    document.getElementById('bicycleForm').addEventListener('submit', function(event) {
+    const frontTravel = document.getElementById('front_travel').value;
+    const rearTravel = document.getElementById('rear_travel').value;
 
-        // İkonun durumunu değiştirme
-        var icon = this.querySelector('i');
-        if (sidebar.classList.contains('collapsed')) {
-            icon.classList.remove('bx-collapse-horizontal');
-            icon.classList.add('bx-expand-horizontal'); // İkonu değiştir
-        } else {
-            icon.classList.remove('bx-expand-horizontal');
-            icon.classList.add('bx-collapse-horizontal'); // İkonu geri al
-        }
-    });
+    if (frontTravel < 80 || frontTravel > 220) {
+        alert("Ön süspansiyon 80 ile 220 mm arasında olmalıdır.");
+        event.preventDefault(); // Formun gönderilmesini engeller
+    }
+
+    if (rearTravel < 80 || rearTravel > 220) {
+        alert("Arka süspansiyon 80 ile 220 mm arasında olmalıdır.");
+        event.preventDefault(); // Formun gönderilmesini engeller
+    }
+});
+
 </script>
 
 </body>
