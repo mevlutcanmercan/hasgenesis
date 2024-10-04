@@ -5,6 +5,11 @@ body {
     font-family: 'Roboto', sans-serif; /* Modern font ailesi */
     background-color: #f0f0f5; /* Daha açık bir arka plan rengi */
     overflow-x: hidden; /* Taşmayı önlemek için */
+    background-image: url('../images/account-background.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
 }
 
 .sidebar {

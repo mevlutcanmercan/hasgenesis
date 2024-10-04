@@ -1,5 +1,6 @@
 <?php
 include 'sidebar.php';
+
 ?>
 
 <!DOCTYPE html>

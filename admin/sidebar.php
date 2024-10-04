@@ -1,8 +1,9 @@
 <?php
 // Database bağlantısı ve oturum başlatma
 include '../dB/database.php';
-
+include '../auth.php';
 session_start();
+requireAdmin();
 
 $currentPage = basename($_SERVER['SCRIPT_NAME']);
 ?>
