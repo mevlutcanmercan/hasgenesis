@@ -10,8 +10,20 @@ body {
     margin: 50px auto;
     background-color: white;
     padding: 20px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
     border-radius: 10px;
+    background: linear-gradient(135deg, #8f8f8f9c, #85858591, #00000094);
+    border-radius: 8px; /* Kenar yuvarlama */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Gölgelendirme */
+    top: 50px; /* Sidebar'ı etkilemeden aşağı yerleştir */
+    left: 52%; /* Yatayda ortala */
+    color: white;
+    transition: transform 0.5s ease, border-color 0.5s ease, backdrop-filter 0.5s ease, box-shadow 0.5s ease;
+}
+.container:hover {
+    backdrop-filter: blur(20px);
+    border-color: #aaa;
+    box-shadow: 0 8px 15px rgba(128, 128, 128, 0.4), /* Grimsi yansıma */
+                0 12px 20px rgba(0, 0, 0, 0.2); /* Altına ekstra bir gölge */
 }
 
 h1 {
@@ -38,13 +50,13 @@ th, td {
     text-align: center;
 }
 
-th {
-    background-color: #f8f8f8;
-}
 
 .form {
     margin-bottom: 30px;
+    margin-right: 20px;
+    margin-left: 35px;
 }
+
 
 .form input {
     width: 100%;
@@ -53,7 +65,14 @@ th {
     border: 1px solid #ddd;
     border-radius: 5px;
 }
+.form-container {
+    display: ruby;
+    justify-content: space-between; /* Formları yan yana getirir ve aralarında boşluk bırakır */
+}
 
+.form-section {
+    width: 48%; /* Her iki formu ekranın yarısına yayar */
+}
 button {
     padding: 10px 15px;
     background-color: #4CAF50;
