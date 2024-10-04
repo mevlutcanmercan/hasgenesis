@@ -13,8 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_ids'])) {
 }
 
 // Filtreleme seçeneklerini kontrol et
-$is_user_filter = isset($_POST['is_user']) ? $_POST['is_user'] : null;
-$topic_filter = isset($_POST['topic']) ? $_POST['topic'] : null;
+$is_user_filter = isset($_POST['is_user']) ? $_POST['is_user'] : (isset($_GET['is_user']) ? $_GET['is_user'] : null);
+$topic_filter = isset($_POST['topic']) ? $_POST['topic'] : (isset($_GET['topic']) ? $_GET['topic'] : null);
 
 // Sayfa numarasını al (Eğer tanımlı değilse varsayılan olarak 1)
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -76,42 +76,25 @@ $topics_result = $conn->query("SELECT DISTINCT topic FROM communication");
     <title>İletişim Yönetimi</title>
     <link rel="stylesheet" href="admincss/communication-management.css">
     <style>
-        
+        /* Tablonun satırlarına tıklanabilirlik eklemek için */
+        tr {
+            cursor: pointer; /* Tıklanabilir işareti */
+        }
     </style>
     <script>
-        // Modalı açmak için fonksiyon
-        function openModal(messageId) {
-            const modal = document.getElementById('myModal');
-            modal.style.display = "block"; // Modalı aç
-
-            // Mesaj ID'sine göre veriyi al ve göster
-            fetch('get_message.php?id=' + messageId)
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('modal-message-content').innerHTML = data;
-                });
-        }
-
-        // Modalı kapatmak için fonksiyon
-        function closeModal() {
-            const modal = document.getElementById('myModal');
-            modal.style.display = "none"; // Modalı kapat
-        }
-
-        // Modal dışına tıklanırsa kapat
-        window.onclick = function (event) {
-            const modal = document.getElementById('myModal');
-            if (event.target == modal) {
-                closeModal(); // Dış alana tıklanırsa modalı kapat
-            }
-        }
-
         // E-posta gönderme fonksiyonu
-    function sendEmail(email) {
-        const subject = encodeURIComponent("Has Genesis Hk."); // E-posta konusu
-        const body = encodeURIComponent("Merhaba,\n\n"); // E-posta içeriği
-        window.location.href = `mailto:${email}?subject=${subject}&body=${body}`; // E-posta istemcisini aç
-    }
+        function sendEmail(email) {
+            const subject = encodeURIComponent("Has Genesis Hk."); // E-posta konusu
+            const body = encodeURIComponent("Merhaba,\n\n"); // E-posta içeriği
+            window.location.href = `mailto:${email}?subject=${subject}&body=${body}`; // E-posta istemcisini aç
+        }
+
+        // Satıra tıklanınca mesaj detaylarını göster
+        function goToMessageDetails(id) {
+            const is_user = document.querySelector('input[name="is_user"]:checked') ? document.querySelector('input[name="is_user"]:checked').value : '';
+            const topic = document.getElementById('topic').value;
+            window.location.href = `message_details.php?id=${id}&is_user=${is_user}&topic=${topic}`; // Mevcut filtrelerle URL'ye ekle
+        }
     </script>
 </head>
 <body>
@@ -159,7 +142,7 @@ $topics_result = $conn->query("SELECT DISTINCT topic FROM communication");
             </thead>
             <tbody>
                 <?php while ($row = $result->fetch_assoc()) { ?>
-                    <tr style="cursor: pointer;" onclick="openModal(<?php echo $row['id']; ?>)">
+                    <tr onclick="goToMessageDetails(<?php echo $row['id']; ?>)">
                         <td><input type="checkbox" name="delete_ids[]" value="<?php echo $row['id']; ?>" onclick="event.stopPropagation();"></td>
                         <td><?php echo htmlspecialchars($row['name']); ?></td>
                         <td><?php echo htmlspecialchars($row['surname']); ?></td>
@@ -185,38 +168,18 @@ $topics_result = $conn->query("SELECT DISTINCT topic FROM communication");
     <div class="pagination-container">
         <!-- Sayfalama Bağlantıları -->
         <?php if ($page > 1): ?>
-            <a href="communication-management.php?page=<?php echo $page - 1; ?>" class="btn btn-outline-primary pagination-link">Önceki</a>
+            <a href="communication-management.php?page=<?php echo $page - 1; ?>&is_user=<?php echo urlencode($is_user_filter); ?>&topic=<?php echo urlencode($topic_filter); ?>" class="btn btn-outline-primary pagination-link">Önceki</a>
         <?php endif; ?>
 
         <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-            <a href="communication-management.php?page=<?php echo $i; ?>" class="btn btn-outline-primary pagination-link <?php if ($i == $page) echo 'active'; ?>"><?php echo $i; ?></a>
+            <a href="communication-management.php?page=<?php echo $i; ?>&is_user=<?php echo urlencode($is_user_filter); ?>&topic=<?php echo urlencode($topic_filter); ?>" class="btn btn-outline-primary pagination-link <?php if ($i == $page) echo 'active'; ?>"><?php echo $i; ?></a>
         <?php endfor; ?>
 
         <?php if ($page < $totalPages): ?>
-            <a href="communication-management.php?page=<?php echo $page + 1; ?>" class="btn btn-outline-primary pagination-link">Sonraki</a>
+            <a href="communication-management.php?page=<?php echo $page + 1; ?>&is_user=<?php echo urlencode($is_user_filter); ?>&topic=<?php echo urlencode($topic_filter); ?>" class="btn btn-outline-primary pagination-link">Sonraki</a>
         <?php endif; ?>
     </div>
 </div>
-
-<!-- Modal Penceresi -->
-<div id="myModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <div id="modal-message-content"></div>
-    </div>
-</div>
-
-<script>
-    // Modal penceresinin açılması ve kapanması
-    document.addEventListener('DOMContentLoaded', function () {
-        var modal = document.getElementById('myModal');
-        var closeButton = document.getElementsByClassName('close')[0];
-
-        closeButton.onclick = function () {
-            modal.style.display = "none";
-        }
-    });
-</script>
 
 </body>
 </html>
