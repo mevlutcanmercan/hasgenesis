@@ -72,7 +72,7 @@ $topics_result = $conn->query("SELECT DISTINCT topic FROM communication");
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=1100">
     <title>İletişim Yönetimi</title>
     <link rel="stylesheet" href="admincss/communication-management.css">
     <style>

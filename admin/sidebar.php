@@ -13,7 +13,7 @@ $currentPage = basename($_SERVER['SCRIPT_NAME']);
 <head>
     
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=1100">
     <link rel="stylesheet" href="admincss/sidebar.css"> <!-- CSS dosyası -->
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"> <!-- Boxicons -->
     <link rel="shortcut icon" href="../images/admin-icon.png" type="image/x-icon">
@@ -38,7 +38,7 @@ $currentPage = basename($_SERVER['SCRIPT_NAME']);
                 <li><a href="news-management" class="<?php echo ($currentPage == 'news-management.php') ? 'active' : ''; ?>">Haber Yönetimi</a></li>
                 <li><a href="projeyonetimi.php" class="<?php echo ($currentPage == 'projeyonetimi.php') ? 'active' : ''; ?>">Proje Yönetimi</a></li>
                 <li><a href="sliderManagement" class="<?php echo ($currentPage == 'sliderManagement.php') ? 'active' : ''; ?>">Slider Yönetimi</a></li>
-                <li><a href="HakkimizdaYonetimi.php" class="<?php echo ($currentPage == 'HakkimizdaYonetimi.php') ? 'active' : ''; ?>">Hakkımızda Yönetimi</a></li>
+                <li><a href="whous-managament" class="<?php echo ($currentPage == 'whous-managament.php') ? 'active' : ''; ?>">Hakkımızda Yönetimi</a></li>
                 <li><a href="communication-management" class="<?php echo ($currentPage == 'communication-management.php') ? 'active' : ''; ?>">İletişim Yönetimi</a></li>
                 <li class="cikisyap"><a href="adminlogout.php">Çıkış Yap</a></li>
             </ul>

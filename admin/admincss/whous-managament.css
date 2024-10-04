@@ -1,0 +1,79 @@
+body {
+    font-family: Arial, sans-serif; /* Genel yazı tipi */
+    position: relative; /* Ana body için konum belirleyici */
+}
+
+.whous-container {
+    max-width: 800px; /* Maksimum genişlik */
+    position: relative; /* Konumu belirle */
+    top: 50px; /* Sidebar'ı etkilemeden aşağı yerleştir */
+    left: 52%; /* Yatayda ortala */
+    transform: translateX(-50%); /* Ortalamak için sola kaydır */
+    background: linear-gradient(135deg, #8f8f8f9c, #85858591, #00000094);
+    border-radius: 8px; /* Kenar yuvarlama */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Gölgelendirme */
+    padding: 20px; /* İç boşluk */
+    color: white;
+    transition: transform 0.5s ease, border-color 0.5s ease, backdrop-filter 0.5s ease, box-shadow 0.5s ease;
+}
+
+
+.whous-container:hover {
+    backdrop-filter: blur(20px);
+    border-color: #aaa;
+    box-shadow: 0 8px 15px rgba(128, 128, 128, 0.4), /* Grimsi yansıma */
+                0 12px 20px rgba(0, 0, 0, 0.2); /* Altına ekstra bir gölge */
+}
+
+h2 {
+    text-align: center; /* Başlık ortala */
+    color: #ffffff; /* Başlık rengi */
+    margin-bottom: 20px; /* Alt boşluk */
+}
+
+.form-group {
+    margin-bottom: 15px; /* Alanlar arası boşluk */
+}
+
+label {
+    display: block; /* Etiketleri blok olarak göster */
+    font-weight: bold; /* Kalın yazı */
+    margin-bottom: 5px; /* Alt boşluk */
+}
+
+input[type="text"],
+textarea,
+input[type="file"] {
+    width: 100%; /* Genişliği yüzde 100 yap */
+    padding: 10px; /* İç boşluk */
+    border: 1px solid #ccc; /* Sınır rengi */
+    border-radius: 4px; /* Kenar yuvarlama */
+    box-sizing: border-box; /* Kutunun boyutlandırmasını ayarla */
+}
+
+textarea {
+    resize: vertical; /* Yalnızca dikey boyutlandırma */
+}
+
+button {
+    background-color: #0056b3; /* Buton arka plan rengi */
+    color: #fff; /* Yazı rengi */
+    padding: 10px 15px; /* İç boşluk */
+    border: none; /* Sınır yok */
+    border-radius: 5px; /* Kenar yuvarlama */
+    cursor: pointer; /* İmleci işaretçi yap */
+    transition: background-color 0.3s; /* Geçiş efekti */
+    display: block; /* Blok olarak göster */
+    margin: 0 auto; /* Ortala */
+}
+
+button:hover {
+    background-color: #004494; /* Hover durumu için arka plan rengi */
+}
+
+img {
+    margin-top: 10px; /* Üst boşluk */
+    max-width: 100%; /* Resmi konteyner genişliğine göre ayarla */
+    height: auto; /* Yüksekliği otomatik ayarla */
+    border-radius: 5px; /* Kenar yuvarlama */
+}

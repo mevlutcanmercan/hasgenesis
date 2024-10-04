@@ -2,7 +2,7 @@
 
 include 'dB/database.php';
 
-function preventAccessIfLoggedIn($redirectUrl = '/hasgenesis/index.php') {
+function preventAccessIfLoggedIn($redirectUrl = 'index.php') {
     if (isset($_SESSION['id_users'])) {
         header("Location: $redirectUrl");
         exit();
@@ -10,7 +10,7 @@ function preventAccessIfLoggedIn($redirectUrl = '/hasgenesis/index.php') {
 }
 
 // Giriş yapılmamış kullanıcıları engellemek için
-function requireLogin($redirectUrl = '/hasgenesis/login.php') {
+function requireLogin($redirectUrl = 'login.php') {
     if (!isset($_SESSION['id_users'])) {
         header("Location: $redirectUrl");
         exit();
@@ -18,7 +18,7 @@ function requireLogin($redirectUrl = '/hasgenesis/login.php') {
 }
 
 // Admin kontrolü fonksiyonu
-function requireAdmin($redirectUrl = '/hasgenesis/index.php') {
+function requireAdmin($redirectUrl = 'index.php') {
     // Oturumda kullanıcı kimliği var mı kontrol et
     if (isset($_SESSION['id_users'])) {
         global $conn; // Veritabanı bağlantısını global olarak kullan

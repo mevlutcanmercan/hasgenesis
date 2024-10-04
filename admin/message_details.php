@@ -26,7 +26,7 @@ $topic_filter = isset($_GET['topic']) ? $_GET['topic'] : '';
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=1100">
     <title>Mesaj Detayları</title>
     <link rel="stylesheet" href="admincss/message-details.css">
     <script>

@@ -23,7 +23,7 @@ body {
     color: #ffffff;
     cursor: pointer;
     transition: left 0.3s ease;
-    z-index: 1000; /* Diğer öğelerin üzerinde görünmesi için yüksek z-index */
+    z-index: 1001; /* Diğer öğelerin üzerinde görünmesi için yüksek z-index */
 }
 
 /* Sidebar ayarları */
