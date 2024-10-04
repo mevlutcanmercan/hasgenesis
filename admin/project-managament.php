@@ -89,7 +89,7 @@ $result = $conn->query($sql);
             </div>
             <div class="action-buttons">
                 <button type="submit" name="delete" class="delete-button">Sil Seçilenler</button>
-                <a href="projeEkle.php" class="add-button">Yeni Ekle</a>
+                <a href="project-add.php" class="add-button">Yeni Ekle</a>
             </div>
         </form>
         
