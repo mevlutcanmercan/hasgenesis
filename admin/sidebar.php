@@ -37,7 +37,7 @@ $currentPage = basename($_SERVER['SCRIPT_NAME']);
                 <li><a href="adminmainpage" class="<?php echo ($currentPage == 'adminmainpage.php') ? 'active' : ''; ?>">Ana Sayfa</a></li>
                 <li><a href="news-management" class="<?php echo ($currentPage == 'news-management.php') ? 'active' : ''; ?>">Haber Yönetimi</a></li>
                 <li><a href="projeyonetimi.php" class="<?php echo ($currentPage == 'projeyonetimi.php') ? 'active' : ''; ?>">Proje Yönetimi</a></li>
-                <li><a href="MedyaYonetimi.php" class="<?php echo ($currentPage == 'MedyaYonetimi.php') ? 'active' : ''; ?>">Medya Yönetimi</a></li>
+                <li><a href="sliderManagement" class="<?php echo ($currentPage == 'sliderManagement.php') ? 'active' : ''; ?>">Slider Yönetimi</a></li>
                 <li><a href="HakkimizdaYonetimi.php" class="<?php echo ($currentPage == 'HakkimizdaYonetimi.php') ? 'active' : ''; ?>">Hakkımızda Yönetimi</a></li>
                 <li><a href="communication-management" class="<?php echo ($currentPage == 'communication-management.php') ? 'active' : ''; ?>">İletişim Yönetimi</a></li>
                 <li class="cikisyap"><a href="adminlogout.php">Çıkış Yap</a></li>
