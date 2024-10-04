@@ -58,8 +58,8 @@ if (isset($_POST['updateSlider'])) {
     $summary = $_POST['summary'];
     $link = $_POST['link'];
     
-    // Mevcut resmi güncelle
-    $imagePath = $_POST['existing_image']; // Varsayılan mevcut resim
+    // Mevcut resmi kullan eğer yeni resim yüklenmemişse
+    $imagePath = $_POST['current_image_path']; // Varsayılan olarak mevcut resim
     if (isset($_FILES['slider_image']) && $_FILES['slider_image']['error'] == UPLOAD_ERR_OK) {
         // Mevcut resmi sil
         if (file_exists('../' . $imagePath)) {
@@ -70,7 +70,7 @@ if (isset($_POST['updateSlider'])) {
         $targetDir = '../images/';
         $targetFile = $targetDir . basename($_FILES['slider_image']['name']);
         move_uploaded_file($_FILES['slider_image']['tmp_name'], $targetFile);
-        $imagePath = 'images/' . basename($_FILES['slider_image']['name']);
+        $imagePath = 'images/' . basename($_FILES['slider_image']['name']); // Yeni resim yolu
     }
 
     $stmt = $conn->prepare("UPDATE main_page_sliders SET title = ?, summary = ?, image_path = ?, link = ? WHERE id = ?");
@@ -79,6 +79,7 @@ if (isset($_POST['updateSlider'])) {
     header("Location: sliderManagement.php?success=Slider%20başarıyla%20güncellendi!");
     exit();
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -135,27 +136,28 @@ if (isset($_POST['updateSlider'])) {
             </form>
         </div>
 
-
-       <!-- Düzenleme Formu -->
-<?php if (isset($_GET['edit'])): 
-    $id = $_GET['edit'];
-    $slider = $conn->query("SELECT * FROM main_page_sliders WHERE id = $id")->fetch_assoc();
-?>
-<div class="form-section">
-    <form action="sliderManagement.php" method="POST" class="form" enctype="multipart/form-data"> <!-- enctype ayarlandı -->
-        <h2>Slider Düzenle</h2>
-        <input type="hidden" name="id" value="<?php echo $slider['id']; ?>">
-        <input type="text" name="title" value="<?php echo $slider['title']; ?>" maxlength="30">
-        <input type="text" name="summary" value="<?php echo $slider['summary']; ?>" maxlength="30">
-        <!-- Resim Yükleme Alanı -->
-        <label for="slider_image">Yeni Slider Resmi Yükle (İsteğe Bağlı):</label>
-        <input type="file" id="slider_image" name="slider_image" accept="image/*">
-        
-        <input type="text" name="link" value="<?php echo $slider['link']; ?>" required>
-        <button type="submit" name="updateSlider">Slider Güncelle</button>
-    </form>
-</div>
-<?php endif; ?>
+    <!-- Düzenleme Formu -->
+    <?php if (isset($_GET['edit'])): 
+        $id = $_GET['edit'];
+        $slider = $conn->query("SELECT * FROM main_page_sliders WHERE id = $id")->fetch_assoc();
+    ?>
+    <div class="form-section">
+        <form action="sliderManagement.php" method="POST" class="form" enctype="multipart/form-data"> <!-- enctype ayarlandı -->
+            <h2>Slider Düzenle</h2>
+            <input type="hidden" name="id" value="<?php echo $slider['id']; ?>">
+            <input type="hidden" name="current_image_path" value="<?php echo $slider['image_path']; ?>"> <!-- Mevcut resim yolu -->
+            <input type="text" name="title" value="<?php echo $slider['title']; ?>" maxlength="30">
+            <input type="text" name="summary" value="<?php echo $slider['summary']; ?>" maxlength="30">
+            
+            <!-- Resim Yükleme Alanı -->
+            <label for="slider_image">Yeni Slider Resmi Yükle (İsteğe Bağlı):</label>
+            <input type="file" id="slider_image" name="slider_image" accept="image/*">
+            
+            <input type="text" name="link" value="<?php echo $slider['link']; ?>" required>
+            <button type="submit" name="updateSlider">Slider Güncelle</button>
+        </form>
+    </div>
+    <?php endif; ?>
 
     <!-- Var Olan Sliderlar -->
     <h2>Mevcut Sliderlar</h2>
