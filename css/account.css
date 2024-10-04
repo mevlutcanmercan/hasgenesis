@@ -3,7 +3,6 @@ body {
     min-height: 100vh;
     margin: 0;
     font-family: 'Roboto', sans-serif; /* Modern font ailesi */
-    background-color: #f0f0f5; /* Daha açık bir arka plan rengi */
     overflow-x: hidden; /* Taşmayı önlemek için */
     background-image: url('../images/account-background.jpg');
     background-repeat: no-repeat;
@@ -16,7 +15,7 @@ body {
     margin-top: 80px;
     min-width: 10%;
     max-width: 250px;
-    background-color: #2d2d2d; /* Daha koyu ve modern bir arka plan */
+    background: linear-gradient(135deg, #8f8f8f, #707070, #000000);
     color: #fff;
     position: fixed;
     height: 100vh;
@@ -37,9 +36,9 @@ body {
 }
 
 .sidebar .nav-link:hover {
-    background: #ff5a5f; /* Kırmızı hover rengi */
+    background: #141414; /* Kırmızı hover rengi */
     color: #fff;
-    box-shadow: 0 4px 10px rgba(255, 90, 95, 0.3); /* Hover gölge efekti */
+    box-shadow: 0 4px 10px rgba(97, 97, 97, 0.3); /* Hover gölge efekti */
 }
 
 .content {
@@ -54,26 +53,62 @@ body {
 }
 
 .tab-content {
+    color: white;
     width: 60%;
     max-width: 800px;
-    background: #fff;
+    background: linear-gradient(135deg, #8f8f8f, #858585, #000000e3);
     padding: 30px; /* Daha geniş padding */
     box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1); /* Daha belirgin kutu gölgesi */
     border-radius: 12px; /* Köşeleri biraz daha fazla yuvarlat */
     transition: box-shadow 0.3s ease; /* Yumuşak geçiş */
 }
 
+
 .tab-content:hover {
     box-shadow: 0px 12px 20px rgba(0, 0, 0, 0.2); /* Hover'da gölgeyi güçlendir */
 }
 
+.add-bike{
+    background-color: rgb(0, 180, 0) !important;
+    margin-bottom: 25px;
+    color: white !important;
+    font: bold;
+    transform: background-color linear 0.3sn !important;
+}
+
+.add-bike:hover{
+    background-color: rgb(0, 211, 0) !important;
+    
+}
+
+tr {
+    text-align: center;
+    border: solid 1px;
+}
+
+th {
+    text-align: center;
+    vertical-align: middle; /* Dikey ortalama */
+    border: solid 1px;
+}
+
+td {
+    text-align: center;
+    vertical-align: middle; /* Dikey ortalama */
+    border: solid 1px !important;
+}
+
+table {
+    border: solid 1px !important;
+    border-collapse: collapse; /* Hücre sınırlarını birleştir */
+}
 /* Toggle butonu stili */
 .toggle-icon {
     position: fixed !important;
     top: 100px;
     left: 230px;
     font-size: 30px;
-    color: #ff5a5f; /* Modern bir kırmızı renk */
+    color: #ff0008; /* Modern bir kırmızı renk */
     cursor: pointer;
     transition: left 0.3s ease, color 0.3s ease;
     z-index: 1000;
@@ -85,7 +120,7 @@ body {
 
 .logo img {
     position: relative;
-    bottom: 70px;
+    bottom: 50px;
     max-width: 70%;
     height: auto;
     display: block;
