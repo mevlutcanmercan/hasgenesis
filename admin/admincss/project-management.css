@@ -1,5 +1,4 @@
 .medya-content {
-    
     margin: 0 auto; /* Sayfanın ortasında konumlandır */
     padding: 20px;
     color: white !important;
@@ -45,16 +44,26 @@ h1 {
     margin-bottom: 10px;
     overflow: hidden; /* Taşan görüntüyü gizle */
     border-radius: 8px; /* Kartın üst kısmındaki köşeleri yuvarla */
-    height: 200px; /* Resimlerin yüksekliği artırıldı */
+    height: 200px; /* Resimlerin yüksekliği */
+    position: relative; /* İçindeki öğeleri konumlandırmak için relative ayarlandı */
+}
+
+.medya-images {
+    position: absolute; /* Resmin konumlandırılması için absolute ayarı */
+    top: 50%; /* Dikeyde ortalanması için 50% ayarlandı */
+    left: 50%; /* Yatayda ortalanması için 50% ayarlandı */
+    transform: translate(-50%, -50%); /* Gerçek ortalamayı sağlamak için translate kullanıldı */
+    width: 100%; /* Resim alanının genişliği %100 */
+    height: 100%; /* Resim alanının yüksekliği %100 */
 }
 
 .medya-images img {
-    width: 100%;
-    height: 100%; /* Resmi kapsayacak şekilde yükseklik ayarı */
-    object-fit: cover; /* Resmi kapsamak için cover kullanımı */
+    width: 100%; /* Resmi kapsayacak şekilde genişlik ayarı */
+    height: auto; /* Yüksekliği otomatik ayarlayarak en-boy oranını koru */
+    max-height: 100%; /* Maksimum yükseklik %100 ile sınırla */
+    object-fit: scale-down; /* Resmin alanına sığdırılması için scale-down kullanımı */
     border-radius: 8px; /* Resim kenarları */
     transition: transform 0.2s; /* Geçiş efekti */
-    transform: scale(1); /* Normal durumda scale-down */
 }
 
 .medya-images img:hover {
@@ -157,12 +166,8 @@ h1 {
     background-color: #444; /* Arka plan rengi */
     border-radius: 5px; /* Köşe yuvarlama */
     border: 2px solid #888; /* Kenarlık */
-    
 }
 
 .checkbox-container input[type="checkbox"]:checked {
     background-color: #66bb6a; /* Seçili durumda arka plan rengi */
-    
 }
-
-

@@ -73,3 +73,12 @@ input[type="text"]:focus, textarea:focus {
     margin-top: 5px; /* Üstte boşluk */
     margin-right: 10px;
 }
+
+.back-button {
+    top: 20px;
+    left: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    align-items: center;
+}
+

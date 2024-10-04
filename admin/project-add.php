@@ -71,27 +71,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=1100">
     <link rel="stylesheet" href="admincss/project-add.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.1/css/boxicons.min.css" rel="stylesheet"> <!-- Boxicons CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
     <title>Yeni Proje Ekle</title>
 </head>
 <body>
     <div class="form-container">
+        <!-- Geri Butonu -->
+        <div class="back-button">
+            <i class='bx bx-arrow-back'></i>
+        </div>
+
         <h1>Yeni Proje Ekle</h1>
 
         <form method="POST" action="" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="name">Proje Adı:</label>
-                <input type="text" id="name" name="name" required>
-                <span class="char-count" id="name-count">0/100</span>
+                <input type="text" id="name" name="name" maxlength="100" required>
+                <span class="char-count" id="name-count">0/50</span>
             </div>
             <div class="form-group">
                 <label for="summary">Proje Özeti:</label>
-                <textarea id="summary" name="summary" rows="4" required></textarea>
+                <textarea id="summary" name="summary" rows="4" maxlength="200" required></textarea>
                 <span class="char-count" id="summary-count">0/200</span>
             </div>
             <div class="form-group">
@@ -125,29 +131,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
     <script>
-        // Karakter sayacı fonksiyonu
-        document.getElementById('name').addEventListener('input', function() {
+        // Karakter sayacı ve sınır kontrolü
+        const maxNameLength = 50;
+        const maxSummaryLength = 200;
+
+        // Proje Adı için karakter sınırı
+        const nameInput = document.getElementById('name');
+        const nameCount = document.getElementById('name-count');
+        nameInput.addEventListener('input', function() {
             const count = this.value.length;
-            document.getElementById('name-count').textContent = `${count}/100`;
+            nameCount.textContent = `${count}/${maxNameLength}`;
+
+            // Karakter sayısı sınırı aşarsa fazla karakterleri kaldır
+            if (count > maxNameLength) {
+                this.value = this.value.substring(0, maxNameLength);
+                nameCount.textContent = `${maxNameLength}/${maxNameLength}`;
+            }
         });
 
-        document.getElementById('summary').addEventListener('input', function() {
+        // Proje Özeti için karakter sınırı
+        const summaryInput = document.getElementById('summary');
+        const summaryCount = document.getElementById('summary-count');
+        summaryInput.addEventListener('input', function() {
             const count = this.value.length;
-            document.getElementById('summary-count').textContent = `${count}/200`;
+            summaryCount.textContent = `${count}/${maxSummaryLength}`;
+
+            // Karakter sayısı sınırı aşarsa fazla karakterleri kaldır
+            if (count > maxSummaryLength) {
+                this.value = this.value.substring(0, maxSummaryLength);
+                summaryCount.textContent = `${maxSummaryLength}/${maxSummaryLength}`;
+            }
         });
 
-        // SweetAlert mesajı göster
+        // Geri butonu tıklandığında belirli bir URL'ye yönlendir
+        document.querySelector('.back-button').addEventListener('click', function() {
+            window.location.href = 'project-managament'; // Belirtilen URL'ye yönlendirme
+        });
+
+        // SweetAlert mesajı göster ve yönlendir
         <?php if ($alertType === 'success' || $alertType === 'error'): ?>
             swal({
                 title: "<?php echo $alertType === 'success' ? 'Başarılı!' : 'Hata!'; ?>",
                 text: "<?php echo $alertMessage; ?>",
                 icon: "<?php echo $alertType; ?>",
                 buttons: true,
-                dangerMode: true,
-            }).then((willRedirect) => {
-                if (willRedirect) {
-                    window.location.href = "<?php echo $_SERVER['PHP_SELF']; ?>";
-                }
+            }).then(() => {
+                window.location.href = "project-add.php"; // Sayfayı yenile
             });
         <?php endif; ?>
     </script>
