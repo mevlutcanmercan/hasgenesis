@@ -16,6 +16,9 @@ body {
 
 /* Toggle ikon ayarları */
 .toggle-icon {
+    padding: 5px;
+    background-color: #000000;
+    border-radius: 5px;
     margin-left: 2%;
     position: fixed; /* Sabit pozisyon */
     top: 2%; /* %2 üstten boşluk */

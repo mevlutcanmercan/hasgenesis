@@ -201,7 +201,9 @@ $user_bikes_result = $user_bikes_stmt->get_result();
         <div class="sidebar" id="sidebar">
         <div class="logo">
             <img src="images/logo-has.png" alt="Admin Logo">
-        </div>     
+            <hr class=""> 
+        </div>
+            
                <nav class="nav flex-column">
                 <a href="#profile" class="nav-link active" data-bs-toggle="tab"><i class='bx bxs-user'></i> Profil</a>
                 <a href="#change-password" class="nav-link" data-bs-toggle="tab"><i class='bx bxs-lock'></i> Şifre Değiştir</a>
@@ -305,7 +307,7 @@ $user_bikes_result = $user_bikes_stmt->get_result();
                 <input type="number" class="form-control" id="rear_travel" name="rear_travel" min="80" max="220" required>
                 <small>Arka süspansiyon 80 ile 220 mm arasında olmalıdır.</small>
             </div>
-                    <button type="submit" name="add_bicycle" class="btn btn-primary">Bisiklet Ekle</button>
+                    <button type="submit" name="add_bicycle" class="btn add-bike">Bisiklet Ekle</button>
                 </form>
                 <h3>Eklediğiniz Bisikletler</h3>
                 <table class="table table-striped">
@@ -314,6 +316,7 @@ $user_bikes_result = $user_bikes_stmt->get_result();
                             <th>Marka</th>
                             <th>Ön Süspansiyon Yolu (mm)</th>
                             <th>Arka Süspansiyon Yolu (mm)</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>

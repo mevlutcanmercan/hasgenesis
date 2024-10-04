@@ -1,0 +1,168 @@
+.medya-content {
+    
+    margin: 0 auto; /* Sayfanın ortasında konumlandır */
+    padding: 20px;
+    color: white !important;
+    max-width: 1200px; /* Maksimum genişlik ayarı */
+}
+
+h1 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    text-align: center;
+    color: white;
+    background-color: #111111b2;
+    padding: 15px;
+    border-radius: 15px;
+    text-shadow: 3px 3px 3px #999;
+}
+
+/* Proje Kartları CSS */
+.medya-list {
+    display: flex; /* Flexbox kullanıldı */
+    flex-wrap: wrap;
+    justify-content: center; /* Kartları ortala */
+    gap: 15px; /* Kartlar arası boşluk */
+}
+
+.medya-card {
+    background-color: #222222b1; /* %75 opaklık */
+    border: 1px solid #555;
+    border-radius: 10px;
+    padding: 15px;
+    height: 370px; /* Kart yüksekliği */
+    width: 100%; /* Kartların genişliği %100 */
+    max-width: 350px; /* Her kartın maksimum genişliği */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s;
+    overflow: hidden; /* Kart taşmasını önle */
+    display: flex; /* Flexbox ile içerikleri hizala */
+    flex-direction: column; /* Dikey hizalama */
+    justify-content: space-between; /* Alanı eşit şekilde dağıt */
+}
+
+.medya-slider {
+    margin-bottom: 10px;
+    overflow: hidden; /* Taşan görüntüyü gizle */
+    border-radius: 8px; /* Kartın üst kısmındaki köşeleri yuvarla */
+    height: 200px; /* Resimlerin yüksekliği artırıldı */
+}
+
+.medya-images img {
+    width: 100%;
+    height: 100%; /* Resmi kapsayacak şekilde yükseklik ayarı */
+    object-fit: cover; /* Resmi kapsamak için cover kullanımı */
+    border-radius: 8px; /* Resim kenarları */
+    transition: transform 0.2s; /* Geçiş efekti */
+    transform: scale(1); /* Normal durumda scale-down */
+}
+
+.medya-images img:hover {
+    transform: scale(1.05); /* Hoverda normal boyuta dön */
+}
+
+.medya-details {
+    display: flex; /* Flexbox kullanarak içeriği hizala */
+    flex-direction: column; /* Dikey hizalama */
+    justify-content: space-between; /* Kart içindeki öğeleri eşit şekilde dağıt */
+    text-align: center; /* Metni ortala */
+    flex-grow: 1; /* Kart içindeki yazı alanının büyümesini sağla */
+}
+
+.medya-card h2 {
+    font-size: 17px;
+    margin: 0; /* Başlık için boşluk sıfır */
+}
+
+.medya-details p {
+    margin: 5px 0; /* Paragraf boşluklarını ayarla */
+    white-space: normal; /* Yazının taşmasını engelle */
+    overflow-wrap: break-word; /* Kelime taşmasını önle */
+    font-size: 13px;
+}
+
+/* Butonlar için stil */
+.button-container {
+    display: flex; /* Butonları yan yana yerleştir */
+    justify-content: space-between; /* Butonları uçlara yerleştir */
+    margin-top: auto; /* Kartın en alt kısmına yerleştir */
+}
+
+.edit-button {
+    background-color: #888; /* Gri arka plan rengi */
+    color: white; /* Buton yazı rengi */
+    border: none; /* Kenarlık yok */
+    padding: 5px 10px; /* İç boşluk */
+    border-radius: 5px; /* Köşe yuvarlama */
+    cursor: pointer; /* İmleç değişimi */
+    text-decoration: none; /* Metin dekorasyonunu kaldır */
+}
+
+.checkbox-container {
+    display: flex; /* Flexbox kullanarak hizala */
+    align-items: flex-end; /* Checkbox'ı alt kısma hizala */
+}
+
+.delete-button, .add-button {
+    font-weight: 700;
+    font-size: 1rem;
+    background-color: #888; /* Gri arka plan rengi */
+    color: white; /* Buton yazı rengi */
+    border: none; /* Kenarlık yok */
+    padding: 10px 15px; /* İç boşluk */
+    border-radius: 5px; /* Köşe yuvarlama */
+    cursor: pointer; /* İmleç değişimi */
+    transition: background-color 0.3s; /* Hover efekti için geçiş */
+    text-decoration: none; /* Metin dekorasyonunu kaldır */
+    width: 150px; /* Buton genişliği */
+    text-align: center; /* Metni ortala */
+    margin: 0 5px; /* Butonlar arası boşluk */
+}
+
+.delete-button:hover, .add-button:hover {
+    background-color: #666; /* Hoverda arka plan rengi değişimi */
+}
+
+.action-buttons {
+    display: flex; /* Flexbox ile hizala */
+    justify-content: center; /* Ortala */
+    margin-top: 20px; /* Üstten boşluk bırak */
+}
+
+.pagination {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.pagination a {
+    margin: 0 5px;
+    padding: 5px 10px;
+    background: #333;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.pagination a.active {
+    background: #555;
+}
+
+.pagination a:hover {
+    background: #444;
+}
+
+.checkbox-container input[type="checkbox"] {
+    width: 20px; /* Checkbox genişliği */
+    height: 20px; /* Checkbox yüksekliği */
+    background-color: #444; /* Arka plan rengi */
+    border-radius: 5px; /* Köşe yuvarlama */
+    border: 2px solid #888; /* Kenarlık */
+    
+}
+
+.checkbox-container input[type="checkbox"]:checked {
+    background-color: #66bb6a; /* Seçili durumda arka plan rengi */
+    
+}
+
+
