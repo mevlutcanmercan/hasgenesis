@@ -37,7 +37,7 @@ $totalItems = $totalItemsResult->fetch_assoc()['total'];
 $totalPages = ceil($totalItems / $itemsPerPage);
 
 // Haberleri veritabanından al
-$sql = "SELECT id, name, summary, created_at, image_path1 FROM news ORDER BY created_at LIMIT $itemsPerPage OFFSET $offset";
+$sql = "SELECT id, name, summary, created_at, image_path1 FROM news ORDER BY created_at DESC LIMIT $itemsPerPage OFFSET $offset";
 $result = $conn->query($sql);
 ?>
 
