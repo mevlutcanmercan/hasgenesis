@@ -103,13 +103,7 @@ $result = $conn->query($sql);
     </div>
 
     <script>
-    function toggleCheckbox(cardElement) {
-        // Kartın içinde bulunan checkbox'ı bul
-        const checkbox = cardElement.querySelector('input[type="checkbox"]');
-        if (checkbox) {
-            checkbox.checked = !checkbox.checked; // Checkbox'ı işaretle veya işaretini kaldır
-        }
-    }
+   
 
     // Checkbox üzerine tıklama olayını dinle
     document.querySelectorAll('.checkbox-container input[type="checkbox"]').forEach(checkbox => {

@@ -30,14 +30,18 @@ body {
 }
 
 /* Sidebar ayarları */
+/* Sidebar CSS */
 .sidebar {
-    position: fixed;
+    position: fixed; /* Sabit pozisyon */
+    top: 0; /* Üstten boşluk sıfırlanır */
+    left: 0; /* Soldan boşluk sıfırlanır */
     width: 15%; /* %15 genişlik */
-    height: 100%;
+    height: 100%; /* Yüksekliği tam yap */
     background-color: #000000ee; /* Sidebar arka plan rengi */
     transition: transform 0.3s ease; /* Geçiş animasyonu */
-    transform: translateX(-100%); /* Başlangıçta kapalı */
-    z-index: 998;
+    transform: translateX(0); /* Sidebar açık halde başlangıç */
+    z-index: 998; /* Sidebar'ın diğer içeriklerin üstünde olmasını sağla */
+    overflow-y: auto; /* İçerik taştığında kaydırma çubuğunu göster */
 }
 
 /* Logo konteyner ayarları */
