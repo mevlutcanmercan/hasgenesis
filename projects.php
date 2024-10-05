@@ -13,7 +13,7 @@ $sliderProjectsQuery = "SELECT image_path1, image_path2, image_path3, image_path
 $sliderProjectsResult = $conn->query($sliderProjectsQuery);
 
 // Fetch projects for the cards
-$query = "SELECT * FROM projects LIMIT $limit OFFSET $offset";
+$query = "SELECT * FROM projects ORDER BY created_at DESC LIMIT $limit OFFSET $offset";
 $result = $conn->query($query);
 
 // Get total record count
