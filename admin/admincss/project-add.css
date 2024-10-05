@@ -82,3 +82,34 @@ input[type="text"]:focus, textarea:focus {
     align-items: center;
 }
 
+.form-group img {
+    max-width: 100px; /* Maksimum genişlik */
+    height: auto; /* Otomatik yükseklik */
+    display: block; /* Blok olarak görüntülenir */
+    margin: 10px 0; /* Üst ve alt boşluk */
+    border-radius: 5px; /* Köşe yuvarlama */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Hafif gölgelendirme */
+}
+
+/* Resimleri düzenlemek için flexbox */
+.image-preview-container {
+    display: flex; /* Flexbox düzeni */
+    flex-wrap: wrap; /* Satırları taşarsa bir sonrakine geç */
+    gap: 10px; /* Resimler arası boşluk */
+    margin-bottom: 20px; /* Alt boşluk */
+}
+
+.image-preview-container img {
+    width: 100px; /* Her resim için genişlik */
+    height: 100px; /* Her resim için yükseklik */
+    object-fit: cover; /* Resmin kutuya sığmasını sağlar, taşmaları kırpar */
+    border-radius: 5px; /* Köşe yuvarlama */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Gölgelendirme efekti */
+    cursor: pointer; /* İmleç değişimi */
+    transition: transform 0.3s ease; /* Hover efekti */
+}
+
+.image-preview-container img:hover {
+    transform: scale(1.1); /* Hover'da büyütme efekti */
+}
+
