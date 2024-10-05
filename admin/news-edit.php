@@ -108,12 +108,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="form-group">
                 <label for="name">Haber Başlığı:</label>
                 <input type="text" id="name" name="name" maxlength="100" value="<?php echo htmlspecialchars($news['name']); ?>" required>
-                <span class="char-count" id="name-count">0/50</span>
+                <span class="char-count" id="name-count">0/55</span>
             </div>
             <div class="form-group">
                 <label for="summary">Haber Özeti:</label>
                 <textarea id="summary" name="summary" rows="4" maxlength="200" required><?php echo htmlspecialchars($news['summary']); ?></textarea>
-                <span class="char-count" id="summary-count">0/200</span>
+                <span class="char-count" id="summary-count">0/175</span>
             </div>
             <div class="form-group">
                 <label for="text">Haber Metni:</label>
@@ -153,8 +153,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
     <script>
         // Karakter sayacı ve sınır kontrolü
-        const maxNameLength = 50;
-        const maxSummaryLength = 200;
+        const maxNameLength = 55;
+        const maxSummaryLength = 175;
 
         // Proje Adı için karakter sınırı
         const nameInput = document.getElementById('name');

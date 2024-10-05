@@ -110,12 +110,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="form-group">
                 <label for="name">Proje Adı:</label>
                 <input type="text" id="name" name="name" maxlength="100" value="<?php echo htmlspecialchars($project['name']); ?>" required>
-                <span class="char-count" id="name-count">0/50</span>
+                <span class="char-count" id="name-count">0/55</span>
             </div>
             <div class="form-group">
                 <label for="summary">Proje Özeti:</label>
                 <textarea id="summary" name="summary" rows="4" maxlength="200" required><?php echo htmlspecialchars($project['summary']); ?></textarea>
-                <span class="char-count" id="summary-count">0/200</span>
+                <span class="char-count" id="summary-count">0/175</span>
             </div>
             <div class="form-group">
                 <label for="text">Proje Metni:</label>
@@ -173,8 +173,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         // Karakter sayacı ve sınır kontrolü
-        const maxNameLength = 50;
-        const maxSummaryLength = 200;
+        const maxNameLength = 55;
+        const maxSummaryLength = 175;
 
         // Proje Adı için karakter sınırı
         const nameInput = document.getElementById('name');
