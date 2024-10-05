@@ -35,6 +35,7 @@ $currentPage = basename($_SERVER['SCRIPT_NAME']);
         <div class="menu">
             <ul>
                 <li><a href="adminmainpage" class="<?php echo ($currentPage == 'adminmainpage.php') ? 'active' : ''; ?>">Ana Sayfa</a></li>
+                <li><a href="hascrewmanagement" class="<?php echo ($currentPage == 'hascrewmanagement.php') ? 'active' : ''; ?>">Has Crew</a></li>
                 <li><a href="newsManagement" class="<?php echo ($currentPage == 'newsManagement.php') ? 'active' : ''; ?>">Haber Yönetimi</a></li>
                 <li><a href="project-managament" class="<?php echo ($currentPage == 'project-managament.php') ? 'active' : ''; ?>">Proje Yönetimi</a></li>
                 <li><a href="sliderManagement" class="<?php echo ($currentPage == 'sliderManagement.php') ? 'active' : ''; ?>">Slider Yönetimi</a></li>
