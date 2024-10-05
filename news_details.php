@@ -10,7 +10,6 @@ ini_set('display_errors', 1);
 
 // Haber ID'sini al
 $newsId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-echo "Haber ID: " . $newsId; // Alınan ID'yi kontrol etmek için eklenmiştir.
 
 // ID'ye göre haber detaylarını al
 $newsQuery = "SELECT id, name, summary, text, image_path1, image_path2, image_path3, created_at FROM news WHERE id = ?";
@@ -83,8 +82,8 @@ if (!$id) {
 
     <!-- Haber Başlığı ve İçeriği -->
     <h2 class="mt-4"><?php echo htmlspecialchars($name); ?></h2>
-    <p class="mt-2"><?php echo nl2br(htmlspecialchars($text)); ?></p> <!-- Burada summary yerine text kullanıldı -->
-</div>
+    <p class="mt-2 news-text"><?php echo nl2br(htmlspecialchars($text)); ?></p>
+    </div>
 
 <footer class="footer mt-auto py-2">
     <div class="footer-container text-center">

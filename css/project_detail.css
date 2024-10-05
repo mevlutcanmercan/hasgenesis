@@ -9,6 +9,12 @@ html, body {
     margin: 0;
     padding: 0;
 }
+.news-text {
+    overflow-wrap: break-word; /* Uzun kelimelerin alt satıra geçmesini sağlar */
+    word-wrap: break-word; /* Eski tarayıcılar için destek */
+    overflow: hidden; /* Taşan içeriği gizler */
+    white-space: normal; /* Normal beyaz boşluk davranışı */
+}
 
 
 body {
