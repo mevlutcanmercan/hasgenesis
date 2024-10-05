@@ -5,13 +5,24 @@ include 'sidebar.php';
 $alertMessage = '';
 $alertType = '';
 
-// Eğer yönlendirme parametresi varsa, mesajı belirle
-if (isset($_GET['status'])) {
-    if ($_GET['status'] === 'success') {
-        $alertMessage = "Haber başarıyla eklendi!";
-        $alertType = 'success';
-    } else {
-        $alertMessage = "Bir hata oluştu!";
+// Düzenlenmek üzere gelen haberin id'sini al
+if (!isset($_GET['id']) || empty($_GET['id'])) {
+    // Eğer id parametresi yoksa, hata ver
+    $alertMessage = 'Haber bulunamadı!';
+    $alertType = 'error';
+} else {
+    $newsId = (int) $_GET['id'];
+
+    // Haber bilgilerini veritabanından al
+    $sql = "SELECT * FROM news WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('i', $newsId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $news = $result->fetch_assoc();
+
+    if (!$news) {
+        $alertMessage = 'Haber bulunamadı!';
         $alertType = 'error';
     }
 }
@@ -22,51 +33,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $text = $_POST['text'];
 
     // Resim yollarını saklamak için bir dizi oluştur
-    $imagePaths = [];
+    $imagePaths = [
+        $news['image_path1'],
+        $news['image_path2'],
+        $news['image_path3']
+    ];
 
-    // Her bir resmi yükle
+    // Yüklü resimleri güncelle
     for ($i = 1; $i <= 3; $i++) {
         if (!empty($_FILES['image' . $i]['name'])) {
             $imagePath = $_FILES['image' . $i]['name'];
-            $targetDirectory = "../images/"; // Resimlerin yükleneceği klasör
+            $targetDirectory = "../images/";
             $targetFile = $targetDirectory . basename($imagePath);
 
             // Resmi yükle
             if (move_uploaded_file($_FILES['image' . $i]['tmp_name'], $targetFile)) {
-                $imagePaths[] = 'images/' . basename($imagePath); // Veritabanına kaydedilecek yol
-            } else {
-                $imagePaths[] = ""; // Yükleme başarısız olursa boş dize
+                $imagePaths[$i - 1] = 'images/' . basename($imagePath);
             }
-        } else {
-            // Resim yüklenmediğinde boş dize olarak ata
-            $imagePaths[] = "";
         }
     }
 
-    // İlk resmi vitrin fotoğrafı olarak ayarla
-    if (empty($imagePaths[0])) {
-        $alertMessage = "En az bir vitrin fotoğrafı eklemelisiniz!";
-        $alertType = 'error';
+    // SQL güncelleme sorgusu
+    $sql = "UPDATE news SET name = ?, summary = ?, text = ?, image_path1 = ?, image_path2 = ?, image_path3 = ? WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssssssi", $name, $summary, $text, $imagePaths[0], $imagePaths[1], $imagePaths[2], $newsId);
+
+    if ($stmt->execute()) {
+        $alertMessage = "Haber başarıyla güncellendi!";
+        $alertType = 'success';
     } else {
-        // SQL sorgusunu hazırla
-        $sql = "INSERT INTO news (name, summary, text, image_path1, image_path2, image_path3) VALUES (?, ?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-
-        // Bind param ile değişkenleri bağla
-        $stmt->bind_param("ssssss", $name, $summary, $text, $imagePaths[0], $imagePaths[1], $imagePaths[2]);
-
-        // Sorguyu çalıştır
-        if ($stmt->execute()) {
-            // Yönlendirme yap
-            header("Location: " . $_SERVER['PHP_SELF'] . "?status=success");
-            exit; // Yönlendirme yaptıktan sonra çıkış yap
-        } else {
-            $alertMessage = "Hata: " . $conn->error;
-            $alertType = 'error';
-        }
-
-        $stmt->close();
+        $alertMessage = "Hata: " . $conn->error;
+        $alertType = 'error';
     }
+
+    $stmt->close();
 }
 ?>
 
@@ -82,43 +82,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <div class="form-container">
+
+    <div class="form-container">
                 <!-- Geri Butonu -->
                 <div class="back-button">
             <i class='bx bx-arrow-back'></i>
         </div>
-        <h1>Yeni Haber Ekle</h1>
+        <h1>Haber Düzenle</h1>
 
-        <form method="POST" action="" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="name">Haber Başlığı:</label>
-                <input type="text" id="name" name="name" required>
-                <span class="char-count" id="name-count">0/100</span>
-            </div>
-            <div class="form-group">
-                <label for="summary">Haber Özeti:</label>
-                <textarea id="summary" name="summary" rows="4" required></textarea>
-                <span class="char-count" id="summary-count">0/200</span>
-            </div>
-            <div class="form-group">
-                <label for="text">Haber Metni:</label>
-                <textarea id="text" name="text" rows="4" required></textarea>
-            </div>
-            <div class="form-group">
-                <label for="image1">Vitrin Fotoğrafı (Zorunlu):</label>
-                <input type="file" id="image1" name="image1" accept="image/*" required>
-            </div>
-            <div class="form-group">
-                <label for="image2">Fotoğraf 2:</label>
-                <input type="file" id="image2" name="image2" accept="image/*">
-            </div>
-            <div class="form-group">
-                <label for="image3">Fotoğraf 3:</label>
-                <input type="file" id="image3" name="image3" accept="image/*">
-            </div>
-            <button type="submit" class="submit-button">Ekle</button>
-        </form>
-
+<form method="POST" action="" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="name">Haber Başlığı:</label>
+        <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($news['name']); ?>" required>
+        <span class="char-count" id="name-count">0/100</span>
     </div>
+    <div class="form-group">
+        <label for="summary">Haber Özeti:</label>
+        <textarea id="summary" name="summary" rows="4" required><?php echo htmlspecialchars($news['summary']); ?></textarea>
+        <span class="char-count" id="summary-count">0/200</span>
+    </div>
+    <div class="form-group">
+        <label for="text">Haber Metni:</label>
+        <textarea id="text" name="text" rows="4" required><?php echo htmlspecialchars($news['text']); ?></textarea>
+    </div>
+    <div class="form-group">
+        <label for="image1">Karttaki Vitrin Fotoğrafı (Zorunlu):</label>
+        <input type="file" id="image1" name="image1" accept="image/*">
+        <?php if (!empty($news['image_path1'])): ?>
+            <p>Mevcut Fotoğraf: <img src="../<?php echo htmlspecialchars($news['image_path1']); ?>" alt="Haber Resmi" style="max-width: 100px;"></p>
+        <?php endif; ?>
+    </div>
+    <div class="form-group">
+        <label for="image2">Fotoğraf 2:</label>
+        <input type="file" id="image2" name="image2" accept="image/*">
+        <?php if (!empty($news['image_path2'])): ?>
+            <p>Mevcut Fotoğraf: <img src="../<?php echo htmlspecialchars($news['image_path2']); ?>" alt="Haber Resmi" style="max-width: 100px;"></p>
+        <?php endif; ?>
+    </div>
+    <div class="form-group">
+        <label for="image3">Fotoğraf 3:</label>
+        <input type="file" id="image3" name="image3" accept="image/*">
+        <?php if (!empty($news['image_path3'])): ?>
+            <p>Mevcut Fotoğraf: <img src="../<?php echo htmlspecialchars($news['image_path3']); ?>" alt="Haber Resmi" style="max-width: 100px;"></p>
+        <?php endif; ?>
+    </div>
+    <button type="submit" class="submit-button">Güncelle</button>
+</form>
+
+</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
     <script>
