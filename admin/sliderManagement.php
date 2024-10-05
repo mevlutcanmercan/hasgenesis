@@ -131,7 +131,7 @@ if (isset($_POST['updateSlider'])) {
                 <label for="slider_image">Slider Resmi Yükle:</label>
                 <input type="file" id="slider_image" name="slider_image" accept="image/*" required>
                 
-                <input type="text" name="link" placeholder="Bağlantı" required>
+                <input type="text" name="link" placeholder="Bağlantı" >
                 <button type="submit" name="addSlider">Slider Ekle</button>
             </form>
         </div>
@@ -153,7 +153,7 @@ if (isset($_POST['updateSlider'])) {
             <label for="slider_image">Yeni Slider Resmi Yükle (İsteğe Bağlı):</label>
             <input type="file" id="slider_image" name="slider_image" accept="image/*">
             
-            <input type="text" name="link" value="<?php echo $slider['link']; ?>" required>
+            <input type="text" name="link" value="<?php echo $slider['link']; ?>" >
             <button type="submit" name="updateSlider">Slider Güncelle</button>
         </form>
     </div>
