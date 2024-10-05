@@ -73,7 +73,7 @@ $result = $conn->query($sql);
                                         <?php echo htmlspecialchars(substr($row['summary'], 0, 175)) . (strlen($row['summary']) > 175 ? '...' : ''); ?>
                                     </p>
                                     <div class="button-container">
-                                        <a href="haber_duzenle.php?id=<?php echo $row['id']; ?>" class="edit-button">Düzenle</a>
+                                        <a href="news-edit.php?id=<?php echo $row['id']; ?>" class="edit-button">Düzenle</a>
                                         <div class="checkbox-container">
                                             <input type="checkbox" name="ids[]" value="<?php echo $row['id']; ?>" id="checkbox-<?php echo $row['id']; ?>">
                                         </div>
