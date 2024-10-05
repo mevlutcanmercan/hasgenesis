@@ -82,8 +82,8 @@ if (!empty($image_path5)) $images[] = $image_path5;
     <!-- Proje Özeti -->
     <div class="project-text mt-4">
         <h4>Proje Detayları</h4>
-        <p><?php echo nl2br(htmlspecialchars($text)); ?></p>
-    </div>
+        <p class="mt-2 news-text"><?php echo nl2br(htmlspecialchars($text)); ?></p>
+        </div>
 </div>
 
 <!-- Sayfanın en altında olacak footer -->
