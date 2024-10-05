@@ -86,14 +86,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1100">
     <link rel="stylesheet" href="admincss/news-add.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.1/css/boxicons.min.css" rel="stylesheet"> <!-- Boxicons CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
-    <title>Yeni Haber Ekle</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11"></link>
+    <title>Haber Düzenle</title>
 </head>
 <body>
     <div class="form-container">
@@ -150,7 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         // Karakter sayacı ve sınır kontrolü
         const maxNameLength = 55;
@@ -163,7 +163,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const count = this.value.length;
             nameCount.textContent = `${count}/${maxNameLength}`;
 
-            // Karakter sayısı sınırı aşarsa fazla karakterleri kaldır
             if (count > maxNameLength) {
                 this.value = this.value.substring(0, maxNameLength);
                 nameCount.textContent = `${maxNameLength}/${maxNameLength}`;
@@ -177,7 +176,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const count = this.value.length;
             summaryCount.textContent = `${count}/${maxSummaryLength}`;
 
-            // Karakter sayısı sınırı aşarsa fazla karakterleri kaldır
             if (count > maxSummaryLength) {
                 this.value = this.value.substring(0, maxSummaryLength);
                 summaryCount.textContent = `${maxSummaryLength}/${maxSummaryLength}`;
@@ -189,18 +187,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             window.location.href = 'newsManagement'; // Belirtilen URL'ye yönlendirme
         });
 
+        // Resim önizleme fonksiyonu
+        function previewImage(input, previewID) {
+            const preview = document.getElementById(previewID);
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block'; // Görüntüyü göster
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.src = '';
+                preview.style.display = 'none'; // Görüntüyü gizle
+            }
+        }
 
-        // SweetAlert mesajı göster
-        <?php if ($alertType === 'success' || $alertType === 'error'): ?>
-            swal({
-                title: "<?php echo $alertType === 'success' ? 'Başarılı!' : 'Hata!'; ?>",
-                text: "<?php echo $alertMessage; ?>",
-                icon: "<?php echo $alertType; ?>",
-                buttons: true,
-                dangerMode: true,
-            }).then((willRedirect) => {
-                if (willRedirect) {
-                    window.location.href = "<?php echo $_SERVER['PHP_SELF']; ?>";
+        // Alert mesajı gösterme
+        <?php if ($alertMessage): ?>
+        Swal.fire({
+            title: '<?php echo $alertType === 'success' ? 'Başarılı' : 'Hata'; ?>',
+            text: '<?php echo $alertMessage; ?>',
+            icon: '<?php echo $alertType; ?>',
+            confirmButtonText: 'Tamam'
+        }).then((result) => {
+                if (result.isConfirmed && "<?php echo $alertType; ?>" === "success") {
+                    window.location.href = 'newsManagement'; // Başarı durumunda yönlendir
                 }
             });
         <?php endif; ?>
