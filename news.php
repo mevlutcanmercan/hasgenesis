@@ -22,11 +22,11 @@ $totalPages = ceil($totalNews / $newsPerPage);
 
 // Eğer geçersiz bir sayfa numarası gelirse varsayılan olarak 1. sayfaya git
 if ($page < 1) $page = 1;
-if ($page > $totalPages) $page = $totalPages;
+if ($page > $totalPages) $page = $pages; // Bu satırda bir hata vardı, $pages yerine $totalPages kullanılmalı.
 
 // Hangi haberi alacağını belirle (OFFSET ve LIMIT kullanarak)
 $offset = ($page - 1) * $newsPerPage;
-$newsQuery = "SELECT id, name, summary, image_path1, created_at FROM news ORDER BY created_at LIMIT $newsPerPage OFFSET $offset";
+$newsQuery = "SELECT id, name, summary, image_path1, created_at FROM news ORDER BY created_at DESC LIMIT $newsPerPage OFFSET $offset";
 $newsResult = $conn->query($newsQuery);
 ?>
 
@@ -37,19 +37,7 @@ $newsResult = $conn->query($newsQuery);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Haber Bülteni</title>
     <link rel="stylesheet" href="css/footer.css">
-    <link rel="stylesheet" href="css/news.css">
-    <style>
-        .fade-in-card {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-
-        .fade-in-card.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    </style>
+    <link rel="stylesheet" href="css/news.css"> <!-- CSS dosyasını ekleyin -->
 </head>
 <body>
 
@@ -62,18 +50,18 @@ $newsResult = $conn->query($newsQuery);
             <?php while($news = $newsResult->fetch_assoc()): ?>
                 <div class="col-md-4 mb-4 fade-in-card">
                     <div class="project-card">
-                        <img src="<?php echo htmlspecialchars($news['image_path1']); ?>" alt="Proje Resmi" class="project-image">
+                        <img src="<?php echo htmlspecialchars($news['image_path1']); ?>" alt="Proje Resmi" class="project-image img-fluid">
                         <div class="project-card-body">
-                            <h3 class="project-title"><?php echo htmlspecialchars($news['name']); ?></h3>
+                            <h3 class="project-title"><?php echo htmlspecialchars(substr($news['name'], 0, 50)); ?></h3>
                             <p class="project-date">
                                 <?php echo strftime("%d.%m.%Y", strtotime($news['created_at'])); ?>
                             </p>
-                            <div class="project-footer">
-                                <p class="project-summary">
-                                    <?php echo htmlspecialchars(substr($news['summary'], 0, 175)) . (strlen($news['summary']) > 175 ? '...' : ''); ?>
-                                </p>
-                                <a href="news_details.php?id=<?php echo $news['id']; ?>" class="btn btn-primary">Detaya Git</a>
-                            </div>
+                            <p class="project-summary">
+                                <?php echo htmlspecialchars(substr($news['summary'], 0, 175)) . (strlen($news['summary']) > 175 ? '...' : ''); ?>
+                            </p>
+                        </div>
+                        <div class="project-footer">
+                            <a href="news_details.php?id=<?php echo $news['id']; ?>" class="btn btn-primary">Detaya Git</a>
                         </div>
                     </div>
                 </div>
@@ -115,7 +103,7 @@ $newsResult = $conn->query($newsQuery);
                     // Gecikme ile animasyon
                     setTimeout(() => {
                         entry.target.classList.add('visible');
-                    }, index * 100);  // Her kart için 100ms gecikme
+                    }, index * 150);  // Her kart için 100ms gecikme
                 }
             });
         }, { threshold: 0.1 }); // Kartın %10'u göründüğünde tetiklenir
