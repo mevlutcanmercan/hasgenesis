@@ -1,0 +1,79 @@
+/* style.css */
+
+body {
+    padding-top: 5% !important;
+    background-color: #f5f5f5;
+    background-image: url('../images/gri-arka-plan.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+}
+
+.container {
+    display: flex; /* Flexbox ile içeriği ortalamak için */
+    flex-direction: column; /* Dikey düzen */
+    justify-content: center; /* Dikey ortalama */
+    align-items: center; /* Yatay ortalama */
+    text-align: center;
+    flex-grow: 1; /* Container'ı dikey olarak büyütmek için */
+    z-index: 1; /* Yazının üstte görünmesini sağla */
+}
+
+.coming-soon {
+    color: #fff; /* Yazı rengi */
+    font-family: 'Arial', sans-serif;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Gölge efekti */
+    opacity: 0; /* Başlangıçta görünmez */
+    transform: translateY(20px); /* Başlangıçta aşağıda görünmesini sağlar */
+    transition: opacity 0.5s ease, transform 0.5s ease; /* Geçiş efekti */
+}
+
+/* Yazının animasyonu */
+.coming-soon.visible {
+    opacity: 1; /* Görünür hale gelmesi */
+    transform: translateY(0); /* Yukarı doğru hareket eder */
+}
+
+/* Yazının animasyonu */
+.coming-soon h1 {
+    font-size: 48px;
+    animation: fadeIn 2s ease-in-out;
+    background: linear-gradient(150deg, #000000, #ff0000);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradient 3s ease infinite alternate;
+}
+
+.coming-soon p {
+    font-size: 24px;
+    animation: fadeIn 2s ease-in-out;
+    animation-delay: 1s; /* H1'den sonra gelmesi için */
+}
+
+.footer {
+    background-color: #343a40; /* Footer arka plan rengi */
+    color: #fff; /* Footer yazı rengi */
+    position: relative;
+    z-index: 0; /* Footer'ın arka planda kalmasını sağla */
+}
+
+/* Animasyonlar */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+}

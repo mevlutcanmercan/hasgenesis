@@ -70,7 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <p>Bizimle iletişime geçmek için formu doldurabilirsiniz. Size en kısa sürede geri dönüş yapacağız.</p>
             
             <!-- Sabit E-posta adresi -->
-            <p>E-posta: <strong>info@yourcompany.com</strong></p>
+            <p>E-posta: <strong>info@hasgenesis.com</strong></p>
             
             <!-- Sosyal Medya İkonları -->
             <div class="social-icons">

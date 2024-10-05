@@ -204,7 +204,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Geri butonu tıklandığında belirli bir URL'ye yönlendir
         document.querySelector('.back-button').addEventListener('click', function() {
-            window.location.href = 'project-management.php'; // Belirtilen URL'ye yönlendirme
+            window.location.href = 'project-managament.php'; // Belirtilen URL'ye yönlendirme
         });
 
         // Resim önizleme fonksiyonu
