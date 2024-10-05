@@ -57,9 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Yeni resmi yükle
             if (move_uploaded_file($_FILES['image' . $i]['tmp_name'], $targetFile)) {
                 $imagePaths[$i - 1] = 'images/' . basename($imagePath); // Yeni yol
-
-                // JavaScript ile mevcut resim önizlemesini güncelle
-                echo "<script>updateImagePreview($i, '../images/" . basename($imagePath) . "');</script>";
             }
         }
     }
@@ -97,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=1100">
     <link rel="stylesheet" href="admincss/project-add.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.1/css/boxicons.min.css" rel="stylesheet"> <!-- Boxicons CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Proje Düzenle</title>
 </head>
 <body>
@@ -173,8 +170,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        // Karakter sayacı ve sınır kontrolü
+        const maxNameLength = 50;
+        const maxSummaryLength = 200;
+
+        // Proje Adı için karakter sınırı
+        const nameInput = document.getElementById('name');
+        const nameCount = document.getElementById('name-count');
+        nameInput.addEventListener('input', function() {
+            const count = this.value.length;
+            nameCount.textContent = `${count}/${maxNameLength}`;
+
+            if (count > maxNameLength) {
+                this.value = this.value.substring(0, maxNameLength);
+                nameCount.textContent = `${maxNameLength}/${maxNameLength}`;
+            }
+        });
+
+        // Proje Özeti için karakter sınırı
+        const summaryInput = document.getElementById('summary');
+        const summaryCount = document.getElementById('summary-count');
+        summaryInput.addEventListener('input', function() {
+            const count = this.value.length;
+            summaryCount.textContent = `${count}/${maxSummaryLength}`;
+
+            if (count > maxSummaryLength) {
+                this.value = this.value.substring(0, maxSummaryLength);
+                summaryCount.textContent = `${maxSummaryLength}/${maxSummaryLength}`;
+            }
+        });
+
+        // Geri butonu tıklandığında belirli bir URL'ye yönlendir
+        document.querySelector('.back-button').addEventListener('click', function() {
+            window.location.href = 'project-management.php'; // Belirtilen URL'ye yönlendirme
+        });
+
         // Resim önizleme fonksiyonu
         function previewImage(input, previewID) {
             const preview = document.getElementById(previewID);
@@ -191,24 +223,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // Resmi yükledikten sonra mevcut resim alanını güncelle
-        function updateImagePreview(imageIndex, newImagePath) {
-            const preview = document.getElementById(`preview${imageIndex}`);
-            preview.src = newImagePath;
-            preview.style.display = "block";
-        }
-
-        // SweetAlert mesajı göster ve sayfa yenile
+        // SweetAlert mesajı göster ve sayfayı yönlendir
         <?php if ($alertType === 'success' || $alertType === 'error'): ?>
-            swal({
+            Swal.fire({
                 title: "<?php echo $alertType === 'success' ? 'Başarılı!' : 'Hata!'; ?>",
                 text: "<?php echo $alertMessage; ?>",
                 icon: "<?php echo $alertType; ?>",
-                buttons: true,
-            }).then(function() {
-                if ("<?php echo $alertType; ?>" === "success") {
-                    // Sayfayı yeni bir sekmede aç
-                    window.open(window.location.href, '_self'); // Sayfayı yeniden açar
+                showCancelButton: false,
+                confirmButtonText: 'Tamam'
+            }).then((result) => {
+                if (result.isConfirmed && "<?php echo $alertType; ?>" === "success") {
+                    window.location.href = 'project-managament.php'; // Başarı durumunda yönlendir
                 }
             });
         <?php endif; ?>
