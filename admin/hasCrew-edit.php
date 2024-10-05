@@ -116,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="form-group">
                 <label for="memberDetail">Ekip Üyesi Detayı:</label>
-                <input type="text" id="memberDetail" name="memberDetail" value="<?php echo htmlspecialchars($crew['memberDetail']); ?>" required>
+                <textarea type="text" rows="4" id="memberDetail" name="memberDetail" value="<?php echo htmlspecialchars($crew['memberDetail']); ?>" required></textarea>
             </div>
 
             <div class="form-group">
