@@ -1,0 +1,58 @@
+.form-container {
+    color: white;
+    max-width: 600px; /* Maksimum genişlik */
+    margin: 50px auto; /* Ortala */
+    padding: 20px; /* İç boşluk */
+    background-color: #222; /* Form arka plan rengi */
+    border-radius: 10px; /* Yuvarlatılmış köşeler */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Gölgelendirme efekti */
+}
+
+h1 {
+    text-align: center; /* Başlık ortala */
+}
+
+.form-group {
+    margin-bottom: 20px; /* Her form grubu arası boşluk */
+}
+
+label {
+    display: block; /* Etiketlerin blok olarak görünmesi */
+    margin-bottom: 5px; /* Etiket ile alan arasında boşluk */
+}
+
+input[type="text"], textarea, input[type="file"] {
+    width: 98%; /* Genişlik ayarı */
+    padding: 10px; /* İç boşluk */
+    border: 1px solid #444; /* Kenarlık rengi */
+    border-radius: 5px; /* Yuvarlatılmış köşeler */
+    background-color: #333; /* Arka plan rengi */
+    color: white; /* Yazı rengi */
+}
+
+input[type="text"]:focus, textarea:focus {
+    border-color: #66bb6a; /* Focus durumu için kenarlık rengi */
+}
+
+.submit-button {
+    background-color: #66bb6a; /* Buton arka plan rengi */
+    color: white; /* Buton yazı rengi */
+    border: none; /* Kenarlık yok */
+    padding: 10px; /* İç boşluk */
+    border-radius: 5px; /* Yuvarlatılmış köşeler */
+    cursor: pointer; /* İmleç değişimi */
+    transition: background-color 0.3s; /* Hover efekti için geçiş */
+    width: 100%; /* Buton genişliği */
+}
+
+.submit-button:hover {
+    background-color: #559c55; /* Hoverda arka plan rengi değişimi */
+}
+
+.char-count {
+    font-size: 0.9rem; /* Yazı boyutu */
+    color: #888; /* Renk */
+    text-align: right; /* Sağda hizalama */
+    margin-top: 5px; /* Üstte boşluk */
+    margin-right: 10px;
+}
