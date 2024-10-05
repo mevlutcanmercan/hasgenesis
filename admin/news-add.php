@@ -156,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Geri butonu tıklandığında belirli bir URL'ye yönlendir
         document.querySelector('.back-button').addEventListener('click', function() {
-            window.location.href = 'project-managament'; // Belirtilen URL'ye yönlendirme
+            window.location.href = 'newsManagement'; // Belirtilen URL'ye yönlendirme
         });
 
 
