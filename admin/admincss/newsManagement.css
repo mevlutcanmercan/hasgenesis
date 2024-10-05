@@ -50,11 +50,11 @@ h1 {
 
 .medya-images img {
     width: 100%;
-    height: 100%; /* Resmi kapsayacak şekilde yükseklik ayarı */
-    object-fit: cover; /* Resmi kapsamak için cover kullanımı */
-    border-radius: 8px; /* Resim kenarları */
-    transition: transform 0.2s; /* Geçiş efekti */
-    transform: scale(1); /* Normal durumda scale-down */
+    height: auto;
+    max-height: 100%;
+    object-fit: scale-down;
+    border-radius: 8px;
+    transition: transform 0.2s;
 }
 
 .medya-images img:hover {
@@ -166,3 +166,11 @@ h1 {
 }
 
 
+.medya-images{
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+}
