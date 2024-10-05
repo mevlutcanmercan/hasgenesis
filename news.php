@@ -15,19 +15,34 @@ $newsPerPage = 6; // Her sayfada 6 haber gösterilecek
 // Toplam haber sayısını bul
 $totalNewsQuery = "SELECT COUNT(*) as total FROM news";
 $totalNewsResult = $conn->query($totalNewsQuery);
-$totalNews = $totalNewsResult->fetch_assoc()['total'];
+
+// Eğer sorgu başarısız olursa veya sonuç bulunamazsa
+if (!$totalNewsResult || $totalNewsResult->num_rows == 0) {
+    $totalNews = 0;
+} else {
+    $totalNews = $totalNewsResult->fetch_assoc()['total'];
+}
 
 // Toplam sayfa sayısını hesapla
 $totalPages = ceil($totalNews / $newsPerPage);
 
 // Eğer geçersiz bir sayfa numarası gelirse varsayılan olarak 1. sayfaya git
-if ($page < 1) $page = 1;
-if ($page > $totalPages) $page = $pages; // Bu satırda bir hata vardı, $pages yerine $totalPages kullanılmalı.
+if ($page < 1) {
+    $page = 1;
+} elseif ($page > $totalPages && $totalPages > 0) {
+    $page = $totalPages;
+}
 
 // Hangi haberi alacağını belirle (OFFSET ve LIMIT kullanarak)
 $offset = ($page - 1) * $newsPerPage;
-$newsQuery = "SELECT id, name, summary, image_path1, created_at FROM news ORDER BY created_at DESC LIMIT $newsPerPage OFFSET $offset";
-$newsResult = $conn->query($newsQuery);
+
+// Eğer toplam haber sayısı 0 ise, veritabanı sorgusunu çalıştırma
+if ($totalNews > 0) {
+    $newsQuery = "SELECT id, name, summary, image_path1, created_at FROM news ORDER BY created_at DESC LIMIT $newsPerPage OFFSET $offset";
+    $newsResult = $conn->query($newsQuery);
+} else {
+    $newsResult = false; // Haber yoksa
+}
 ?>
 
 <!DOCTYPE html>
@@ -44,9 +59,9 @@ $newsResult = $conn->query($newsQuery);
 <div class="container mt-5">
     <h2 class="text-center mb-4 fade-in" id="projects-title">Haber Bülteni</h2>
     <div class="row" id="news-cards">
-        <?php if ($newsResult->num_rows == 0): ?>
-            <p class="text-center">Henüz Haber Bulunmuyor.</p>
-        <?php else: ?>
+        <?php if ($totalNews == 0): ?>
+            <p class="text-center">Henüz haber eklenmemiştir.</p>
+        <?php elseif ($newsResult && $newsResult->num_rows > 0): ?>
             <?php while($news = $newsResult->fetch_assoc()): ?>
                 <div class="col-md-4 mb-4 fade-in-card">
                     <div class="project-card">
@@ -66,25 +81,31 @@ $newsResult = $conn->query($newsQuery);
                     </div>
                 </div>
             <?php endwhile; ?>
+        <?php else: ?>
+            <!-- Sorgu başarısız olursa veya haber bulunamazsa bu mesajı göster -->
+            <p class="text-center">Haberler yüklenirken bir sorun oluştu. Lütfen daha sonra tekrar deneyin.</p>
         <?php endif; ?>
     </div>
 
-    <div class="pagination-container">
-        <!-- Sayfalama Bağlantıları -->
-        <?php if ($page > 1): ?>
-            <a href="news.php?page=<?php echo $page - 1; ?>" class="btn btn-outline-primary pagination-link">Önceki</a>
-        <?php endif; ?>
+    <!-- Sayfalama yalnızca haber varsa gösterilir -->
+    <?php if ($totalNews > 0): ?>
+        <div class="pagination-container">
+            <!-- Sayfalama Bağlantıları -->
+            <?php if ($page > 1): ?>
+                <a href="news.php?page=<?php echo $page - 1; ?>" class="btn btn-outline-primary pagination-link">Önceki</a>
+            <?php endif; ?>
 
-        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-            <a href="news.php?page=<?php echo $i; ?>" class="btn btn-outline-primary pagination-link <?php if ($i == $page) echo 'active'; ?>">
-                <?php echo $i; ?>
-            </a>
-        <?php endfor; ?>
+            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                <a href="news.php?page=<?php echo $i; ?>" class="btn btn-outline-primary pagination-link <?php if ($i == $page) echo 'active'; ?>">
+                    <?php echo $i; ?>
+                </a>
+            <?php endfor; ?>
 
-        <?php if ($page < $totalPages): ?>
-            <a href="news.php?page=<?php echo $page + 1; ?>" class="btn btn-outline-primary pagination-link">Sonraki</a>
-        <?php endif; ?>
-    </div>
+            <?php if ($page < $totalPages): ?>
+                <a href="news.php?page=<?php echo $page + 1; ?>" class="btn btn-outline-primary pagination-link">Sonraki</a>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
 </div>
 
 <footer class="footer mt-auto py-2">
@@ -103,7 +124,7 @@ $newsResult = $conn->query($newsQuery);
                     // Gecikme ile animasyon
                     setTimeout(() => {
                         entry.target.classList.add('visible');
-                    }, index * 150);  // Her kart için 100ms gecikme
+                    }, index * 150);  // Her kart için 150ms gecikme
                 }
             });
         }, { threshold: 0.1 }); // Kartın %10'u göründüğünde tetiklenir

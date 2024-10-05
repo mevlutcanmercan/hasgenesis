@@ -10,8 +10,27 @@ if (isset($_POST['delete'])) {
     if (!empty($_POST['ids'])) {
         $idsToDelete = $_POST['ids'];
         $ids = implode(',', array_map('intval', $idsToDelete));
-        $sql = "DELETE FROM projects WHERE id IN ($ids)";
-        if ($conn->query($sql) === TRUE) {
+        
+        // Silinecek projelerin tüm resim yollarını al
+        $sqlSelectImages = "SELECT image_path1, image_path2, image_path3, image_path4 FROM projects WHERE id IN ($ids)";
+        $resultImages = $conn->query($sqlSelectImages);
+        
+        if ($resultImages->num_rows > 0) {
+            while ($rowImages = $resultImages->fetch_assoc()) {
+                // Tüm resim yollarını kontrol et ve sil
+                foreach ($rowImages as $imagePath) {
+                    $fullPath = '../' . $imagePath; // Resmin tam yolunu oluştur
+                    // Resim yolunun boş olmadığını ve dosyanın mevcut olup olmadığını kontrol et
+                    if (!empty($imagePath) && file_exists($fullPath)) {
+                        unlink($fullPath); // Dosyayı sil
+                    }
+                }
+            }
+        }
+
+        // Kayıtları sil
+        $sqlDelete = "DELETE FROM projects WHERE id IN ($ids)";
+        if ($conn->query($sqlDelete) === TRUE) {
             $alertMessage = "Seçili projeler başarıyla silindi!";
             $alertType = 'success';
         } else {
@@ -37,7 +56,7 @@ $totalItems = $totalItemsResult->fetch_assoc()['total'];
 $totalPages = ceil($totalItems / $itemsPerPage);
 
 // Projeleri veritabanından al
-$sql = "SELECT id, name, summary, created_at, image_path1 FROM projects ORDER BY created_at DESC LIMIT $itemsPerPage OFFSET $offset";
+$sql = "SELECT id, name, summary, created_at, image_path1, image_path2, image_path3, image_path4 FROM projects ORDER BY created_at DESC LIMIT $itemsPerPage OFFSET $offset";
 $result = $conn->query($sql);
 ?>
 
@@ -53,7 +72,6 @@ $result = $conn->query($sql);
 </head>
 <body>
     <div class="medya-content">
-        
         <form method="POST" action="" id="medyaForm">
             <div class="medya-list">
                 <?php if ($result->num_rows > 0): ?>
@@ -103,8 +121,6 @@ $result = $conn->query($sql);
     </div>
 
     <script>
-   
-
     // Checkbox üzerine tıklama olayını dinle
     document.querySelectorAll('.checkbox-container input[type="checkbox"]').forEach(checkbox => {
         checkbox.addEventListener('click', function(event) {

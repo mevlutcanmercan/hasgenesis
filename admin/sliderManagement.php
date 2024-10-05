@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Karakter sınırını kontrol et
-    if (strlen($title) > 30 || strlen($summary) > 30) {
+    if (mb_strlen($title, 'UTF-8') > 30 || mb_strlen($summary, 'UTF-8') > 30) {
         header("Location: sliderManagement.php?error=Karakter%20sınırı%20aşıldı!");
         exit();
     } else {
@@ -79,7 +79,6 @@ if (isset($_POST['updateSlider'])) {
     header("Location: sliderManagement.php?success=Slider%20başarıyla%20güncellendi!");
     exit();
 }
-
 ?>
 
 <!DOCTYPE html>

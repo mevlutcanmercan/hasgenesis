@@ -70,6 +70,8 @@ h1 {
 }
 
 .medya-card h2 {
+    white-space: normal;
+    overflow-wrap: break-word;
     font-size: 17px;
     margin: 0; /* Başlık için boşluk sıfır */
 }
@@ -79,6 +81,7 @@ h1 {
     white-space: normal; /* Yazının taşmasını engelle */
     overflow-wrap: break-word; /* Kelime taşmasını önle */
     font-size: 13px;
+    width: 350px;
 }
 
 /* Butonlar için stil */

@@ -7,7 +7,7 @@ session_start();
 $currentPage = basename($_SERVER['SCRIPT_NAME']);
 $welcomeMessage = "";
 $logoutLink = "";
-$loginLink = "<a href='/hasgenesis/login.php' class='btn-login'>Giriş Yap</a>";
+$loginLink = "<a href='login.php' class='btn-login'>Giriş Yap</a>";
 $profileDropdown = ""; 
 
 if (isset($_SESSION['id_users'])) {

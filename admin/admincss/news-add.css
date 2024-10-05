@@ -45,6 +45,7 @@ input[type="text"]:focus, textarea:focus {
     width: 100%; /* Buton genişliği */
 }
 
+
 .submit-button:hover {
     background-color: #559c55; /* Hoverda arka plan rengi değişimi */
 }

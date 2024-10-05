@@ -80,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt->execute()) {
             $alertMessage = "Ekip üyesi başarıyla güncellendi!";
             $alertType = 'success';
-            header("Location: hascrewmanagement");
+            // Mesajı ayarlayıp yönlendirmeyi JavaScript ile yapacağız
         } else {
             $alertMessage = "Hata: " . $conn->error;
             $alertType = 'error';
@@ -98,7 +98,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=1100">
     <link rel="stylesheet" href="admincss/news-add.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.1/css/boxicons.min.css" rel="stylesheet"> <!-- Boxicons CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <title>Ekip Üyesi Düzenle</title>
 </head>
 <body>
@@ -116,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="form-group">
                 <label for="memberDetail">Ekip Üyesi Detayı:</label>
-                <textarea type="text" rows="4" id="memberDetail" name="memberDetail" value="<?php echo htmlspecialchars($crew['memberDetail']); ?>" required></textarea>
+                <textarea rows="4" id="memberDetail" name="memberDetail" required><?php echo htmlspecialchars($crew['memberDetail']); ?></textarea>
             </div>
 
             <div class="form-group">
@@ -189,27 +190,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
     <script>
-        // Geri butonu tıklandığında belirli bir URL'ye yönlendir
-        document.querySelector('.back-button').addEventListener('click', function() {
-            window.location.href = 'hascrewmanagement'; // Belirtilen URL'ye yönlendirme
-        });
+    // Geri butonu tıklandığında belirli bir URL'ye yönlendir
+    document.querySelector('.back-button').addEventListener('click', function() {
+        window.location.href = 'hascrewmanagement'; // Belirtilen URL'ye yönlendirme
+    });
 
-        // SweetAlert mesajı göster
-        <?php if ($alertType === 'success' || $alertType === 'error'): ?>
-            swal({
-                title: "<?php echo $alertType === 'success' ? 'Başarılı!' : 'Hata!'; ?>",
-                text: "<?php echo $alertMessage; ?>",
-                icon: "<?php echo $alertType; ?>",
-                buttons: true,
-                dangerMode: true,
-            }).then((willRedirect) => {
-                if (willRedirect) {
-                    window.location.href = "<?php echo $_SERVER['PHP_SELF'] . '?id=' . $crewID; ?>";
-                }
-            });
-        <?php endif; ?>
-    </script>
+    // SweetAlert2 mesajı göster
+    <?php if ($alertType === 'success' || $alertType === 'error'): ?>
+        Swal.fire({
+            title: "<?php echo $alertType === 'success' ? 'Başarılı!' : 'Hata!'; ?>",
+            text: "<?php echo $alertMessage; ?>",
+            icon: "<?php echo $alertType; ?>",
+            confirmButtonText: 'Tamam',
+        }).then((result) => {
+            // "Tamam" butonuna tıklanırsa veya mesajın dışına tıklanırsa yönlendirme
+            if (result.isConfirmed || result.dismiss) {
+                window.location.href = "hascrewmanagement"; // Yönlendirme
+            }
+        });
+    <?php endif; ?>
+</script>
 </body>
 </html>

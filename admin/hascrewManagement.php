@@ -29,7 +29,7 @@ if (isset($_POST['delete'])) {
                 
                 foreach ($imagePaths as $path) {
                     if (!empty($path) && file_exists($path)) {
-                        unlink($path);
+                        unlink($path); // Dosyayı sil
                     }
                 }
             }
@@ -72,7 +72,7 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1100">
-    <link rel="stylesheet" href="admincss/hascrewManagement.css"> <!-- Mevcut CSS dosyasını kullanabilirsiniz -->
+    <link rel="stylesheet" href="admincss/hascrewmanagement.css"> <!-- Mevcut CSS dosyasını kullanabilirsiniz -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <title>Ekip Yönetimi</title>
@@ -129,14 +129,6 @@ $result = $conn->query($sql);
     </div>
 
     <script>
-    function toggleCheckbox(cardElement) {
-        // Kartın içinde bulunan checkbox'ı bul
-        const checkbox = cardElement.querySelector('input[type="checkbox"]');
-        if (checkbox) {
-            checkbox.checked = !checkbox.checked; // Checkbox'ı işaretle veya işaretini kaldır
-        }
-    }
-
     // Checkbox üzerine tıklama olayını dinle
     document.querySelectorAll('.checkbox-container input[type="checkbox"]').forEach(checkbox => {
         checkbox.addEventListener('click', function(event) {

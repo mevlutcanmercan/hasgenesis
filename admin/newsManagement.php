@@ -9,7 +9,27 @@ $alertType = '';
 if (isset($_POST['delete'])) {
     if (!empty($_POST['ids'])) {
         $idsToDelete = $_POST['ids'];
+        // Silinecek haberlerin fotoğraflarını almak için
         $ids = implode(',', array_map('intval', $idsToDelete));
+        $sql = "SELECT image_path1, image_path2, image_path3 FROM news WHERE id IN ($ids)";
+        $imageResult = $conn->query($sql);
+        
+        // Eğer fotoğrafları almayı başardıysak
+        if ($imageResult->num_rows > 0) {
+            while($imageRow = $imageResult->fetch_assoc()) {
+                // Her bir resim yolu için kontrol ve silme işlemi
+                foreach (['image_path1', 'image_path2', 'image_path3'] as $imageField) {
+                    $imagePath = '../' . htmlspecialchars($imageRow[$imageField]);
+
+                    // Fotoğrafı sil
+                    if (!empty($imageRow[$imageField]) && file_exists($imagePath)) {
+                        unlink($imagePath); // Dosyayı sil
+                    }
+                }
+            }
+        }
+        
+        // Sonra haberleri sil
         $sql = "DELETE FROM news WHERE id IN ($ids)";
         if ($conn->query($sql) === TRUE) {
             $alertMessage = "Seçili haberler başarıyla silindi!";
@@ -37,7 +57,7 @@ $totalItems = $totalItemsResult->fetch_assoc()['total'];
 $totalPages = ceil($totalItems / $itemsPerPage);
 
 // Haberleri veritabanından al
-$sql = "SELECT id, name, summary, created_at, image_path1 FROM news ORDER BY created_at DESC LIMIT $itemsPerPage OFFSET $offset";
+$sql = "SELECT id, name, summary, created_at, image_path1, image_path2, image_path3 FROM news ORDER BY created_at DESC LIMIT $itemsPerPage OFFSET $offset";
 $result = $conn->query($sql);
 ?>
 
@@ -46,7 +66,7 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1100">
-    <link rel="stylesheet" href="admincss/newsManagement.css">
+    <link rel="stylesheet" href="admincss/newsmanagement.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <title>Haber Yönetimi</title>
@@ -102,14 +122,6 @@ $result = $conn->query($sql);
     </div>
 
     <script>
-    function toggleCheckbox(cardElement) {
-        // Kartın içinde bulunan checkbox'ı bul
-        const checkbox = cardElement.querySelector('input[type="checkbox"]');
-        if (checkbox) {
-            checkbox.checked = !checkbox.checked; // Checkbox'ı işaretle veya işaretini kaldır
-        }
-    }
-
     // Checkbox üzerine tıklama olayını dinle
     document.querySelectorAll('.checkbox-container input[type="checkbox"]').forEach(checkbox => {
         checkbox.addEventListener('click', function(event) {
