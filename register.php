@@ -162,6 +162,12 @@
                 <input type="date" name="birthday_users" placeholder="Doğum Tarihi" required>
                 <i class='bx bxs-calendar' style="color:black;"></i>
             </div>
+            <div class="mb-3 fade-in">
+                <input type="checkbox" id="kvkk" name="kvkk" required>
+                <label for="kvkk">
+                    <a href="forms/KVKK.pdf" target="_blank">KVKK</a>'yı okudum ve onaylıyorum.
+                </label>
+            </div>
             <button type="submit" class="btn">Kayıt Ol</button>
         </form>
     </div>

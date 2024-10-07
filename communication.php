@@ -125,6 +125,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <label for="mesaj" class="form-label">Mesaj*</label>
                     <textarea class="form-control" id="mesaj" name="mesaj" rows="4" required></textarea>
                 </div>
+
+                <div class="mb-3 fade-in">
+                <input type="checkbox" id="kvkk" name="kvkk" required>
+                <label for="kvkk">
+                    <a href="forms/KVKK.pdf" target="_blank">KVKK</a>'yı okudum ve onaylıyorum.
+                </label>
+                </div>
                 
                 <button type="submit" class="btn btn-primary">GÖNDER</button>
             </form>
