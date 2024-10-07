@@ -1,5 +1,4 @@
 <?php
-// Veritabanı bağlantısı, stil dosyaları ve oturum yönetimi ile ilgili dosyaları ekleyin.
 include 'dB/database.php';
 include 'bootstrap.php';
 include 'auth.php';
@@ -7,6 +6,15 @@ session_start();
 
 // Kullanıcı zaten oturum açmışsa, ana sayfaya yönlendir.
 preventAccessIfLoggedIn();
+
+// Çerezlerdeki verileri kontrol et ve form alanlarına aktar
+if (isset($_COOKIE['mail_users']) && isset($_COOKIE['password_users'])) {
+    $userMail = $_COOKIE['mail_users'];
+    $userPassword = $_COOKIE['password_users'];
+} else {
+    $userMail = '';
+    $userPassword = '';
+}
 
 // POST isteği kontrolü
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -37,6 +45,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Şifre doğruysa, oturumu başlat ve kullanıcıyı yönlendir
             $_SESSION['id_users'] = $id_users;
             session_regenerate_id(true); // Oturum ID'sini yenile
+
+            // Beni Hatırla seçeneği işaretlenmişse
+            if (isset($_POST['remember'])) {
+                // Çerezleri 30 gün boyunca sakla
+                setcookie('mail_users', $userMail, time() + (86400 * 30), "/");
+                setcookie('password_users', $userPassword, time() + (86400 * 30), "/"); // Güvenlik açığına dikkat edin
+            } else {
+                // Çerezleri temizle
+                setcookie('mail_users', '', time() - 3600, "/");
+                setcookie('password_users', '', time() - 3600, "/");
+            }
 
             // Başarı mesajı ve yönlendirme
             echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
@@ -91,6 +110,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <!-- Boxicons, Bootstrap ve Stil Dosyaları -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="css/login.css"> <!-- Kendi stil dosyanızı buraya ekleyin -->
+    <link rel="shortcut icon" href="images/logo-has.png" type="image/x-icon">
 </head>
 <body>
     <!-- Üst Kısım -->
@@ -109,20 +129,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             <!-- Kullanıcı Girişi -->
             <div class="input-box">
-                <input type="email" name="mail_users" placeholder="Eposta Adresi" required>
+                <input type="email" name="mail_users" placeholder="Eposta Adresi" value="<?php echo htmlspecialchars($userMail); ?>" required>
                 <i class='bx bxs-user' style="color:black"></i>
             </div>
             
             <!-- Şifre Girişi -->
             <div class="input-box">
-                <input type="password" name="password_users" placeholder="Şifre" id="password" required>
+                <input type="password" name="password_users" placeholder="Şifre" value="<?php echo htmlspecialchars($userPassword); ?>" id="password" required>
                 <i class='bx bxs-lock-alt' style="color:black"></i>
             </div>
             
             <!-- Hatırlatma ve Şifre Unutma -->
             <div class="remember-forgot">
                 <label>
-                    <input type="checkbox" name="remember" class="checkbox-remember">Beni Hatırla
+                    <input type="checkbox" name="remember" class="checkbox-remember" <?php echo isset($_COOKIE['mail_users']) ? 'checked' : ''; ?>>Beni Hatırla
                 </label>
                 <a href="forgotpassword">Şifremi Unuttum</a>
             </div>
