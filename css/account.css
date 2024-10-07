@@ -135,32 +135,20 @@ table {
 
 }
 
-/* Dosya yükleme alanı düzenleme */
-input[type="file"].profile-photo-upload  {
-    width: 100%; /* Genişliği ayarla */
-    color: transparent; /* Yazıyı görünmez yap */
-    left: 70px;
-    position: relative;
-padding-top: 5px;
-}
-
-/* Buton stilleri */
-button.btn {
-    background-color: #4a4a4a;
-    color: white;
-    padding: 10px 20px;
-    border: none;
+.photo-status {
+    font-weight: bold;
+    padding: 5px 10px;
     border-radius: 5px;
-    cursor: pointer;
-    left: 83px;
-    position: relative;
-    top: 5px;
+    color: white; /* Yazı rengi beyaz */
 }
 
-button.btn:hover {
-    background-color: #333; /* Hover rengi */
+.present {
+    background-color: green; /* Yeşil arka plan */
 }
 
+.absent {
+    background-color: red; /* Kırmızı arka plan */
+}
 
 /* Mobil Cihazlar İçin CSS */
 @media (max-width: 768px) {
@@ -229,30 +217,5 @@ button.btn:hover {
     .sidebar.closed + .content {
         margin-left: 0; /* Sidebar kapalıyken content sola kayar */
     }
-        /* Dosya yükleme alanı düzenleme */
-    input[type="file"].profile-photo-upload  {
-        width: 100%; /* Genişliği ayarla */
-        color: transparent; /* Yazıyı görünmez yap */
-        left: 50px;
-        position: relative;
-        padding-top: 5px;
-    }
-
-    /* Buton stilleri */
-    button.btn {
-        background-color: #4a4a4a;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        left: 63px;
-        position: relative;
-        top: 5px;
-    }
-
-    button.btn:hover {
-        background-color: #333; /* Hover rengi */
-    }
-
+  
 }

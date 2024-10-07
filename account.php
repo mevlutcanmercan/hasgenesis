@@ -233,6 +233,7 @@ $user_bikes_result = $user_bikes_stmt->get_result();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/account.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"> <!-- Boxicons -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Account</title>
@@ -291,11 +292,7 @@ $user_bikes_result = $user_bikes_stmt->get_result();
             $profile_photo = !empty($profile_photo_path) ? "images/profilephotos/" . htmlspecialchars($profile_photo_path) : 'images/logo-has.png';
             ?>
             <img src="<?php echo $profile_photo; ?>" alt="Profil Fotoğrafı" class="img-fluid">
-            <!-- Profil fotoğrafını değiştirmek için form -->
-            <form action="" method="post" enctype="multipart/form-data">
-            <input type="file" name="profile-photo" class="profile-photo-upload" accept="image/*">
-            <button type="submit" name="update_profile_photo" class="btn">Ekle</button>
-        </form>
+           
             <hr class="">
         </div>
            
@@ -328,6 +325,15 @@ $user_bikes_result = $user_bikes_stmt->get_result();
                     <p><strong>E-posta:</strong> <span id="user-email"><?php echo htmlspecialchars($email); ?></span></p>
                     <p><strong>Telefon:</strong> <span id="user-telefon"><?php echo htmlspecialchars($telefon); ?></span></i></p>
                     <p><strong>Doğum Tarihi:</strong> <span id="user-birthday"><?php echo htmlspecialchars($birthday); ?></span></p>
+                    <label for="">Profil Fotoğrafı 
+        <span class="<?php echo $profile_photo ? 'photo-status present' : 'photo-status absent'; ?>">
+            <?php if ($profile_photo): ?>
+                <i class="fas fa-check-circle"></i> Var
+            <?php else: ?>
+                <i class="fas fa-times-circle"></i> Yok
+            <?php endif; ?>
+        </span>
+    </label>
                 </div>
 
                 <div id="edit-profile-form" style="display: none;">
@@ -356,7 +362,7 @@ $user_bikes_result = $user_bikes_stmt->get_result();
                             <label for="profile-photo" class="form-label">Profil Fotoğrafı</label>
                             <input type="file" class="form-control" id="profile-photo" name="profile-photo" accept="image/*">
                         </div>
-                        <button type="submit" name="update_profile" class="btn btn-primary">Güncelle</button>
+                <button type="submit" name="update_profile" class="btn btn-primary">Güncelle</button>
                         <button type="button" class="btn btn-secondary" onclick="toggleEditProfile()">İptal</button>
                     </form>
                 </div>
