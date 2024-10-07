@@ -292,11 +292,10 @@ $user_bikes_result = $user_bikes_stmt->get_result();
             ?>
             <img src="<?php echo $profile_photo; ?>" alt="Profil Fotoğrafı" class="img-fluid">
             <!-- Profil fotoğrafını değiştirmek için form -->
-                    <form action="" method="post" enctype="multipart/form-data">
-            <input type="file" name="profile-photo" accept="image/*">
+            <form action="" method="post" enctype="multipart/form-data">
+            <input type="file" name="profile-photo" class="profile-photo-upload" accept="image/*">
             <button type="submit" name="update_profile_photo" class="btn">Ekle</button>
         </form>
-
             <hr class="">
         </div>
            

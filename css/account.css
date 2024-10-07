@@ -136,7 +136,7 @@ table {
 }
 
 /* Dosya yükleme alanı düzenleme */
-input[type="file"] {
+input[type="file"].profile-photo-upload  {
     width: 100%; /* Genişliği ayarla */
     color: transparent; /* Yazıyı görünmez yap */
     left: 70px;
@@ -230,7 +230,7 @@ button.btn:hover {
         margin-left: 0; /* Sidebar kapalıyken content sola kayar */
     }
         /* Dosya yükleme alanı düzenleme */
-    input[type="file"] {
+    input[type="file"].profile-photo-upload  {
         width: 100%; /* Genişliği ayarla */
         color: transparent; /* Yazıyı görünmez yap */
         left: 50px;
