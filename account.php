@@ -16,6 +16,15 @@ $stmt->bind_result($email, $name, $surname, $telefon, $birthday, $isAdmin);
 $stmt->fetch();
 $stmt->close();
 
+
+// Kullanıcı bilgilerini al
+$stmt = $conn->prepare("SELECT mail_users, name_users, surname_users, telefon, birthday_users, isAdmin FROM users WHERE id_users = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$stmt->bind_result($email, $name, $surname, $telefon, $birthday, $isAdmin);
+$stmt->fetch();
+$stmt->close();
+
 // Profil güncelleme
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     $new_name = $_POST['name'];
@@ -24,9 +33,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     $new_telefon = $_POST['telefon'];
     $new_birthday = $_POST['birthday'];
 
-    $update_stmt = $conn->prepare("UPDATE users SET name_users = ?, surname_users = ?, mail_users = ?, telefon = ?, birthday_users = ? WHERE id_users = ?");
-    $update_stmt->bind_param("sssssi", $new_name, $new_surname, $new_email, $new_telefon, $new_birthday, $user_id);
-    
+    // Fotoğrafın yüklendiğini kontrol et
+    if (isset($_FILES['profile-photo']) && $_FILES['profile-photo']['error'] === UPLOAD_ERR_OK) {
+        $photo_tmp_name = $_FILES['profile-photo']['tmp_name'];
+        $photo_name = $_FILES['profile-photo']['name'];
+        $photo_target_dir = "images/profilephotos/";
+        $photo_target_file = $photo_target_dir . basename($photo_name);
+        $imageFileType = strtolower(pathinfo($photo_target_file, PATHINFO_EXTENSION));
+
+        // Dosya türünü kontrol et
+        $allowed_types = ['jpg', 'jpeg', 'png', 'gif'];
+        if (in_array($imageFileType, $allowed_types)) {
+            // Fotoğrafı sunucuya kaydet
+            if (move_uploaded_file($photo_tmp_name, $photo_target_file)) {
+                // Profil fotoğrafı güncellemesi için SQL sorgusu
+                $update_stmt = $conn->prepare("UPDATE users SET name_users = ?, surname_users = ?, mail_users = ?, telefon = ?, birthday_users = ?, profile_photo_path = ? WHERE id_users = ?");
+                $update_stmt->bind_param("ssssssi", $new_name, $new_surname, $new_email, $new_telefon, $new_birthday, $photo_name, $user_id);
+            } else {
+                echo "Fotoğraf yüklenirken bir hata oluştu.";
+            }
+        } else {
+            echo "Sadece JPG, JPEG, PNG ve GIF dosyalarına izin verilmektedir.";
+        }
+    } else {
+        // Eğer yeni fotoğraf yüklenmemişse, sadece diğer bilgileri güncelle
+        $update_stmt = $conn->prepare("UPDATE users SET name_users = ?, surname_users = ?, mail_users = ?, telefon = ?, birthday_users = ? WHERE id_users = ?");
+        $update_stmt->bind_param("sssssi", $new_name, $new_surname, $new_email, $new_telefon, $new_birthday, $user_id);
+    }
+
     if ($update_stmt->execute()) {
         $_SESSION['message'] = "success|Profil başarıyla güncellendi!";
     } else {
@@ -35,6 +69,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     $update_stmt->close();
 
     // JavaScript ile yönlendirme
+    echo "<script>
+        window.onload = function() {
+            setTimeout(function() {
+                window.location.href = 'account.php';
+            }, 500);
+        };
+    </script>";
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile_photo'])) {
+    // Yüklenen dosyayı kontrol et
+    if (isset($_FILES['profile-photo']) && $_FILES['profile-photo']['error'] === UPLOAD_ERR_OK) {
+        // Dosya bilgilerini al
+        $photo_tmp_name = $_FILES['profile-photo']['tmp_name'];
+        $photo_name = $_FILES['profile-photo']['name'];
+        $photo_target_dir = "images/profilephotos/";
+        $photo_target_file = $photo_target_dir . basename($photo_name);
+        $imageFileType = strtolower(pathinfo($photo_target_file, PATHINFO_EXTENSION));
+
+        // İzin verilen dosya türleri
+        $allowed_types = ['jpg', 'jpeg', 'png', 'gif'];
+        if (in_array($imageFileType, $allowed_types)) {
+            // Dosyayı yükle
+            if (move_uploaded_file($photo_tmp_name, $photo_target_file)) {
+                // Eski profil fotoğrafını güncelle
+                $stmt = $conn->prepare("UPDATE users SET profile_photo_path = ? WHERE id_users = ?");
+                $stmt->bind_param("si", $photo_name, $user_id);
+
+                if ($stmt->execute()) {
+                    $_SESSION['message'] = "success|Profil fotoğrafı başarıyla eklendi!";
+                } else {
+                    $_SESSION['message'] = "error|Profil fotoğrafı güncellenirken bir hata oluştu.";
+                }
+                $stmt->close();
+            } else {
+                $_SESSION['message'] = "error|Fotoğraf yüklenirken bir hata oluştu.";
+            }
+        } else {
+            $_SESSION['message'] = "error|Sadece JPG, JPEG, PNG ve GIF dosyalarına izin verilmektedir.";
+        }
+    } else {
+        $_SESSION['message'] = "error|Fotoğraf seçilmedi veya yüklenirken bir hata oluştu.";
+    }
+
+    // Sayfanın yeniden yüklenmesi
     echo "<script>
         window.onload = function() {
             setTimeout(function() {
@@ -196,26 +275,43 @@ $user_bikes_result = $user_bikes_stmt->get_result();
             });
         </script>
     <?php endif; ?>
-
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
         <div class="logo">
-            <img src="images/logo-has.png" alt="Admin Logo">
-            <hr class=""> 
-        </div>
+          <?php
+            // Profil fotoğrafı yolunu al
+            $stmt = $conn->prepare("SELECT profile_photo_path FROM users WHERE id_users = ?");
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+            $stmt->bind_result($profile_photo_path);
+            $stmt->fetch();
+            $stmt->close();
             
+            // Eğer profil fotoğrafı yoksa varsayılan bir resim göster
+            $profile_photo = !empty($profile_photo_path) ? "images/profilephotos/" . htmlspecialchars($profile_photo_path) : 'images/logo-has.png';
+            ?>
+            <img src="<?php echo $profile_photo; ?>" alt="Profil Fotoğrafı" class="img-fluid">
+            <!-- Profil fotoğrafını değiştirmek için form -->
+                    <form action="" method="post" enctype="multipart/form-data">
+            <input type="file" name="profile-photo" accept="image/*">
+            <button type="submit" name="update_profile_photo" class="btn">Ekle</button>
+        </form>
+
+            <hr class="">
+        </div>
+           
                <nav class="nav flex-column">
                 <a href="#profile" class="nav-link active" data-bs-toggle="tab"><i class='bx bxs-user'></i> Profil</a>
                 <a href="#change-password" class="nav-link" data-bs-toggle="tab"><i class='bx bxs-lock'></i> Şifre Değiştir</a>
                 <a href="#bicycle" class="nav-link" data-bs-toggle="tab"><i class='bx bx-trip'></i> Bisikletlerim</a>
 
                 <!-- Admin Tab: Eğer kullanıcı admin ise göster -->
-                            <?php if ($isAdmin == 1): ?>
-                <a href="admin/adminmainpage.php" class="nav-link"><i class='bx bxs-shield'></i> Admin Paneli</a>
+                  <?php if ($isAdmin == 1): ?>
+             <a href="admin/adminmainpage.php" class="nav-link"><i class='bx bxs-shield'></i> Admin Paneli</a>
             <?php endif; ?>
             </nav>
         </div>
-
+    
                 <!-- Toggle Icon (Sidebar aç/kapa) -->
         <div class="toggle-icon" id="toggle-icon" >
             <i class='bx bx-chevrons-left' ></i> <!-- Sol ok ikonu (açık) -->
@@ -236,7 +332,7 @@ $user_bikes_result = $user_bikes_stmt->get_result();
                 </div>
 
                 <div id="edit-profile-form" style="display: none;">
-                    <form method="POST" action="">
+                    <form method="POST" action="" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="name" class="form-label">Ad</label>
                             <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($name); ?>" required>
@@ -256,6 +352,10 @@ $user_bikes_result = $user_bikes_stmt->get_result();
                         <div class="mb-3">
                             <label for="birthday" class="form-label">Doğum Tarihi</label>
                             <input type="date" class="form-control" id="birthday" name="birthday" value="<?php echo htmlspecialchars($birthday); ?>" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="profile-photo" class="form-label">Profil Fotoğrafı</label>
+                            <input type="file" class="form-control" id="profile-photo" name="profile-photo" accept="image/*">
                         </div>
                         <button type="submit" name="update_profile" class="btn btn-primary">Güncelle</button>
                         <button type="button" class="btn btn-secondary" onclick="toggleEditProfile()">İptal</button>
@@ -338,8 +438,8 @@ $user_bikes_result = $user_bikes_stmt->get_result();
             </div>
         </div>
     </div>
-                <script>
-                     // Şifre Değiştirme Formu için Şifre Doğrulaması
+
+     <script>
     function validateChangePassword() {
         const newPassword = document.getElementById('new_password').value;
         const confirmPassword = document.getElementById('confirm_password').value;
@@ -359,7 +459,7 @@ $user_bikes_result = $user_bikes_stmt->get_result();
             return true;
         }
     }
-                </script>
+     </script>
     <script>
         function toggleEditProfile() {
             var profileInfo = document.getElementById('profile-info');
