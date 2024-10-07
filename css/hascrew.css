@@ -14,7 +14,7 @@ body {
 }
 
 .swiper-container {
-    width: 80% !important;
+    width: 50% !important;
     height: 400px !important; /* Slider yüksekliği */
     margin-bottom: 20px !important; /* Slider ve detaylar arasında boşluk */
     margin-top: 6% !important;
@@ -200,6 +200,7 @@ body {
 @media (max-width: 1050px) {
     body {
         padding-top: 10% !important; /* Üst boşluğu azalt */
+        
     }
 
     .swiper-container {
@@ -242,18 +243,82 @@ body {
     }
 }
 
+@media (max-width: 768px) {
+    html, body {
+         padding-top: 20% !important; /* Üst boşluğu azalt */
+         height: 100% !important; /* Sayfanın yüksekliğini tam ayarla */
+         margin: 0 !important;
+         padding: 0 !important;
+         overflow-x: hidden;
+     }
+ 
+     .swiper-container {
+         height: 250px !important; /* Küçük ekranlar için slider yüksekliğini küçült */
+     }
+ 
+     .swiper-slide {
+         height: 100% !important; /* Slaytların tam yüksekliğini koru */
+         flex-direction: column !important; /* Dikey yerleşim */
+     }
+ 
+     #member-name {
+         font-size: 1.5em !important; /* İsim başlığını küçült */
+         text-align: center; /* Metni ortala */
+     }
+ 
+     #member-detail {
+         font-size: 1em !important; /* Detay metninin boyutunu küçült */
+         text-align: center; /* Detay metni ortala */
+     }
+ 
+     .social-icons a {
+         font-size: 20px !important; /* Sosyal medya ikonlarını küçült */
+         margin: 0 5px !important; /* İkonlar arası boşluğu düzenle */
+     }
+ 
+     #image-modal img {
+         max-width: 80% !important; /* Modal içinde resmin boyutunu mobilde küçült */
+         height: auto; /* Görüntü bozulmadan yeniden boyutlandır */
+     }
+ 
+     #image-modal .close {
+         font-size: 25px !important; /* Kapatma butonunun boyutunu küçült */
+         top: 10px; /* Kapatma butonunu biraz aşağıya çek */
+         right: 10px; /* Sağa yasla */
+     }
+ }
+ 
 @media (max-width: 576px) {
     body {
         padding-top: 20% !important; /* Üst boşluğu azalt */
     }
-
-    .swiper-button-next, 
-    .swiper-button-prev {
-        display: none !important; /* Butonları daha da gizle */
+    .swiper-container {
+        height: 200px !important; /* En küçük ekranlar için yükseklik azalt */
     }
 
-    .info {
-        display: none !important; /* Bilgi kısmını gizle */
+    .swiper-slide {
+        height: 100% !important; /* Yüksekliği otomatik yap */
+        flex-direction: column !important; /* Dikey yerleşim */
+    }
+
+    #member-name {
+        font-size: 1.5em !important; /* İsim başlığını küçült */
+    }
+
+    #member-detail {
+        font-size: 1em !important; /* Detay metninin boyutunu küçült */
+    }
+
+    .social-icons a {
+        font-size: 20px !important; /* İkon boyutunu küçült */
+    }
+
+    #image-modal img {
+        max-width: 80% !important; /* Mobilde modal resminin boyutunu küçült */
+    }
+
+    #image-modal .close {
+        font-size: 25px !important; /* Kapatma butonunu daha da küçült */
     }
 }
 

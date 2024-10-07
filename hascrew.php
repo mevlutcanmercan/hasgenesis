@@ -56,9 +56,6 @@ if ($result->num_rows > 0) {
         </div>
         <?php endforeach; ?>
     </div>
-    <!-- Navigation buttons -->
-    <div class="swiper-button-prev"></div>
-    <div class="swiper-button-next"></div>
 </div>
 
 <!-- Detay Kısmı: Hover Resimler için -->
@@ -85,31 +82,44 @@ if ($result->num_rows > 0) {
 <!-- Swiper JS -->
 <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 <script>
-    const swiper = new Swiper('.swiper-container', {
-        loop: true,
-        slidesPerView: 3,
-        spaceBetween: 30,
-        centeredSlides: true,
-        pagination: {
-            el: '.swiper-pagination',
-            clickable: true,
+const swiper = new Swiper('.swiper-container', {
+    loop: true,
+    slidesPerView: 3,
+    spaceBetween: 30,
+    centeredSlides: true,
+    pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+    },
+    navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+    },
+    breakpoints: {
+        576: { // 576px ve altı
+            slidesPerView: 1,
+            spaceBetween: 10,
+            centeredSlides: true,
         },
-        navigation: {
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
+        768: { // 768px ve altı
+            slidesPerView: 2,
+            spaceBetween: 20,
+            centeredSlides: true,
         },
-        on: {
-            init: function () {
-                const initialSlide = this.slides[this.activeIndex];
-                updateDetails(initialSlide);
-            },
-            slideChangeTransitionStart: function () {
-                const activeSlide = this.slides[this.activeIndex];
-                updateDetails(activeSlide);
-            },
-            
-        }
-    });
+        // Daha büyük ekranlar için varsayılan ayar (3 slayt)
+    },
+    on: {
+        init: function () {
+            const initialSlide = this.slides[this.activeIndex];
+            updateDetails(initialSlide);
+        },
+        slideChangeTransitionStart: function () {
+            const activeSlide = this.slides[this.activeIndex];
+            updateDetails(activeSlide);
+        },
+    }
+});
+
     document.querySelectorAll('.swiper-slide').forEach(slide => {
     slide.addEventListener('click', function() {
         const clickedIndex = parseInt(this.getAttribute('data-swiper-slide-index')); // Tıklanan slide'ın gerçek indeksini al
