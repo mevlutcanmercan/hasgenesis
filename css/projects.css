@@ -238,6 +238,11 @@ body {
         flex-wrap: wrap; /* Kartların birden fazla satıra yayılmasına izin ver */
         justify-content: center; /* Kartları yatayda ortalar */
     }
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+    display: none !important;
+}
 }
 @media (orientation: landscape) {
     body {

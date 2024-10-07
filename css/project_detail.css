@@ -31,7 +31,7 @@ body {
 
 .container {
     border-radius: 20px;
-    padding: 20px;
+    
     max-width: 1200px; /* Konteynerin genişliği */
     margin: auto; /* Ortalamak için */
 }
@@ -50,4 +50,32 @@ body {
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     margin-bottom: 2%;
+}
+
+h2{
+    text-align: center;
+    margin-top: 2%;
+    text-shadow: 3px 3px 3px rgba(83, 83, 83, 0.521);
+    font-weight: bolder;
+}
+
+h4{
+    text-decoration: underline;
+}
+
+/* Responsive Tasarım */
+@media (max-width: 992px) {
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+    display: none !important;
+}
+
+    .container {
+        padding: 10px;
+    }
+
+
+    body{
+        padding-top: 5%;
+    }
 }

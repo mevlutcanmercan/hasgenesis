@@ -8,13 +8,17 @@ requireLogin(); // Kullanıcının giriş yapıp yapmadığını kontrol eder
 
 $user_id = $_SESSION['id_users']; 
 
-// Kullanıcı bilgilerini al
-$stmt = $conn->prepare("SELECT mail_users, name_users, surname_users, telefon, birthday_users, isAdmin FROM users WHERE id_users = ?");
+// Kullanıcı bilgilerini çek
+$stmt = $conn->prepare("SELECT mail_users, name_users, surname_users, telefon, birthday_users, isAdmin, profile_photo_path FROM users WHERE id_users = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
-$stmt->bind_result($email, $name, $surname, $telefon, $birthday, $isAdmin);
+$stmt->bind_result($email, $name, $surname, $telefon, $birthday, $isAdmin, $profile_photo_path);
 $stmt->fetch();
 $stmt->close();
+
+// Profil fotoğrafı varsa göster, yoksa varsayılan resim göster
+$profile_photo = !empty($profile_photo_path) ? "images/profilephotos/" . htmlspecialchars($profile_photo_path) : 'images/logo-has.png';
+
 
 
 // Kullanıcı bilgilerini al
@@ -325,15 +329,15 @@ $user_bikes_result = $user_bikes_stmt->get_result();
                     <p><strong>E-posta:</strong> <span id="user-email"><?php echo htmlspecialchars($email); ?></span></p>
                     <p><strong>Telefon:</strong> <span id="user-telefon"><?php echo htmlspecialchars($telefon); ?></span></i></p>
                     <p><strong>Doğum Tarihi:</strong> <span id="user-birthday"><?php echo htmlspecialchars($birthday); ?></span></p>
-                    <label for="">Profil Fotoğrafı 
-        <span class="<?php echo $profile_photo ? 'photo-status present' : 'photo-status absent'; ?>">
-            <?php if ($profile_photo): ?>
-                <i class="fas fa-check-circle"></i> Var
-            <?php else: ?>
-                <i class="fas fa-times-circle"></i> Yok
-            <?php endif; ?>
-        </span>
-    </label>
+                    <label for=""><strong>Profil Fotoğrafı:</strong>
+                            <span class="<?php echo !empty($profile_photo_path) ? 'photo-status present' : 'photo-status absent'; ?>">
+                                <?php if (!empty($profile_photo_path)): ?>
+                                    <i class="fas fa-check-circle"></i> Var
+                                <?php else: ?>
+                                    <i class="fas fa-times-circle"></i> Yok
+                                <?php endif; ?>
+                            </span>
+                    </label>
                 </div>
 
                 <div id="edit-profile-form" style="display: none;">
