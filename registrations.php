@@ -76,6 +76,7 @@ $total_price = 0;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $bib = intval($_POST['bib_selection']);
+    $selected_bicycle = intval($_POST['bicycle']); // Seçilen bisikletin ID'si
     $selected_races = $_POST['races'] ?? [];
     $extra_charge = 0;
 
@@ -123,14 +124,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Update total price
             $total_price += $extra_charge;
 
-              // Yüklenen dosyaların kaydedileceği dizin
-              $waiver_dir = 'documents/feragatname/';
-              $receipt_dir = 'documents/receipt/';
-  
-              // Yüklenen dosyaların kaydedilmesi
-              $feragatname = null;
-              $price_document = null;
+            // Yüklenen dosyaların kaydedileceği dizin
+            $waiver_dir = 'documents/feragatname/';
+            $receipt_dir = 'documents/receipt/';
 
+            // Yüklenen dosyaların kaydedilmesi
+            $feragatname = null;
+            $price_document = null;
 
             if (isset($_FILES['waiver']) && $_FILES['waiver']['error'] === UPLOAD_ERR_OK) {
                 $feragatname = $_FILES['waiver']['name'];
@@ -141,6 +141,51 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $price_document = $_FILES['receipt']['name'];
                 move_uploaded_file($_FILES['receipt']['tmp_name'], $receipt_dir . $price_document);
             }
+
+            // Bisiklet bilgilerini kontrol etme
+            $bike_query = "SELECT front_travel, rear_travel FROM bicycles WHERE id = ? AND user_id = ?";
+            $stmt = $conn->prepare($bike_query);
+            $stmt->bind_param("ii", $selected_bicycle, $user_id);
+            $stmt->execute();
+            $bike_result = $stmt->get_result();
+            $bike = $bike_result->fetch_assoc();
+
+            if (!$bike) {
+                die('Bisiklet bilgisi bulunamadı.');
+            }
+
+            $front_travel = $bike['front_travel'];
+            $rear_travel = $bike['rear_travel'];
+
+            // Süspansiyon mesafelerini organizasyon kuralları ile karşılaştır
+            $travel_valid = true;
+            $error_messages = [];
+
+            // Ön süspansiyon mesafesini kontrol et
+            if ($organization['min_front_suspension_travel'] !== null && $front_travel < $organization['min_front_suspension_travel']) {
+                $travel_valid = false;
+                $error_messages[] = "Seçtiğiniz bisikletin ön süspansiyon mesafesi bu organizasyon için yeterli değil.";
+            }
+
+            // Arka süspansiyon mesafesini kontrol et
+            if ($organization['min_rear_suspension_travel'] !== null && $rear_travel < $organization['min_rear_suspension_travel']) {
+                $travel_valid = false;
+                $error_messages[] = "Seçtiğiniz bisikletin arka süspansiyon mesafesi bu organizasyon için yeterli değil.";
+            }
+
+            // Eğer mesafeler uygun değilse, hata mesajı göster
+            if (!$travel_valid) {
+                $error_message = implode(" ", $error_messages);
+                echo "<script>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Hata!',
+                        text: '$error_message',
+                    });
+                </script>";
+                exit;
+            }
+
             // Insert user registration into database
             $registration_query = "INSERT INTO registrations (Bib, first_name, second_name, organization_id, race_type, category, feragatname, price_document, created_time, approval_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)";
             $stmt = $conn->prepare($registration_query);
@@ -148,8 +193,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Temporary variables for string data
             $status = 0; // Use 0 for 'pending'
             $race_type_json = json_encode($selected_races); // Race types encoded as JSON
-            $feragatname = $_FILES['waiver']['name'] ?? null; // Waiver file check
-            $price_document = $_FILES['receipt']['name'] ?? null; // Price document check
 
             // Bind variables
             $stmt->bind_param("issssissi", $bib, $first_name, $second_name, $organization_id, $race_type_json, $category, $feragatname, $price_document, $status);
@@ -180,6 +223,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 }
+
+// Kullanıcıya ait bisikletleri çekmek
+$bike_query = "
+    SELECT b.id, br.brandName, b.front_travel, b.rear_travel 
+    FROM bicycles b
+    JOIN brands br ON b.brand = br.id
+    WHERE b.user_id = ?
+";
+$stmt = $conn->prepare($bike_query);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$bike_result = $stmt->get_result();
+
 ?>
 
 <!DOCTYPE html>
@@ -254,13 +310,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
 
                 <div class="mb-3">
+                    <label for="bicycle" class="form-label">Bisiklet Seçiniz</label>
+                    <select class="form-select" id="bicycle" name="bicycle" required>
+                        <option value="">Bisiklet Seçiniz</option>
+                        <?php
+                        // Kullanıcıya ait bisikletleri döngüyle listeleme
+                        if ($bike_result && $bike_result->num_rows > 0) {
+                            while ($bike = $bike_result->fetch_assoc()) {
+                                echo "<option value='{$bike['id']}'>{$bike['brandName']} - Ön: {$bike['front_travel']}mm, Arka: {$bike['rear_travel']}mm</option>";
+                            }
+                        } else {
+                            echo "<option value=''>Bisiklet bulunamadı</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+
+                <div class="mb-3">
                     <input type="checkbox" id="custom_bib" onchange="toggleBibInput()">
                     <label for="custom_bib" class="form-label">Özel Bib Numarası Almak İstiyorum</label>
                 </div>
 
                 <div id="bib_input" style="display:none;">
                     <label for="bib_selection" class="form-label">Bib Numarası</label>
-                    <input type="number" class="form-control" id="bib_selection" name="bib_selection" required>
+                    <input type="number" class="form-control" id="bib_selection" name="bib_selection">
                 </div>
                 <div class="section-divider"></div> <!-- Bölüm Çizgisi -->
 

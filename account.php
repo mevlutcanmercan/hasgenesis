@@ -396,13 +396,13 @@ $user_bikes_result = $user_bikes_stmt->get_result();
                     </div>
                             <div class="mb-3">
                 <label for="front_travel" class="form-label">Ön Süspansiyon (mm)</label>
-                <input type="number" class="form-control" id="front_travel" name="front_travel" min="80" max="220" required>
-                <small>Ön süspansiyon 80 ile 220 mm arasında olmalıdır.</small>
+                <input type="number" class="form-control" id="front_travel" name="front_travel"  required>
+                <small>Eğer Süspansiyon yok ise "0" yazınız!</small>
             </div>
             <div class="mb-3">
                 <label for="rear_travel" class="form-label">Arka Süspansiyon (mm)</label>
-                <input type="number" class="form-control" id="rear_travel" name="rear_travel" min="80" max="220" required>
-                <small>Arka süspansiyon 80 ile 220 mm arasında olmalıdır.</small>
+                <input type="number" class="form-control" id="rear_travel" name="rear_travel"  required>
+                <small>Eğer Süspansiyon yok ise "0" yazınız!</small>
             </div>
                     <button type="submit" name="add_bicycle" class="btn add-bike">Bisiklet Ekle</button>
                 </form>
