@@ -52,10 +52,10 @@ console.log(fullPhoneNumber); // Tam numara (örneğin: +905xxxxxxxxx)
     });
 });
 
-// İlk harfleri büyük yapan fonksiyon
+// İlk harfleri büyük yapan fonksiyon (Türkçe karakter desteği ile)
 function capitalizeFirstLetters(input) {
-    return input.replace(/\b\w/g, function (char) {
-        return char.toUpperCase();
+    return input.replace(/(^|\s)([a-zâêîôûğşçö]*)/gi, function (match) {
+        return match.charAt(0).toUpperCase() + match.slice(1);
     });
 }
 
@@ -67,6 +67,7 @@ document.getElementById('name_users').addEventListener('input', function () {
 document.getElementById('surname_users').addEventListener('input', function () {
     this.value = capitalizeFirstLetters(this.value);
 });
+
 
 function validatePassword() {
     const password = document.getElementById('password').value;

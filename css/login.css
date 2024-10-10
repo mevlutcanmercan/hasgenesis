@@ -232,3 +232,34 @@ body {
     color: #333;
 }
 
+.gender-options {
+    display: flex;
+    bottom: 38px;
+    position: relative;
+    left: 80px;
+    display: flex;
+    align-items: center;
+}
+
+.gender-options input[type="radio"] {
+    display: none; /* Hide the default radio buttons */
+}
+
+.gender-options label {
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #333;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 25px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.gender-options input[type="radio"]:checked + label {
+    background-color: rgba(0, 255, 13, 0.8);
+    color: black;
+}
+
+.gender-options label:hover {
+    background-color: rgba(0, 255, 13, 0.3); /* Optional: Highlight on hover */
+}

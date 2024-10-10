@@ -8,19 +8,6 @@ requireLogin(); // Kullanıcının giriş yapıp yapmadığını kontrol eder
 
 $user_id = $_SESSION['id_users']; 
 
-// Kullanıcı bilgilerini çek
-$stmt = $conn->prepare("SELECT mail_users, name_users, surname_users, telefon, birthday_users, isAdmin, profile_photo_path FROM users WHERE id_users = ?");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$stmt->bind_result($email, $name, $surname, $telefon, $birthday, $isAdmin, $profile_photo_path);
-$stmt->fetch();
-$stmt->close();
-
-// Profil fotoğrafı varsa göster, yoksa varsayılan resim göster
-$profile_photo = !empty($profile_photo_path) ? "images/profilephotos/" . htmlspecialchars($profile_photo_path) : 'images/logo-has.png';
-
-
-
 // Kullanıcı bilgilerini al
 $stmt = $conn->prepare("SELECT mail_users, name_users, surname_users, telefon, birthday_users, isAdmin FROM users WHERE id_users = ?");
 $stmt->bind_param("i", $user_id);
@@ -28,6 +15,7 @@ $stmt->execute();
 $stmt->bind_result($email, $name, $surname, $telefon, $birthday, $isAdmin);
 $stmt->fetch();
 $stmt->close();
+
 
 // Profil güncelleme
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
