@@ -18,6 +18,7 @@
         $surname = trim($_POST['surname_users']);
         $telefon = trim($_POST['telefon']);
         $birthday = trim($_POST['birthday_users']);
+        $sex = trim($_POST['sex']);
     
         // Sunucu tarafı doğrulamaları
         
@@ -56,13 +57,13 @@
         if (empty($error)) {
             // Şifreyi hash'le
             $hashed_password = password_hash($password, PASSWORD_BCRYPT);
-    
+
             // Yeni kullanıcı ekle
-            $sql_insert = "INSERT INTO users (password_users, mail_users, name_users, surname_users, telefon, birthday_users, isAdmin) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            $sql_insert = "INSERT INTO users (password_users, mail_users, name_users, surname_users, telefon, birthday_users, sex, isAdmin) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt_insert = $conn->prepare($sql_insert);
             if ($stmt_insert) {
                 $isAdmin = 0; 
-                $stmt_insert->bind_param("ssssssi", $hashed_password, $email, $name, $surname, $telefon, $birthday, $isAdmin);
+                $stmt_insert->bind_param("sssssssi", $hashed_password, $email, $name, $surname, $telefon, $birthday, $sex, $isAdmin);
                 
                 if ($stmt_insert->execute()) {
                     $success = "Kayıt başarı ile tamamlandı, giriş sayfasına yönlendiriliyorsunuz...";
@@ -74,6 +75,7 @@
                 $error = "Veritabanı hatası: " . $conn->error;
             }
         }
+
     }
 ?>
 <!DOCTYPE html>
@@ -162,6 +164,15 @@
                 <input type="date" name="birthday_users" placeholder="Doğum Tarihi" required>
                 <i class='bx bxs-calendar' style="color:black;"></i>
             </div>
+                    <div class="input-box">
+            <label>Cinsiyet:</label>
+            <div class="gender-options">
+                <input type="radio" id="male" name="sex" value="Erkek" required>
+                <label for="male">Erkek</label>
+                <input type="radio" id="female" name="sex" value="Kadın" required>
+                <label for="female">Kadın</label>
+            </div>
+        </div>
             <div class="mb-3 fade-in">
                 <input type="checkbox" id="kvkk" name="kvkk" required>
                 <label for="kvkk">
