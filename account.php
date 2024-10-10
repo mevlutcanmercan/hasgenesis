@@ -16,15 +16,6 @@ $stmt->bind_result($email, $name, $surname, $telefon, $birthday, $isAdmin);
 $stmt->fetch();
 $stmt->close();
 
-
-// Kullanıcı bilgilerini al
-$stmt = $conn->prepare("SELECT mail_users, name_users, surname_users, telefon, birthday_users, isAdmin FROM users WHERE id_users = ?");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$stmt->bind_result($email, $name, $surname, $telefon, $birthday, $isAdmin);
-$stmt->fetch();
-$stmt->close();
-
 // Profil güncelleme
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     $new_name = $_POST['name'];

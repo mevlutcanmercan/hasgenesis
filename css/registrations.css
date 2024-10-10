@@ -1,0 +1,47 @@
+.container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 150px !important;
+}
+
+.left-section, .right-section {
+    width: 45%;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input, select {
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 15px;
+}
+
+button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.price-info {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.price-info ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.price-info ul li {
+    padding: 5px 0;
+}
