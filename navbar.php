@@ -30,7 +30,6 @@ if (isset($_SESSION['id_users'])) {
             </a>
             <ul class='dropdown-menu dropdown-menu-end' aria-labelledby='navbarDropdown'>
                 <li><a class='dropdown-item' href='account'>Profilim</a></li>
-                <li><a class='dropdown-item' href='#'>Ayarlar</a></li>
                 <li><hr class='dropdown-divider'></li>
                 <li><a class='dropdown-item' href='logout'>Çıkış Yap</a></li>
             </ul>

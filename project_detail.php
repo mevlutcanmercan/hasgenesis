@@ -55,7 +55,7 @@ if (!empty($image_path5)) $images[] = $image_path5;
 <body>
 
 <div class="container mt-5">
-    <h2 class="text-center mb-4"><?php echo htmlspecialchars($name); ?></h2>
+    
 
     <!-- Carousel -->
     <div id="projectCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -78,6 +78,8 @@ if (!empty($image_path5)) $images[] = $image_path5;
             <span class="visually-hidden">Sonraki</span>
         </button>
     </div>
+
+    <h2 class="text-center mb-4"><?php echo htmlspecialchars($name); ?></h2>
 
     <!-- Proje Özeti -->
     <div class="project-text mt-4">
