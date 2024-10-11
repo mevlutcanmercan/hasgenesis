@@ -1,0 +1,161 @@
+/* Form genel ayarları */
+.form-container {
+    max-width: 800px;
+    margin: 40px auto; /* Üstten ve alttan boşluk */
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Hafif gölge */
+    font-family: 'Arial', sans-serif;
+}
+
+/* Form başlığı */
+h2 {
+    text-align: center;
+    color: #333;
+    font-size: 26px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Her form grubu için ayarlar */
+.form-group {
+    margin-bottom: 25px;
+}
+
+/* Etiketler */
+label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #555;
+    font-size: 15px;
+}
+
+/* Input ve textarea stilleri */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+textarea,
+select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+/* Giriş elemanları focus durumu */
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+textarea:focus,
+select:focus {
+    border-color: #bbb;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Textarea alanı */
+textarea {
+    height: 120px;
+    resize: vertical; /* Kullanıcı boyutunu ayarlayabilir */
+}
+
+/* ComboBox stili */
+select {
+    appearance: none; /* Tarayıcı varsayılan stilini kaldır */
+    background-color: #fff;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="%23007BFF"><polygon points="5 7 10 12 15 7" /></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center; /* Ok simgesi */
+    background-size: 12px;
+}
+
+/* Yarış kategorileri checkbox ve fiyat alanları */
+#downhill_price_input,
+#enduro_price_input,
+#ulumega_price_input,
+#tour_price_input {
+    margin-top: 12px;
+    padding-left: 25px;
+}
+
+/* Checkbox stilleri */
+input[type="checkbox"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: #f0f0f0;
+    margin-right: 10px;
+    font: inherit;
+    width: 18px;
+    height: 18px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+input[type="checkbox"]:checked {
+    background-color: #28a745; /* Checkbox dolgu rengi - Yeşil */
+    border-color: #28a745; /* Yeşil kenar */
+}
+
+input[type="checkbox"]:checked:before {
+    content: "\2714"; /* Unicode check işareti */
+    position: absolute;
+    top: 0;
+    left: 3px;
+    font-size: 11px;
+    color: white;
+}
+
+/* Başlıklar */
+h3 {
+    color: #444;
+    margin-top: 40px;
+    font-size: 20px;
+    font-weight: 600;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Gönderme düğmesi */
+button[type="submit"] {
+    width: 100%;
+    padding: 14px;
+    background-color: #777;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #555;
+}
+
+/* Responsiveness - Küçük ekranlar için */
+@media (max-width: 768px) {
+    .form-container {
+        width: 95%;
+        padding: 20px;
+    }
+
+    button[type="submit"] {
+        padding: 12px;
+        font-size: 14px;
+    }
+}
