@@ -1,7 +1,7 @@
 <?php
-include 'dB/database.php';  // Veritabanı bağlantısı
-include 'navbar.php';        // Navigasyon barı
-include 'bootstrap.php';     // Bootstrap CSS
+include 'sidebar.php';
+include '../db/database.php'; // Veritabanı bağlantısını dahil et
+include '../bootstrap.php';
 
 // Kullanıcı giriş kontrolü
 $user_id = isset($_SESSION['id_users']) ? $_SESSION['id_users'] : null; // Kullanıcı ID'si
@@ -14,6 +14,32 @@ $category = isset($_POST['category']) ? $_POST['category'] : (isset($_GET['categ
 $items_per_page = 5; // Her sayfada gösterilecek kart sayısı
 $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Geçerli sayfa numarası
 $offset = ($current_page - 1) * $items_per_page; // Offset hesaplama
+
+// Silme işlemi
+if (isset($_GET['delete_id'])) {
+    $organization_id = intval($_GET['delete_id']);
+
+    // İlk olarak organizasyonun fiyatlarını sil
+    $delete_prices_sql = "DELETE FROM prices WHERE organization_id = ?";
+    $stmt = $conn->prepare($delete_prices_sql);
+    $stmt->bind_param("i", $organization_id);
+    $stmt->execute();
+
+    // Ardından organizasyonu sil
+    $delete_organization_sql = "DELETE FROM organizations WHERE id = ?";
+    $stmt = $conn->prepare($delete_organization_sql);
+    $stmt->bind_param("i", $organization_id);
+    $stmt->execute();
+
+    // Başarılı bir şekilde silindiyse
+    if ($stmt->affected_rows > 0) {
+        echo "<script>alert('Organizasyon başarıyla silindi.');</script>";
+    } else {
+        echo "<script>alert('Silme işlemi sırasında bir hata oluştu.');</script>";
+    }
+
+    $stmt->close();
+}
 
 // Sorgu başlangıcı
 $sql = "
@@ -69,19 +95,12 @@ $result = $conn->query($sql);
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Duyarlı tasarım için önemli -->
+    <meta name="viewport" content="width=1100">
+    <link rel="stylesheet" href="admincss/organizations-admin.css"> <!-- CSS dosyasına bağlantı -->
     <title>Organizasyonlar</title>
-    <link rel="stylesheet" href="css/footer.css">
-    <link rel="stylesheet" href="css/organizations.css"> <!-- Özel CSS dosyanız -->
-    <style>
-        .disabled-btn {
-            opacity: 0.5; /* Soluk görünüm için */
-            pointer-events: none; /* Tıklanamaz hale getirme */
-        }
-    </style>
 </head>
 <body>
 
@@ -113,6 +132,7 @@ $result = $conn->query($sql);
             </div>
         </div>
         <button type="submit" class="btn btn-primary mt-3">Filtrele</button>
+        <a href="add-organizations.php" class="btn btn-secondary mt-3 ms-2">Organizasyon Ekle</a> <!-- Organizasyon Ekle butonu -->
     </form>
 
     <div class="row">
@@ -142,9 +162,9 @@ $result = $conn->query($sql);
                 }
                 $categories_list = implode(', ', $categories); // Kategorileri birleştir
 
-                echo "<div class='col-lg-12 mb-4'>
-                        <div class='card organization-card d-flex flex-row flex-wrap'> <!-- Flex-wrap ekledik -->
-                            <div class='card-content flex-grow-1 p-4'>
+                echo "<div class='col-lg-4 mb-4'> <!-- Kart genişliğini 4'e ayarladık -->
+                        <div class='card organization-card'>
+                            <div class='card-content p-4'>
                                 <h5 class='card-title'>{$row['name']}</h5>
                                 <p class='card-text'><strong>Kategoriler:</strong> {$categories_list}</p>
                                 <p class='card-text'><strong>Tür:</strong> {$row['type']}</p> <!-- Tür bilgisi eklendi -->
@@ -179,25 +199,11 @@ $result = $conn->query($sql);
                 }
                 echo "</p>";
 
-                // Kayıt Ol butonu
-                $current_time = time(); // Şu anki zaman
-                $register_start_time = strtotime($row['register_start_date']); // Kayıt başlangıç zamanı
-                $register_end_time = strtotime($row['last_register_day']); // Kayıt bitiş zamanı
-
-                if ($current_time < $register_start_time) {
-                    // Kayıt süresi henüz başlamamışsa
-                    echo "<a href='#' class='btn btn-primary disabled-btn'>Kayıtlar Henüz Başlamamıştır!</a>";
-                } elseif ($current_time > $register_end_time) {
-                    // Kayıt süresi geçmişse, "Kayıt Süresi Bitmiştir!" mesajını göster
-                    echo "<a href='#' class='btn btn-primary disabled-btn'>Kayıt Süresi Bitmiştir!</a>";
-                } else {
-                    // Kayıt süresi devam ediyorsa, giriş yapmışsa "Kayıt Ol", giriş yapmamışsa "Giriş Yap ve Kayıt Ol" butonunu göster
-                    if ($user_id) {
-                        echo "<a href='registrations.php?organization_id={$row['id']}' class='btn btn-primary'>Kayıt Ol</a>";
-                    } else {
-                        echo "<a href='login.php' class='btn btn-primary'>Giriş Yap ve Kayıt Ol</a>";
-                    }
-                }
+                // Düzenle ve Sil butonları
+                echo "<div class='mt-3'>
+                        <a href='edit_organization.php?id={$row['id']}' class='btn btn-secondary'>Düzenle</a>
+                        <a href='?delete_id={$row['id']}' class='btn btn-danger' onclick='return confirm(\"Bu organizasyonu silmek istediğinizden emin misiniz?\");'>Sil</a>
+                      </div>";
 
                 echo "      </div>
                             <div class='map-container'>
@@ -240,14 +246,6 @@ $result = $conn->query($sql);
     </nav>
     </div>
 </div>
-<footer class="footer mt-auto py-2">
-    <div class="footer-container text-center">
-        <span class='text-muted'>HAS GENESIS &copy; 2024. Tüm hakları saklıdır.</span>
-    </div>
-</footer>
 
 </body>
 </html>
-
-
-
