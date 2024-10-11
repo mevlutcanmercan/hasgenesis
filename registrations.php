@@ -7,6 +7,7 @@ include 'auth.php';
 requireLogin(); 
 $user_id = $_SESSION['id_users'];
 
+// Bisiklet verilerini çek
 $bike_query = "
     SELECT b.id, br.brandName, b.front_travel, b.rear_travel 
     FROM bicycles b
@@ -48,6 +49,19 @@ if (isset($_GET['organization_id'])) {
         die('Geçersiz organizasyon ID.');
     }
 
+    // Fiyat bilgilerini al
+    $price_query = "SELECT * FROM prices WHERE organization_id = ?";
+    $stmt = $conn->prepare($price_query);
+    $stmt->bind_param("i", $organization_id);
+    $stmt->execute();
+    $price_result = $stmt->get_result();
+    $prices_row = $price_result->fetch_assoc();
+    $stmt->close();
+
+    if (!$prices_row) {
+        die('Fiyat bilgileri bulunamadı.');
+    }
+
     // Aktif yarışları al
     $active_races = [];
     if ($organization['downhill'] == 1) $active_races[] = 'downhill';
@@ -55,21 +69,6 @@ if (isset($_GET['organization_id'])) {
     if ($organization['tour'] == 1) $active_races[] = 'tour';
     if ($organization['ulumega'] == 1) $active_races[] = 'ulumega';
     if ($organization['e_bike'] == 1) $active_races[] = 'e_bike';
-
-    // Fiyatları al
-    $prices_query = "SELECT * FROM prices WHERE organization_id = ?";
-    $stmt = $conn->prepare($prices_query);
-    $stmt->bind_param("i", $organization_id);
-    $stmt->execute();
-    $prices_result = $stmt->get_result();
-
-    $prices_row = $prices_result && $prices_result->num_rows > 0 ? $prices_result->fetch_assoc() : null; // Fiyat verileri
-
-// Bib numarasına göre ekstra ücret hesaplama
-$extra_charge = isset($_POST['bib_selection']) && !empty($_POST['bib_selection']) 
-    ? $prices_row['special_bib_price'] 
-    : $prices_row['bib_price'];
-
 
 } else {
     die('Organizasyon ID bulunamadı.');
@@ -99,7 +98,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $bib = intval($_POST['bib_selection']);
     $selected_races = $_POST['races'] ?? [];
     $selected_bicycles = $_POST['bicycle_for'] ?? []; // Her yarış türü için seçilen bisikletler
-    $extra_charge = !empty($bib) ? 50 : 0; // Özel Bib numarası için ekstra ücret
     $total_price = 0; // Toplam fiyatı başlat
 
     // Bib numarasının kontrolü
@@ -108,10 +106,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->bind_param("ii", $bib, $organization_id);
     $stmt->execute();
     $bib_check_result = $stmt->get_result();
+    $stmt->close();
 
     // Kayıt işlemleri için "Genel Kayıt Ol" butonuna tıklanma kontrolü
     if (isset($_POST['register'])) {
-        if ($bib_check_result->num_rows > 0) {
+        if ($bib > 0 && $bib_check_result->num_rows > 0) {
             echo "<script>
                 Swal.fire({
                     icon: 'error',
@@ -141,8 +140,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 }
             }
 
-            // Toplam fiyat güncelle
-            $total_price += $extra_charge;
+            // Bib numarası ekleme (Her durumda bib_price ekleniyor)
+            if ($bib > 0) {
+                $total_price += $prices_row['bib_price'];
+            }
+
+            // Özel Bib numarası ekleme (sadece işaretli ise)
+            if (isset($_POST['custom_bib']) && $_POST['custom_bib'] == 'on') {
+                $total_price += $prices_row['special_bib_price'] - $prices_row['bib_price'];
+            }
 
             // Yüklenen dosyaların kaydedileceği dizin
             $waiver_dir = 'documents/feragatname/';
@@ -205,18 +211,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     });
                 </script>";
             } else {
-                // Insert user registration into database
-                $registration_query = "INSERT INTO registrations (Bib, first_name, second_name, organization_id, race_type, category, feragatname, price_document, created_time, approval_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)";
+                // Kayıt fiyatını veritabanına kaydet
+                $registration_query = "INSERT INTO registrations (Bib, first_name, second_name, organization_id, race_type, category, feragatname, price_document, registration_price, created_time, approval_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)";
                 $stmt = $conn->prepare($registration_query);
 
-                // Temporary variables for string data
-                $status = 0; // Use 0 for 'pending'
-                $race_type_json = json_encode($selected_races); // Race types encoded as JSON
-                $feragatname = $_FILES['waiver']['name'] ?? null; // Waiver file check
-                $price_document = $_FILES['receipt']['name'] ?? null; // Price document check
+                // Değişkenler
+                $status = 0; // Beklemede
+                $race_type_json = json_encode($selected_races); // Yarış türleri JSON formatında
+                $feragatname = $_FILES['waiver']['name'] ?? null; // Feragatname dosyası
+                $price_document = $_FILES['receipt']['name'] ?? null; // Dekont dosyası
 
-                // Bind variables
-                $stmt->bind_param("issssissi", $bib, $first_name, $second_name, $organization_id, $race_type_json, $category, $feragatname, $price_document, $status);
+                // Değişkenleri bağla
+                $stmt->bind_param("issssissdi", $bib, $first_name, $second_name, $organization_id, $race_type_json, $category, $feragatname, $price_document, $total_price, $status);
 
                 // Sorguyu çalıştır
                 if ($stmt->execute()) {
@@ -239,7 +245,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     text: 'Kayıt eklenirken bir hata oluştu: " . $stmt_bikes->error . "',
                                 });
                             </script>";
-                            // Optional: Rollback işlemi eklenebilir
+                            // Opsiyonel: Rollback işlemi eklenebilir
                             exit();
                         }
                     }
@@ -281,33 +287,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script>
-   function updatePrice(prices) {
-    let total = 0;
-    const selectedRaces = document.querySelectorAll('input[name="races[]"]:checked');
+    // PHP'den gelen fiyat bilgilerini JavaScript'e aktar
+    const prices = <?php echo json_encode($prices_row); ?>;
 
-    selectedRaces.forEach((checkbox) => {
-        total += prices[checkbox.value] || 0; // Yarış fiyatını kontrol et
-    });
+    function updatePrice(prices) {
+        let total = 0;
+        const selectedRaces = document.querySelectorAll('input[name="races[]"]:checked');
 
-    // Bib numarası girişi kontrolü
-    const bibInput = document.getElementById('bib_selection').value;
-    const bibCharge = bibInput ? prices['special_bib_price'] : prices['bib_price'];
-    total += bibCharge;
+        selectedRaces.forEach((checkbox) => {
+            total += parseFloat(prices[checkbox.value + '_price']) || 0; // Yarış fiyatını kontrol et
+        });
 
-    // Toplam fiyatı güncelle
-    document.getElementById('total_price').value = total + " TL"; // Input değeri olarak güncelle
-}
+        // Her durumda bib_price ekle
+        total += parseFloat(prices['bib_price']) || 0;
+
+        // Özel Bib numarası ekleme
+        const customBibChecked = document.getElementById('custom_bib').checked;
+        if (customBibChecked) {
+            total += parseFloat(prices['special_bib_price'] - parseFloat(prices['bib_price'])) || 0;
+        }
+
+        // Toplam fiyatı güncelle
+        document.getElementById('total_price').value = total.toFixed(2) + " TL"; // Input değeri olarak güncelle
+    }
 
     window.onload = function() {
-        // Fiyatları diziye ekle
-        const prices = {
-            downhill: <?php echo isset($prices_row['downhill_price']) ? $prices_row['downhill_price'] : 0; ?>,
-            enduro: <?php echo isset($prices_row['enduro_price']) ? $prices_row['enduro_price'] : 0; ?>,
-            ulumega: <?php echo isset($prices_row['ulumega_price']) ? $prices_row['ulumega_price'] : 0; ?>,
-            ebike: <?php echo isset($prices_row['ebike_price']) ? $prices_row['ebike_price'] : 0; ?>,
-            tour: <?php echo isset($prices_row['tour_price']) ? $prices_row['tour_price'] : 0; ?>
-        };
-
         // Checkbox ve Bib girişi değiştiğinde fiyatı güncelle
         document.querySelectorAll('input[name="races[]"]').forEach((checkbox) => {
             checkbox.addEventListener('change', function() {
@@ -316,7 +320,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             });
         });
 
-        document.getElementById('bib_selection').addEventListener('input', function() {
+        document.getElementById('custom_bib').addEventListener('change', function() {
+            toggleBibInput();
             updatePrice(prices);
         });
 
@@ -340,7 +345,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <div class="container">
     <div class="row">
-        <!-- Left column: User info and registration form -->
+        <!-- Sol sütun: Kullanıcı bilgileri ve kayıt formu -->
         <div class="col-md-8">
             <h3>Organizasyona Kayıt</h3>
             <div class="section-divider"></div> <!-- Bölüm Çizgisi -->
@@ -355,7 +360,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <input type="text" class="form-control" id="second_name" name="second_name" value="<?php echo htmlspecialchars($second_name); ?>" required disabled>
                 </div>
                 <div class="mb-3">
-                    <input type="checkbox" id="custom_bib" onchange="toggleBibInput()">
+                    <input type="checkbox" id="custom_bib" name="custom_bib" onchange="toggleBibInput()">
                     <label for="custom_bib" class="form-label">Özel Bib Numarası Almak İstiyorum</label>
                 </div>
 
@@ -406,7 +411,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </form>
         </div>
 
-        <!-- Right column: Organization and Pricing Info -->
+        <!-- Sağ sütun: Organizasyon bilgileri -->
         <div class="col-md-4">
             <h3>Organizasyon Bilgileri</h3>
             <div class="section-divider"></div> <!-- Bölüm Çizgisi -->
@@ -415,7 +420,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="section-divider"></div> <!-- Bölüm Çizgisi -->
 
             <h4>Toplam Fiyat</h4>
-            <input type="text" id="total_price" class="form-control" value="0 TL" readonly>
+                <input type="text" id="total_price" class="form-control mb-3" value="0.00 TL" readonly>
+
         </div>
     </div>
 </div>
