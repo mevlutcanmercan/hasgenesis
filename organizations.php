@@ -17,9 +17,9 @@ $offset = ($current_page - 1) * $items_per_page; // Offset hesaplama
 
 // Sorgu başlangıcı
 $sql = "
-    SELECT o.*, p.downhill_price, p.enduro_price, p.tour_price, p.ulumega_price, o.race_details_pdf, o.type
+    SELECT o.*, p.downhill_price, p.enduro_price, p.tour_price, p.ulumega_price, p.ebike_price, o.race_details_pdf, o.type
     FROM organizations o 
-    LEFT JOIN prices p ON o.id = p.organization_id";
+    LEFT JOIN prices p ON o.id = p.organization_id"; // E-Bike fiyatı için p.ebike_price eklendi
 
 // Filtreleme ekle
 $filters = [];
@@ -57,7 +57,7 @@ if (count($filters) > 0) {
 }
 
 // Toplam kayıt sayısını hesapla
-$total_sql = str_replace("o.*, p.downhill_price, p.enduro_price, p.tour_price, p.ulumega_price, o.race_details_pdf, o.type", "COUNT(*) as total", $sql);
+$total_sql = str_replace("o.*, p.downhill_price, p.enduro_price, p.tour_price, p.ulumega_price, p.ebike_price, o.race_details_pdf, o.type", "COUNT(*) as total", $sql);
 $total_result = $conn->query($total_sql);
 $total_row = $total_result->fetch_assoc();
 $total_items = $total_row['total']; // Toplam kayıt sayısı
@@ -166,6 +166,9 @@ $result = $conn->query($sql);
                     if (!is_null($row['ulumega_price'])) {
                         echo "<p class='card-text'><strong>Ulumega Fiyatı:</strong> {$row['ulumega_price']} TL</p>";
                     }
+                    if (!is_null($row['ebike_price'])) { // E-Bike fiyatı kontrolü
+                        echo "<p class='card-text'><strong>E-Bike Fiyatı:</strong> {$row['ebike_price']} TL</p>"; // E-Bike fiyatını yazdır
+                    }
                 }
 
                 // Yarış detayları ve kuralları için PDF bağlantısı
@@ -248,6 +251,3 @@ $result = $conn->query($sql);
 
 </body>
 </html>
-
-
-
