@@ -192,11 +192,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     if ($front_travel < $organization['min_front_suspension_travel'] || $rear_travel < $organization['min_rear_suspension_travel']) {
                         $suspension_error = true;
                         $error_message = "Yarış türü '$race' için seçtiğiniz bisikletin süspansiyon değeri organizasyonun gereksinimlerini karşılamıyor.";
+                        $stmt->close();
                         break;
                     }
                 } else {
                     $suspension_error = true;
                     $error_message = "Seçilen bisiklet bulunamadı.";
+                    $stmt->close();
                     break;
                 }
                 $stmt->close();
@@ -204,10 +206,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             if ($suspension_error) {
                 echo "<script>
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Hata!',
-                        text: '$error_message',
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Hata!',
+                            text: '$error_message',
+                        }).then(() => {
+                        });
                     });
                 </script>";
             } else {
@@ -258,7 +263,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             title: 'Başarılı!',
                             text: 'Kayıt başarıyla eklendi.',
                         }).then(() => {
-                            window.location.reload();
+                        window.location.href = /hasgenesis/registrations.php;
                         });
                     </script>";
                 } else {
@@ -287,58 +292,84 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script>
-    // PHP'den gelen fiyat bilgilerini JavaScript'e aktar
-    const prices = <?php echo json_encode($prices_row); ?>;
+     // PHP'den gelen fiyat bilgilerini JavaScript'e aktar
+     const prices = <?php echo json_encode($prices_row); ?>;
 
-    function updatePrice(prices) {
-        let total = 0;
-        const selectedRaces = document.querySelectorAll('input[name="races[]"]:checked');
+function updatePrice(prices) {
+    let total = 0;
+    const selectedRaces = document.querySelectorAll('input[name="races[]"]:checked');
 
-        selectedRaces.forEach((checkbox) => {
-            total += parseFloat(prices[checkbox.value + '_price']) || 0; // Yarış fiyatını kontrol et
-        });
+    selectedRaces.forEach((checkbox) => {
+        total += parseFloat(prices[checkbox.value + '_price']) || 0; // Yarış fiyatını kontrol et
+    });
 
-        // Her durumda bib_price ekle
+    // Her durumda bib_price ekle, ancak sadece custom_bib işaretli değilse
+    const customBibChecked = document.getElementById('custom_bib').checked;
+    if (customBibChecked) {
+        total += parseFloat(prices['special_bib_price']) || 0;
+    } else {
         total += parseFloat(prices['bib_price']) || 0;
-
-        // Özel Bib numarası ekleme
-        const customBibChecked = document.getElementById('custom_bib').checked;
-        if (customBibChecked) {
-            total += parseFloat(prices['special_bib_price'] - parseFloat(prices['bib_price'])) || 0;
-        }
-
-        // Toplam fiyatı güncelle
-        document.getElementById('total_price').value = total.toFixed(2) + " TL"; // Input değeri olarak güncelle
     }
 
-    window.onload = function() {
-        // Checkbox ve Bib girişi değiştiğinde fiyatı güncelle
-        document.querySelectorAll('input[name="races[]"]').forEach((checkbox) => {
-            checkbox.addEventListener('change', function() {
-                updatePrice(prices);
-                showBikeSelection(this);
-            });
-        });
+    // Toplam fiyatı güncelle
+    document.getElementById('total_price').value = total.toFixed(2) + " TL"; // Input değeri olarak güncelle
+}
 
-        document.getElementById('custom_bib').addEventListener('change', function() {
-            toggleBibInput();
+window.onload = function() {
+    // Checkbox ve Bib girişi değiştiğinde fiyatı güncelle
+    document.querySelectorAll('input[name="races[]"]').forEach((checkbox) => {
+        checkbox.addEventListener('change', function() {
             updatePrice(prices);
+            showBikeSelection(this);
         });
+    });
 
-        // İlk toplam fiyat güncellemesi
-        updatePrice(prices);
-    };
+    document.getElementById('custom_bib').addEventListener('change', function() {
+        toggleBibInput();
+    });
 
-    function showBikeSelection(checkbox) {
-        const raceType = checkbox.value;
-        const selectionDiv = document.getElementById('bike_selection_for_' + raceType);
-        selectionDiv.style.display = checkbox.checked ? 'block' : 'none';
+    // İlk toplam fiyat güncellemesi
+    updatePrice(prices);
+};
+
+function showBikeSelection(checkbox) {
+    const raceType = checkbox.value;
+    const selectionDiv = document.getElementById('bike_selection_for_' + raceType);
+    selectionDiv.style.display = checkbox.checked ? 'block' : 'none';
+}
+
+function toggleBibInput() {
+    const bibInputDiv = document.getElementById("bib_input");
+    const bibInput = document.getElementById("bib_selection");
+    const customBibChecked = document.getElementById("custom_bib").checked;
+    bibInputDiv.style.display = customBibChecked ? "block" : "none";
+    
+    if (!customBibChecked) {
+        // Inputu sıfırla
+        bibInput.value = "";
+        bibInput.removeAttribute("required");
+    } else {
+        bibInput.setAttribute("required", "required");
     }
+    
+    // Fiyatı güncelle
+    updatePrice(prices);
+}
 
-    function toggleBibInput() {
-        const bibInput = document.getElementById("bib_input");
-        bibInput.style.display = document.getElementById("custom_bib").checked ? "block" : "none";
+function validateForm() {
+
+    const selectedRaces = document.querySelectorAll('input[name="races[]"]:checked');
+    if (selectedRaces.length === 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Hata!',
+            text: 'En az bir yarış türü seçmelisiniz.',
+        });
+        return false; // Formun gönderilmesini engelle
     }
+    return true; // Form gönderilebilir
+
+}
     </script>
 </head>
 <body>
@@ -350,8 +381,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <h3>Organizasyona Kayıt</h3>
             <div class="section-divider"></div> <!-- Bölüm Çizgisi -->
 
-            <form action="" method="post" enctype="multipart/form-data">
-                <div class="mb-3">
+            <form action="" method="post" enctype="multipart/form-data" onsubmit="return validateForm();">
+            <div class="mb-3">
                     <label for="first_name" class="form-label">İsim</label>
                     <input type="text" class="form-control" id="first_name" name="first_name" value="<?php echo htmlspecialchars($first_name); ?>" required disabled>
                 </div>
