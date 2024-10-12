@@ -20,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $enduro_price = isset($_POST['enduro']) ? ($_POST['enduro_price'] !== '' ? $_POST['enduro_price'] : NULL) : NULL;
     $ulumega_price = isset($_POST['ulumega']) ? ($_POST['ulumega_price'] !== '' ? $_POST['ulumega_price'] : NULL) : NULL;
     $tour_price = isset($_POST['tour']) ? ($_POST['tour_price'] !== '' ? $_POST['tour_price'] : NULL) : NULL;
+    $ebike_price = isset($_POST['e_bike']) ? ($_POST['ebike_price'] !== '' ? $_POST['ebike_price'] : NULL) : NULL; // E-Bike fiyatı
 
     // Yarış Numarası (Bib) ve Özel Yarış Numarası fiyatları
     $bib_price = !empty($_POST['bib_price']) ? $_POST['bib_price'] : NULL; 
@@ -53,30 +54,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Organizasyonu veritabanına ekle
-    $stmt = $conn->prepare("INSERT INTO organizations (name, adress, details, register_start_date, last_register_day, type, downhill, enduro, tour, ulumega, min_front_suspension_travel, min_rear_suspension_travel, race_details_pdf) 
-                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO organizations (name, adress, details, register_start_date, last_register_day, type, downhill, enduro, tour, ulumega, e_bike, min_front_suspension_travel, min_rear_suspension_travel, race_details_pdf) 
+                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
     // Evet/Hayır değerlerini ayarlama
     $downhill = isset($_POST['downhill']) ? 1 : 0;
     $enduro = isset($_POST['enduro']) ? 1 : 0;
     $tour = isset($_POST['tour']) ? 1 : 0;
     $ulumega = isset($_POST['ulumega']) ? 1 : 0;
+    $e_bike = isset($_POST['e_bike']) ? 1 : 0;
 
     // Sorguyu çalıştır
-    if ($stmt->execute([$organization_name, $address, $details, $register_start_date, $last_register_day, $organization_type, $downhill, $enduro, $tour, $ulumega, $min_front_suspension_travel, $min_rear_suspension_travel, $upload_file])) {
+    if ($stmt->execute([$organization_name, $address, $details, $register_start_date, $last_register_day, $organization_type, $downhill, $enduro, $tour, $ulumega, $e_bike, $min_front_suspension_travel, $min_rear_suspension_travel, $upload_file])) {
         $organization_id = $conn->insert_id;
 
-        // Fiyatları ekle (null olanları atlayarak)
-        $price_stmt = $conn->prepare("INSERT INTO prices (organization_id, downhill_price, enduro_price, ulumega_price, tour_price, bib_price, special_bib_price) 
-                                       VALUES (?, ?, ?, ?, ?, ?, ?)");
+        // Fiyatları ekle
+        $price_stmt = $conn->prepare("INSERT INTO prices (organization_id, downhill_price, enduro_price, ulumega_price, tour_price, ebike_price, bib_price, special_bib_price) 
+                                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
-        if ($price_stmt->execute([$organization_id, $downhill_price, $enduro_price, $ulumega_price, $tour_price, $bib_price, $special_bib_price])) {
+        if ($price_stmt->execute([$organization_id, $downhill_price, $enduro_price, $ulumega_price, $tour_price, $ebike_price, $bib_price, $special_bib_price])) {
             // Sweet Alert ile başarı mesajı
             echo '<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>';
             echo '<script>
                     swal("Başarılı!", "Organizasyon başarıyla eklendi!", "success")
                     .then((value) => {
-                        window.location.href = "your_redirect_page.php"; // Burayı yönlendirmek istediğiniz sayfa ile değiştirin
+                        window.location.href = "organizations-admin.php"; // Burayı yönlendirmek istediğiniz sayfa ile değiştirin
                     });
                   </script>';
         } else {
@@ -87,7 +89,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="tr">
@@ -155,75 +156,77 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
 
         <!-- Süspansiyon Kuralları -->
-        <h3>Süspansiyon Kuralları</h3>
         <div class="form-group">
             <label for="min_front_suspension_travel">Minimum Ön Süspansiyon Mesafesi (mm) - Kural yok ise "0" giriniz !</label>
-            <input type="number" id="min_front_suspension_travel" name="min_front_suspension_travel" placeholder="Örneğin: 100">
+            <input type="number" id="min_front_suspension_travel" name="min_front_suspension_travel" min="0" step="0.1">
         </div>
 
         <div class="form-group">
             <label for="min_rear_suspension_travel">Minimum Arka Süspansiyon Mesafesi (mm) - Kural yok ise "0" giriniz !</label>
-            <input type="number" id="min_rear_suspension_travel" name="min_rear_suspension_travel" placeholder="Örneğin: 100">
+            <input type="number" id="min_rear_suspension_travel" name="min_rear_suspension_travel" min="0" step="0.1">
         </div>
 
-        <!-- Yarış Kategorileri -->
-        <h3>Yarış Kategorileri (Ücretsiz etkinliklerde fiyat girmenize gerek yoktur !)+</h3>
+        <!-- Fiyat Kategorileri -->
+        <h3>Fiyat Kategorileri</h3>
         <div class="form-group">
-            <label>
-                <input type="checkbox" id="downhill" name="downhill" onclick="togglePriceInput('downhill', 'downhill_price')"> Downhill
-            </label>
-            <div id="downhill_price" style="display:none;">
-                <label for="downhill_price">Fiyat (TL)</label>
-                <input type="number" name="downhill_price" placeholder="Fiyatı girin">
+            <input type="checkbox" id="downhill" name="downhill" onclick="togglePriceInput('downhill', 'downhill_price_input')">
+            <label for="downhill">Downhill</label>
+            <div id="downhill_price_input" style="display:none;">
+                <label for="downhill_price">Downhill Fiyatı</label>
+                <input type="number" id="downhill_price" name="downhill_price" step="0.01">
             </div>
         </div>
 
         <div class="form-group">
-            <label>
-                <input type="checkbox" id="enduro" name="enduro" onclick="togglePriceInput('enduro', 'enduro_price')"> Enduro
-            </label>
-            <div id="enduro_price" style="display:none;">
-                <label for="enduro_price">Fiyat (TL)</label>
-                <input type="number" name="enduro_price" placeholder="Fiyatı girin">
+            <input type="checkbox" id="enduro" name="enduro" onclick="togglePriceInput('enduro', 'enduro_price_input')">
+            <label for="enduro">Enduro</label>
+            <div id="enduro_price_input" style="display:none;">
+                <label for="enduro_price">Enduro Fiyatı</label>
+                <input type="number" id="enduro_price" name="enduro_price" step="0.01">
             </div>
         </div>
 
         <div class="form-group">
-            <label>
-                <input type="checkbox" id="ulumega" name="ulumega" onclick="togglePriceInput('ulumega', 'ulumega_price')"> Ulumega
-            </label>
-            <div id="ulumega_price" style="display:none;">
-                <label for="ulumega_price">Fiyat (TL)</label>
-                <input type="number" name="ulumega_price" placeholder="Fiyatı girin">
+            <input type="checkbox" id="ulumega" name="ulumega" onclick="togglePriceInput('ulumega', 'ulumega_price_input')">
+            <label for="ulumega">Ulumega</label>
+            <div id="ulumega_price_input" style="display:none;">
+                <label for="ulumega_price">Ulumega Fiyatı</label>
+                <input type="number" id="ulumega_price" name="ulumega_price" step="0.01">
             </div>
         </div>
 
         <div class="form-group">
-            <label>
-                <input type="checkbox" id="tour" name="tour" onclick="togglePriceInput('tour', 'tour_price')"> Tur
-            </label>
-            <div id="tour_price" style="display:none;">
-                <label for="tour_price">Fiyat (TL)</label>
-                <input type="number" name="tour_price" placeholder="Fiyatı girin">
+            <input type="checkbox" id="tour" name="tour" onclick="togglePriceInput('tour', 'tour_price_input')">
+            <label for="tour">Tur</label>
+            <div id="tour_price_input" style="display:none;">
+                <label for="tour_price">Tur Fiyatı</label>
+                <input type="number" id="tour_price" name="tour_price" step="0.01">
             </div>
         </div>
 
-        <!-- Bib Fiyatları -->
-        <h3>Yarış Numarası (Bib) Fiyatları</h3>
         <div class="form-group">
-            <label for="bib_price">Normal Bib Fiyatı</label>
-            <input type="number" id="bib_price" name="bib_price" placeholder="Fiyatı girin">
+            <input type="checkbox" id="e_bike" name="e_bike" onclick="togglePriceInput('e_bike', 'ebike_price_input')">
+            <label for="e_bike">E-Bike</label>
+            <div id="ebike_price_input" style="display:none;">
+                <label for="ebike_price">E-Bike Fiyatı</label>
+                <input type="number" id="ebike_price" name="ebike_price" step="0.01">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="bib_price">Bib Fiyatı</label>
+            <input type="number" id="bib_price" name="bib_price" step="0.01">
         </div>
 
         <div class="form-group">
             <label for="special_bib_price">Özel Bib Fiyatı</label>
-            <input type="number" id="special_bib_price" name="special_bib_price" placeholder="Fiyatı girin">
+            <input type="number" id="special_bib_price" name="special_bib_price" step="0.01">
         </div>
 
-        <!-- PDF Yükleme Alanı -->
+        <!-- PDF dosyası yükleme -->
         <div class="form-group">
-            <label for="race_details_pdf">Organizasyon Detayları PDF</label>
-            <input type="file" id="race_details_pdf" name="race_details_pdf" accept=".pdf" required>
+            <label for="race_details_pdf">Yarış Detayları PDF</label>
+            <input type="file" id="race_details_pdf" name="race_details_pdf" accept="application/pdf" required>
         </div>
 
         <button type="submit">Organizasyonu Ekle</button>
