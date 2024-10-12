@@ -167,13 +167,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
 
         <!-- Yarış Kategorileri -->
-        <h3>Yarış Kategorileri</h3>
+        <h3>Yarış Kategorileri (Ücretsiz etkinliklerde fiyat girmenize gerek yoktur !)+</h3>
         <div class="form-group">
             <label>
                 <input type="checkbox" id="downhill" name="downhill" onclick="togglePriceInput('downhill', 'downhill_price')"> Downhill
             </label>
             <div id="downhill_price" style="display:none;">
-                <label for="downhill_price">Fiyat</label>
+                <label for="downhill_price">Fiyat (TL)</label>
                 <input type="number" name="downhill_price" placeholder="Fiyatı girin">
             </div>
         </div>
@@ -183,7 +183,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <input type="checkbox" id="enduro" name="enduro" onclick="togglePriceInput('enduro', 'enduro_price')"> Enduro
             </label>
             <div id="enduro_price" style="display:none;">
-                <label for="enduro_price">Fiyat</label>
+                <label for="enduro_price">Fiyat (TL)</label>
                 <input type="number" name="enduro_price" placeholder="Fiyatı girin">
             </div>
         </div>
@@ -193,7 +193,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <input type="checkbox" id="ulumega" name="ulumega" onclick="togglePriceInput('ulumega', 'ulumega_price')"> Ulumega
             </label>
             <div id="ulumega_price" style="display:none;">
-                <label for="ulumega_price">Fiyat</label>
+                <label for="ulumega_price">Fiyat (TL)</label>
                 <input type="number" name="ulumega_price" placeholder="Fiyatı girin">
             </div>
         </div>
@@ -203,7 +203,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <input type="checkbox" id="tour" name="tour" onclick="togglePriceInput('tour', 'tour_price')"> Tur
             </label>
             <div id="tour_price" style="display:none;">
-                <label for="tour_price">Fiyat</label>
+                <label for="tour_price">Fiyat (TL)</label>
                 <input type="number" name="tour_price" placeholder="Fiyatı girin">
             </div>
         </div>
@@ -222,7 +222,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         <!-- PDF Yükleme Alanı -->
         <div class="form-group">
-            <label for="race_details_pdf">Yarış Detayları PDF</label>
+            <label for="race_details_pdf">Organizasyon Detayları PDF</label>
             <input type="file" id="race_details_pdf" name="race_details_pdf" accept=".pdf" required>
         </div>
 
