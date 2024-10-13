@@ -43,7 +43,7 @@ if (isset($_GET['delete_id'])) {
 
 // Sorgu başlangıcı
 $sql = "
-    SELECT o.*, p.downhill_price, p.enduro_price, p.tour_price, p.ulumega_price, o.race_details_pdf, o.type
+    SELECT o.*, p.downhill_price, p.enduro_price, p.tour_price, p.ulumega_price, p.ebike_price, o.race_details_pdf, o.type
     FROM organizations o 
     LEFT JOIN prices p ON o.id = p.organization_id";
 
@@ -52,13 +52,10 @@ $filters = [];
 
 // Kayıt durumunu kontrol et
 if ($registration_time === 'past') {
-    // Kayıt süresi geçmiş olan yarışlar
     $filters[] = "o.last_register_day < NOW()";
 } elseif ($registration_time === 'ongoing') {
-    // Kayıt süresi devam eden yarışlar
     $filters[] = "o.last_register_day >= NOW() AND o.register_start_date <= NOW()";
 } elseif ($registration_time === 'upcoming') {
-    // Kayıt süresi başlamamış olan yarışlar
     $filters[] = "o.register_start_date > NOW()";
 }
 
@@ -83,7 +80,7 @@ if (count($filters) > 0) {
 }
 
 // Toplam kayıt sayısını hesapla
-$total_sql = str_replace("o.*, p.downhill_price, p.enduro_price, p.tour_price, p.ulumega_price, o.race_details_pdf, o.type", "COUNT(*) as total", $sql);
+$total_sql = str_replace("o.*, p.downhill_price, p.enduro_price, p.tour_price, p.ulumega_price, p.ebike_price, o.race_details_pdf, o.type", "COUNT(*) as total", $sql);
 $total_result = $conn->query($total_sql);
 $total_row = $total_result->fetch_assoc();
 $total_items = $total_row['total']; // Toplam kayıt sayısı
@@ -134,7 +131,7 @@ $result = $conn->query($sql);
         <button type="submit" class="btn btn-primary mt-3">Filtrele</button>
         <a href="add-organizations.php" class="btn btn-secondary mt-3 ms-2">Organizasyon Ekle</a> <!-- Organizasyon Ekle butonu -->
     </form>
-
+    
     <div class="row">
         <?php
         // Eğer sonuç varsa, organizasyonları döngü ile yazdır
@@ -162,7 +159,7 @@ $result = $conn->query($sql);
                 }
                 $categories_list = implode(', ', $categories); // Kategorileri birleştir
 
-                echo "<div class='col-lg-4 mb-4'> <!-- Kart genişliğini 4'e ayarladık -->
+                echo "<div class='col-lg-12 mb-4'> <!-- Kart genişliğini 4'e ayarladık -->
                         <div class='card organization-card'>
                             <div class='card-content p-4'>
                                 <h5 class='card-title'>{$row['name']}</h5>
@@ -185,6 +182,9 @@ $result = $conn->query($sql);
                     }
                     if (!is_null($row['ulumega_price'])) {
                         echo "<p class='card-text'><strong>Ulumega Fiyatı:</strong> {$row['ulumega_price']} TL</p>";
+                    }
+                    if (!is_null($row['ebike_price'])) { // E-Bike fiyatını kontrol et
+                        echo "<p class='card-text'><strong>E-Bike Kategorisi Yarış Ücreti:</strong> {$row['ebike_price']} TL</p>"; // E-Bike fiyatı göster
                     }
                 }
 
