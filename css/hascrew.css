@@ -13,11 +13,58 @@ body {
     background-position: center;
 }
 
+.header-container {
+    width: 70%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-top: 3%; /* Üstten boşluk */
+    padding: 20px;
+    background: linear-gradient(200deg, #8f8f8f9c, #85858591, #3d3d3d94);
+    border-radius: 20px;
+    transition: background 0.3s ease, transform 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease;
+}
+
+.header-container:hover{
+    
+    backdrop-filter: blur(10px);
+    
+}
+
+.header-image {
+    max-width: 50%; /* Resim genişliği */
+    height: auto; /* Yüksekliği otomatik ayarla */
+    border-radius: 10px;
+    margin-bottom: 25px; /* Resim ile açıklama arasındaki boşluk */
+    transition: transform 0.3s ease !important; /* Resim geçişi */
+}
+
+.header-image:hover {
+    transform: scale(1.02) !important; /* Hover efekti */
+    
+}
+
+.header-description {
+    font-size: 1.2em; /* Yazı boyutu */
+    color: #333; /* Yazı rengi */
+    max-width: 80%; /* Metnin genişliği */
+    line-height: 1.5;
+    font-weight: 500;
+}
+
+.image-container
+{
+    width: 70%;
+    margin: 0 auto;
+}
+
 .swiper-container {
     width: 50% !important;
     height: 400px !important; /* Slider yüksekliği */
     margin-bottom: 20px !important; /* Slider ve detaylar arasında boşluk */
-    margin-top: 6% !important;
+    margin-top: 3% !important;
 }
 
 .swiper-slide {
@@ -85,7 +132,7 @@ body {
     display: none; /* Başlangıçta gizli */
     word-wrap: break-word; /* Uzun kelimeleri aşağıya sarmala */
     overflow-wrap: break-word;
-    overflow-y: auto;
+    
     margin-top: 1%;
     margin-bottom: 1%;
     text-align: justify;

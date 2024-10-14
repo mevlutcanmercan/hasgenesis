@@ -69,50 +69,20 @@ $totalPages = ceil($totalProjects / $limit); // Calculate total pages
     <div class="Header">
     <h2>Projelerimiz</h2>
     </div>
-    <div id="projectSlider" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            <?php
-            $images = [];
+    
 
-            // Collect image paths from slider projects
-            while ($project = $sliderProjectsResult->fetch_assoc()) {
-                foreach ($project as $imagePath) {
-                    if (!empty($imagePath)) $images[] = $imagePath; // Only add non-empty paths
-                }
-            }
-
-            // Randomize images for the slider
-            shuffle($images);
-
-            // Add images to the slider
-            $active = 'active';
-            foreach ($images as $image) {
-                echo "<div class='carousel-item $active'>
-                        <img src='$image' class='d-block w-100' alt='Project Image'>
-                      </div>";
-                $active = ''; // Remove 'active' class from subsequent items
-            }
-            ?>
+        <div class="image-container" style="text-align: center; margin-bottom: 20px;">
+            <img src="images/projeresmi.jpg" alt="Projelerimiz" style="max-width: 100%; height: auto;">
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#projectSlider" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Önceki</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#projectSlider" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Sonraki</span>
-        </button>
-    </div>
-
-    <!-- Short info about the projects -->
     
         
         <p>
             Ülkemizin dört bir yanı dağlarla çevrilidir. Buna rağmen dağ bisikleti kültürü yok denecek kadar az. Yurt dışında bulunduğumuz süreçte, şahit olduğumuz dağ bisikleti turizmini ülkemizde bisiklet parkları ve dağ bisikleti yolları yaparak bir noktaya getirmektir. Kışın doluluk oranı %100 olan kayak tesislerimiz yazın %5’lere düşmektedir. Amacımız, yaptığımız ve yapacağımız projelerle bu dengesizliğe bir denge getirmektir. Dağ bisikleti, doğayla iç içe adrenalin seviyesi yüksek bir spor dalıdır. İnsanlar, şehir hayatının verdiği monotonluktan dolayı doğayı tercih sebebi olmaya başlamıştır. Biz de bu durumu göz önünde bulundurarak, ülkemizde dağ bisikletine yönelik birçok proje geliştirmiş bulunmaktayız. Bu projelerle, hem dağ bisikleti tutkunlarına yeni alanlar sunmayı hem de dağ bisikleti kültürünü yaymayı hedefliyoruz. Geliştirdiğimiz bu projeleri aşağıdaki kartlardan inceleyebilirsiniz.
         </p>
     </div>
+    <hr>
 <?php endif; ?>
-<hr>
+
 <div class="container mt-4">
     <div class="row">
         <?php if ($result->num_rows > 0): ?>

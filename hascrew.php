@@ -36,6 +36,11 @@ if ($result->num_rows > 0) {
 </head>
 <body>
 
+<div class="header-container">
+    <img src="images/takım-logo.jpg" alt="Başlık Resmi" class="header-image">
+    <p class="header-description">Ülkemizde Dağ bisikletinin sürdürebilir olması için dağ bisikleti yolları yapıyoruz, organizasyonlar düzenliyoruz, bu noktadan sonra yetenekli gençleri yönlendirmek, desteklemek, yarışlarda rekabeti arttırmak ve Ülkemizi yurt dışında temsil etmek için 2019 yılında kurduğumuz bir bisiklet takımdır.</p>
+</div>
+
 
 <!-- Swiper Slider -->
 <div class="swiper-container">

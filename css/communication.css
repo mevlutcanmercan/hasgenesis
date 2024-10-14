@@ -154,6 +154,10 @@ h2 {
     align-items: center;
 }
 
+.img-fluid{
+    border-radius: 10px;
+}
+
 /* Responsive ayarlar */
 @media (max-width: 768px) {
     body {
