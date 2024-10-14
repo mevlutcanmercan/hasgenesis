@@ -1,0 +1,64 @@
+/* Video arka planı */
+.video-container {
+    position: relative;
+    height: 100vh; /* Tüm ekranı kaplar */
+    overflow: hidden;
+}
+
+#background-video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -1;
+    transform: translate(-50%, -50%);
+    background-size: cover; /* Tam ekranı kaplayacak */
+}
+
+/* Ortadaki içerik */
+.overlay-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    z-index: 1; /* Üstte görünsün */
+    backdrop-filter: blur(10px); /* Arka planı bulanıklaştır */
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.5); /* Hafif siyah bir arka plan */
+    border-radius: 15px;
+}
+
+.overlay-content h1 {
+    font-size: 3em;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.overlay-content p {
+    font-size: 1.2em;
+    font-weight: lighter;
+}
+
+/* Mobil cihazlar için responsive düzenlemeler */
+@media (max-width: 768px) {
+    .overlay-content h1 {
+        font-size: 2em;
+    }
+
+    .overlay-content p {
+        font-size: 1em;
+    }
+}
+
+/* Footer Stili */
+.footer {
+    position: relative;
+    z-index: 10; /* Footer videonun üstünde yer alsın */
+    background: rgba(0, 0, 0, 0.8); /* Footer için siyah arka plan */
+    color: #fff;
+}
