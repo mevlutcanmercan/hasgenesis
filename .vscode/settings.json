@@ -1,0 +1,7 @@
+{
+"intelephense.files.exclude": [
+    "**/node_modules/**",
+    "**/intelephense/lib/stub/date/date.php"
+]
+
+}
