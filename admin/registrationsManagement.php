@@ -1,6 +1,6 @@
 <?php
 include '../db/database.php'; // Veritabanı bağlantısını dahil et
-
+include 'sidebar.php';
 require '../vendor/autoload.php'; // Composer autoload dosyasını dahil et
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -13,6 +13,21 @@ if (isset($_GET['organization_id'])) {
     echo "<script>showErrorAlert('Geçersiz organizasyon ID.');</script>";
     exit();
 }
+// Organizasyonun ismini alacak fonksiyon
+function checkOrganizationName($conn, $organization_id) {
+    $sql = "SELECT name FROM organizations WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $organization_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($row = $result->fetch_assoc()) {
+        return $row['name'];
+    } else {
+        return "Bilinmeyen Organizasyon";
+    }
+}
+$organization_name = checkOrganizationName($conn, $organization_id);
 
 // Kayıt Silme İşlemi
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_registration_id'])) {
@@ -65,41 +80,92 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 
+// Kategori dönüşüm tablosu
+$category_map = [
+    'JUNIOR' => 'JUNIOR 14-21',
+    'ELITLER' => 'ELITLER 22-35',
+    'MASTER A' => 'MASTER A 36-45',
+    'MASTER B' => 'MASTER B 46-...',
+    'KADINLAR' => 'KADINLAR 17-...',
+    'E-BIKE' => 'E-BIKE 17-...',
+];
+
 // Excel Export Logic
 if (isset($_GET['action']) && $_GET['action'] === 'export') {
+    // Çıktı tamponunu temizle
+    ob_clean();
+    
+    // Veritabanı sorgusu
     $query = "SELECT * FROM registrations WHERE organization_id = ?";
     $stmt_export = $conn->prepare($query);
     $stmt_export->bind_param("i", $organization_id);
     $stmt_export->execute();
     $result_export = $stmt_export->get_result();
 
+    // Excel dosyası oluşturma
     $spreadsheet = new Spreadsheet();
     $sheet = $spreadsheet->getActiveSheet();
 
-    // Adjusting headers to match the provided Excel format
-    $sheet->setCellValue('A1', 'Bib');
-    $sheet->setCellValue('B1', 'First name');
-    $sheet->setCellValue('C1', 'Last name');
-    $sheet->setCellValue('D1', 'Category');
+    // Sınır stilini tanımla
+    $styleArray = [
+        'borders' => [
+            'allBorders' => [
+                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                'color' => ['argb' => 'FF000000'], // Siyah renkli ince çizgi
+            ],
+        ],
+    ];
 
-    // Populate the data
+    // Excel başlıklarını ayarla
+    $sheet->setCellValue('A1', 'Bib');
+    $sheet->setCellValue('B1', 'Name');
+    $sheet->setCellValue('C1', 'First Name');
+    $sheet->setCellValue('D1', 'Last Name');
+    $sheet->setCellValue('E1', 'Category');
+
+    // Verileri tabloya ekle
     $row = 2;
     while ($data = $result_export->fetch_assoc()) {
+        // Name sütunu için first_name + second_name birleştir
+        $full_name = $data['first_name'] . ' ' . $data['second_name'];
         $sheet->setCellValue('A' . $row, $data['Bib']);
-        $sheet->setCellValue('B' . $row, $data['first_name']);
-        $sheet->setCellValue('C' . $row, $data['second_name']);
-        $sheet->setCellValue('D' . $row, $data['category']);
+        $sheet->setCellValue('B' . $row, $full_name); // Name sütunu
+        $sheet->setCellValue('C' . $row, $data['first_name']);
+        $sheet->setCellValue('D' . $row, $data['second_name']);
+
+        // Kategori dönüşümü
+        $category = isset($category_map[$data['category']]) ? $category_map[$data['category']] : $data['category'];
+        $sheet->setCellValue('E' . $row, $category);
+
+        // Hücrelere sınır ekle
+        $sheet->getStyle("A$row:E$row")->applyFromArray($styleArray);
+
         $row++;
     }
 
-    // Output the Excel file
+    // Başlıklar için de sınır ekle
+    $sheet->getStyle('A1:E1')->applyFromArray($styleArray);
+
+        // Sütun genişliklerini ayarla
+        foreach (range('A', 'E') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+    // Excel dosyasını indirilmeye hazırla
     $writer = new Xlsx($spreadsheet);
     $fileName = 'registrations_' . date('Y-m-d') . '.xlsx';
+
+    // Excel için doğru başlıklar
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     header('Content-Disposition: attachment; filename="' . $fileName . '"');
+    header('Cache-Control: max-age=0');
+    
+    // Excel dosyasını çıktı olarak gönder
     $writer->save('php://output');
     exit();
 }
+
+
 ?>
 
 <!DOCTYPE html>
@@ -113,7 +179,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
     <script src="/hasgenesis/js/registeralerts.js"></script>
 </head>
 <body>
-<h2>Organization ID: <?php echo $organization_id; ?> Kayıt Yönetimi</h2>
+<h2><?php echo $organization_name; ?> - Kayıt Yönetimi</h2>
 
 <a href="registrationsManagement.php?action=export&organization_id=<?php echo $organization_id; ?>" class="btn btn-primary">Excel Olarak İndir</a>
 
@@ -126,6 +192,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
         <label for="category">Kategoriye Göre Filtrele:</label>
         <select name="category" id="category">
             <option value="">Tüm Kategoriler</option>
+            <!-- Dinamik Kategori Seçenekleri -->
             <?php
             // Tüm kategorileri dinamik olarak veritabanından almak için:
             $category_query = "SELECT DISTINCT category FROM registrations WHERE organization_id = ?";
@@ -140,10 +207,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
             ?>
         </select>
 
-        <!-- Fiyata Göre Filtreleme -->
-        <label for="price">Fiyata Göre Filtrele:</label>
-        <input type="number" name="price" id="price" placeholder="Fiyat" value="<?php echo isset($_GET['price']) ? $_GET['price'] : ''; ?>">
-
         <!-- Yarış Tipine Göre Filtreleme -->
         <label for="race_type">Yarış Tipine Göre Filtrele:</label>
         <select name="race_type" id="race_type">
@@ -155,16 +218,17 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
             <option value="E_bike" <?php echo (isset($_GET['race_type']) && $_GET['race_type'] == 'E_bike') ? 'selected' : ''; ?>>E_bike</option>
         </select>
 
-       <!-- Sıralama Kriteri -->
-       <label for="order_by">Sıralama Kriteri:</label>
-        <select name="order_by" id="order_by">
-            <option value="id" <?php echo (isset($_GET['order_by']) && $_GET['order_by'] == 'id') ? 'selected' : ''; ?>>ID</option>
+        <!-- Sıralama Kriteri -->
+        <label for="order_by">Sıralama Kriteri:</label>
+        <select name="order_by">
+            <option value="Bib" <?php echo (isset($_GET['order_by']) && $_GET['order_by'] == 'Bib') ? 'selected' : ''; ?>>Bib</option>
+            <option value="first_name" <?php echo (isset($_GET['order_by']) && $_GET['order_by'] == 'first_name') ? 'selected' : ''; ?>>İsim</option>
             <option value="registration_price" <?php echo (isset($_GET['order_by']) && $_GET['order_by'] == 'registration_price') ? 'selected' : ''; ?>>Fiyat</option>
         </select>
 
         <!-- Sıralama Yönü -->
         <label for="order_dir">Sıralama Yönü:</label>
-        <select name="order_dir" id="order_dir">
+        <select name="order_dir">
             <option value="ASC" <?php echo (isset($_GET['order_dir']) && $_GET['order_dir'] == 'ASC') ? 'selected' : ''; ?>>Artan</option>
             <option value="DESC" <?php echo (isset($_GET['order_dir']) && $_GET['order_dir'] == 'DESC') ? 'selected' : ''; ?>>Azalan</option>
         </select>

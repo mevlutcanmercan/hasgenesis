@@ -86,7 +86,7 @@ $result = $conn->query($sql);
                                 <div class="medya-details">
                                     <h2><?php echo htmlspecialchars($row['name']); ?></h2>
                                     <p class="project-date">
-                                        <?php echo strftime("%d.%m.%Y", strtotime($row['created_at'])); ?>
+                                    <?php echo strftime("%d.%m.%Y", strtotime($row['created_at'])); ?>
                                     </p>
                                     <p class="project-summary">
                                         <?php echo htmlspecialchars(substr($row['summary'], 0, 175)) . (strlen($row['summary']) > 175 ? '...' : ''); ?>

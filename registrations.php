@@ -61,6 +61,7 @@ function determineCategory($age, $sex) {
     if ($age >= 14 && $age <= 21 && $sex != 'Kadın') return 'JUNIOR';
     if ($age >= 22 && $age <= 35 && $sex != 'Kadın') return 'ELITLER';
     if ($age >= 36 && $age <= 45 && $sex != 'Kadın') return 'MASTER A';
+    if ($age >= 46 && $sex != 'Kadın') return 'MASTER B';
     if ($age >= 17 && $sex == 'Kadın') return 'KADINLAR';
     if ($age >= 17) return 'E-BIKE';
     return 'UNKNOWN';
@@ -234,6 +235,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="css/registrations.css"> <!-- Your CSS -->
+        <link rel="stylesheet" href="css/navbar.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
@@ -365,7 +367,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     <div class="mb-3">
                         <!-- Yarış türleri -->
-                        <label>Yarış Türleri:</label>
+                        <label class="form-label">Yarış Türleri:</label>
                         <?php foreach ($active_races as $race): ?>
                             <div>
                                 <input type="checkbox" name="races[]" value="<?php echo $race; ?>" id="<?php echo $race; ?>" onclick="showBikeSelection(this)">
@@ -421,5 +423,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="path_to_js/registeralerts.js"></script>
+    <footer class="footer mt-auto py-2">
+    <div class="footer-container text-center">
+        <span class="text-muted">HAS GENESIS © 2024. Tüm hakları saklıdır.</span>
+    </div>
+</footer>
     </body>
     </html>
