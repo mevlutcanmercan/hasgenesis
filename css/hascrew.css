@@ -245,6 +245,39 @@ body {
 
 /* Mobil için özel stiller */
 @media (max-width: 1050px) {
+
+
+    .header-container {
+        width: 90%;
+        margin-bottom: 2%;
+    }
+    
+    .header-container:hover{
+        
+        backdrop-filter: none;
+        
+    }
+    
+    .header-image {
+        max-width: 100%; /* Resim genişliği */
+        height: auto; /* Yüksekliği otomatik ayarla */
+        
+    }
+    
+    .header-image:hover {
+        transform: scale(1.02) !important; /* Hover efekti */
+        
+    }
+    
+    .header-description {
+        font-size: 0.9em; /* Yazı boyutu */
+        color: #333; /* Yazı rengi */
+        max-width: 80%; /* Metnin genişliği */
+        line-height: 1.5;
+        font-weight: 500;
+    }
+
+
     body {
         padding-top: 10% !important; /* Üst boşluğu azalt */
         

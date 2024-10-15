@@ -117,6 +117,8 @@ body {
 }
 
 #projects-title {
+    font-weight: 500 !important;
+    color: white;
     text-align: center;
     margin-bottom: 25px;
     text-shadow: 3px 3px 3px rgba(0, 0, 0, 0.479);
@@ -181,6 +183,12 @@ body {
         flex-wrap: wrap; /* Kartların birden fazla satıra yayılmasına izin ver */
         justify-content: center; /* Kartları yatayda ortalar */
     }
+
+    /* Genel Scrollbar Stili */
+    ::-webkit-scrollbar {
+        display: none !important;
+    }
+
 }
 
 /* Genel Scrollbar Stili */

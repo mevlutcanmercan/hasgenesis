@@ -3,7 +3,7 @@
 * {
     font-family: "Poppins", sans-serif;
     box-sizing: border-box;
-    text-align: center;
+    
 }
 
 html, body {
@@ -37,6 +37,7 @@ body {
     opacity: 0; /* Başlangıçta görünmez */
     transform: translateY(50px); /* Başlangıçta biraz aşağıda */
     transition: opacity 0.6s ease, transform 0.6s ease, backdrop-filter 0.6s ease, box-shadow 0.6s ease;/* Yavaş geçiş */
+    text-align: center;
 }
 
 .readonly-input {
@@ -44,6 +45,7 @@ body {
     color: #6c757d;
     pointer-events: none;
     opacity: 0.7;
+    
 }
 
 .container:hover {
@@ -197,5 +199,63 @@ h2 {
 
     h2 {
         margin-top: 0;
+    }
+}
+
+/* Mobil cihazlar için genel düzenlemeler */
+@media (max-width: 768px) and (orientation: landscape) {
+    /* Body padding'i azalt */
+    body {
+        padding-top: 5%; /* Yatay modda daha az boşluk bırak */
+    }
+
+    /* Container boyutunu küçült */
+    .container {
+        width: 90% !important; /* Genişliği küçült */
+        padding: 15px; /* İç boşlukları küçült */
+        margin-bottom: 15px; /* Alt boşluğu azalt */
+        backdrop-filter: blur(3px); /* Blur efektini hafiflet */
+    }
+
+    /* Başlık font boyutunu küçült */
+    h2 {
+        font-size: 18px; /* Başlık boyutunu küçült */
+        margin-bottom: 15px;
+    }
+
+    /* Yazı boyutlarını küçült */
+    .form-label, .social-icons a {
+        font-size: 14px; /* Metin boyutunu küçült */
+    }
+
+    /* Görsel boyutlarını küçült */
+    .col-md-4 img {
+        max-width: 120px; /* Görsel genişliğini azalt */
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    /* Sosyal ikonlar ve butonlar küçültüldü */
+    .social-icons a {
+        font-size: 24px; /* Sosyal medya ikonlarını küçült */
+        margin-right: 15px; /* Aralarındaki boşluğu azalt */
+    }
+
+    /* Buton genişliği ve yazı boyutu küçültüldü */
+    .btn-primary {
+        width: 90%; /* Buton genişliğini daralt */
+        font-size: 14px; /* Buton yazı boyutunu küçült */
+        padding: 8px 10px; /* İç boşlukları azalt */
+        border-width: 1px; /* Buton kenar kalınlığını küçült */
+    }
+
+    /* Grid yapısındaki elemanların küçültülmesi */
+    .row.mb-3 .col {
+        width: 100%; /* Kolonlar tam genişlikte */
+        margin-bottom: 10px; /* Alt boşluğu biraz azalt */
+    }
+
+    .mb-3.checkbox-group label {
+        font-size: 14px; /* Checkbox metin boyutu küçüldü */
     }
 }

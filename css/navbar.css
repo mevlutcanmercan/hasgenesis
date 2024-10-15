@@ -131,8 +131,8 @@ a.nav-link {
     .navbar-nav .nav-link {
         color: rgb(0, 0, 0) !important;
         border-radius: 5px;
-        padding: 10px 15px;
-        font-size: 1.10rem;
+        padding: 5px 10px;
+        font-size: 0.9rem;
         text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.6);
         font-weight: bold;
         transition: transform 0.3s, background-color 0.3s, color 0.3s;
@@ -149,6 +149,22 @@ a.nav-link {
         z-index: 9999 !important;
 
     }
+}
+
+@media (max-width: 950px) and (orientation: landscape) {
+
+    .navbar-nav .nav-link {
+        color: rgb(0, 0, 0) !important;
+        border-radius: 5px;
+        padding: 5px 10px;
+        font-size: 0.9rem;
+        text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.6);
+        font-weight: bold;
+        transition: transform 0.3s, background-color 0.3s, color 0.3s;
+        margin: 0 5px;
+        z-index: 9999 !important;
+    }
+
 }
 
 

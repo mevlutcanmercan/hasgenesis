@@ -28,13 +28,15 @@ body {
 }
 
 .Header h2{
-    
-        font-weight: bolder;
-        text-align: center;
-        margin-bottom: 2%;
-        font-size: 2rem;
+    color: white;
+    font-weight: 500 !important;
+    text-align: center;
+    margin-bottom: 25px;
+    text-shadow: 3px 3px 3px rgba(0, 0, 0, 0.479);
     
 }
+
+
 
 
 
@@ -200,7 +202,7 @@ body {
 @media (max-width: 1200px) {
 
     body{
-        padding-top: 20% !important; /* Başlık ve üst kısımların ekrandaki yüzdelik oranı */
+        padding-top: 25% !important; /* Başlık ve üst kısımların ekrandaki yüzdelik oranı */
     }
 
     .project-card-img {
@@ -230,10 +232,9 @@ body {
         justify-content: center; /* Kartları yatayda ortalar */
     }
 
-    .carousel-control-prev-icon,
-    .carousel-control-next-icon {
-    display: none !important;
-}
+    ::-webkit-scrollbar {
+        display: none !important;
+    }
 }
 @media (orientation: landscape) {
     body {
