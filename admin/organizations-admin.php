@@ -137,9 +137,9 @@ $result = $conn->query($sql);
         // Eğer sonuç varsa, organizasyonları döngü ile yazdır
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
-                // Adres sütunundaki iframe kodu
+                $organization_id = $row['id']; // Organizasyon ID'sini al
                 $iframe = $row['adress']; // Adres (iframe) sütunu
-
+            
                 // Kategorileri kontrol et
                 $categories = [];
                 if ($row['downhill']) {
@@ -154,23 +154,24 @@ $result = $conn->query($sql);
                 if ($row['ulumega']) {
                     $categories[] = 'Ulumega';
                 }
-                if ($row['e_bike']) { // E-Bike kategorisi kontrolü
-                    $categories[] = 'E-Bike'; // E-Bike kategorisini ekle
+                if ($row['e_bike']) {
+                    $categories[] = 'E-Bike';
                 }
                 $categories_list = implode(', ', $categories); // Kategorileri birleştir
-
-                echo "<div class='col-lg-12 mb-4'> <!-- Kart genişliğini 4'e ayarladık -->
-                        <div class='card organization-card'>
-                            <div class='card-content p-4'>
-                                <h5 class='card-title'>{$row['name']}</h5>
-                                <p class='card-text'><strong>Kategoriler:</strong> {$categories_list}</p>
-                                <p class='card-text'><strong>Tür:</strong> {$row['type']}</p> <!-- Tür bilgisi eklendi -->
-                                <p class='card-text'><strong>Kayıt Başlangıç Tarihi:</strong> {$row['register_start_date']}</p>
-                                <p class='card-text'><strong>Son Kayıt Günü:</strong> {$row['last_register_day']}</p>
-                                <p class='card-text'><strong>Detaylar:</strong> {$row['details']}</p>";
-
-                // Fiyatları yazdır
-                if (strtotime($row['last_register_day']) >= time()) { // Kayıt süresi geçmemişse fiyatları göster
+            
+                echo "<div class='col-lg-12 mb-4'>
+                <a href='/hasgenesis/admin/registrationsManagement.php?organization_id=$organization_id' class='organization-link' style='text-decoration: none;'>
+                            <div class='card organization-card'>
+                                <div class='card-content p-4'>
+                                    <h5 class='card-title'>{$row['name']}</h5>
+                                    <p class='card-text'><strong>Kategoriler:</strong> {$categories_list}</p>
+                                    <p class='card-text'><strong>Tür:</strong> {$row['type']}</p>
+                                    <p class='card-text'><strong>Kayıt Başlangıç Tarihi:</strong> {$row['register_start_date']}</p>
+                                    <p class='card-text'><strong>Son Kayıt Günü:</strong> {$row['last_register_day']}</p>
+                                    <p class='card-text'><strong>Detaylar:</strong> {$row['details']}</p>";
+            
+                // Fiyat bilgilerini ekleyelim
+                if (strtotime($row['last_register_day']) >= time()) { 
                     if (!is_null($row['downhill_price'])) {
                         echo "<p class='card-text'><strong>Downhill Kategorisi Yarış Ücreti:</strong> {$row['downhill_price']} TL</p>";
                     }
@@ -183,35 +184,34 @@ $result = $conn->query($sql);
                     if (!is_null($row['ulumega_price'])) {
                         echo "<p class='card-text'><strong>Ulumega Fiyatı:</strong> {$row['ulumega_price']} TL</p>";
                     }
-                    if (!is_null($row['ebike_price'])) { // E-Bike fiyatını kontrol et
-                        echo "<p class='card-text'><strong>E-Bike Kategorisi Yarış Ücreti:</strong> {$row['ebike_price']} TL</p>"; // E-Bike fiyatı göster
+                    if (!is_null($row['ebike_price'])) {
+                        echo "<p class='card-text'><strong>E-Bike Kategorisi Yarış Ücreti:</strong> {$row['ebike_price']} TL</p>";
                     }
                 }
-
-                // Yarış detayları ve kuralları için PDF bağlantısı
+            
+                // PDF bağlantısını ekleyelim
                 echo "<p class='card-text'><strong>Organizasyon detaylarını ve kurallarını indirmek için tıklayınız:</strong> ";
-
-                // PDF dosyası var mı kontrol et
                 if (!empty($row['race_details_pdf'])) {
                     echo "<a href='{$row['race_details_pdf']}' target='_blank' class='btn btn-link'>PDF'i Aç</a>";
                 } else {
                     echo "PDF mevcut değil.";
                 }
                 echo "</p>";
-
+            
                 // Düzenle ve Sil butonları
                 echo "<div class='mt-3'>
                         <a href='edit-organizations.php?id={$row['id']}' class='btn btn-secondary'>Düzenle</a>
                         <a href='?delete_id={$row['id']}' class='btn btn-danger' onclick='return confirm(\"Bu organizasyonu silmek istediğinizden emin misiniz?\");'>Sil</a>
                       </div>";
-
-                echo "      </div>
-                            <div class='map-container'>
-                                <h6 class='map-title'>Konum</h6> <!-- Konum başlığı -->
-                                {$iframe} <!-- Harita iframe burada gösteriliyor -->
-                            </div>
+            
+                echo "  </div>
+                        <div class='map-container'>
+                            <h6 class='map-title'>Konum</h6>
+                            {$iframe}
                         </div>
-                      </div>";
+                      </div>
+                    </p>
+                  </div>";
             }
         } else {
             echo "<div class='col-12'><p class='text-center'>Kayıt bulunamadı.</p></div>";
