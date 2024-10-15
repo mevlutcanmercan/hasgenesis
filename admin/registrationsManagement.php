@@ -43,6 +43,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_registration_id
     }
 }
 
+// Kayıt Onaylama ve Reddetme İşlemi
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
+    $registration_id = intval($_POST['registration_id']);
+    $new_status = ($_POST['action'] == 'approve') ? 1 : 0;
+
+    $status_stmt = $conn->prepare("UPDATE registrations SET approval_status = ? WHERE id = ?");
+    $status_stmt->bind_param("ii", $new_status, $registration_id);
+
+    if ($status_stmt->execute()) {
+        echo json_encode(['success' => true, 'status' => $new_status]);
+    } else {
+        echo json_encode(['success' => false]);
+    }
+    exit();
+}
+
 // Filtreleme ve sıralama işlemleri
 $category_filter = isset($_GET['category']) ? $_GET['category'] : '';
 $price_filter = isset($_GET['price']) ? $_GET['price'] : '';
@@ -172,16 +188,34 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=1100">
     <title>Kayıt Yönetimi</title>
     <link rel="stylesheet" href="/hasgenesis/admin/admincss/regmanegement.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script src="/hasgenesis/js/registeralerts.js"></script>
 </head>
+<script>
+    function confirmDelete(registrationId) {
+        // SweetAlert ile onay mesajı
+        Swal.fire({
+            title: 'Bu kaydı silmek istediğinizden emin misiniz?',
+            text: "Bu işlem geri alınamaz!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Evet, sil!',
+            cancelButtonText: 'Hayır'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Eğer onaylanırsa, formu submit et
+                document.getElementById('deleteForm-' + registrationId).submit();
+            }
+        })
+    }
+</script>
 <body>
 <h2><?php echo $organization_name; ?> - Kayıt Yönetimi</h2>
-
-<a href="registrationsManagement.php?action=export&organization_id=<?php echo $organization_id; ?>" class="btn btn-primary">Excel Olarak İndir</a>
 
 <!-- Filtreleme ve Sıralama Formu -->
 <div class="filter-sort">
@@ -235,6 +269,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
 
         <!-- Filtrele ve Sırala Butonu -->
         <button type="submit">Filtrele ve Sırala</button>
+        <a href="registrationsManagement.php?action=export&organization_id=<?php echo $organization_id; ?>" class="btn btn-primary">Excel Olarak İndir </a>
     </form>
 </div>
 
@@ -249,35 +284,76 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
                 <th>Kategori</th>
                 <th>Yarış Tipi</th>
                 <th>Fiyat</th>
+                <th>Onay Durumu</th>
+                <th>Belgeler</th>
+                <th>Onay Durumu</th>
                 <th>İşlem</th>
             </tr>
         </thead>
         <tbody>
-            <?php
-            if ($result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    echo "<tr>";
-                    echo "<td>" . $row['Bib'] . "</td>";
-                    echo "<td>" . $row['first_name'] . "</td>";
-                    echo "<td>" . $row['second_name'] . "</td>";
-                    echo "<td>" . $row['category'] . "</td>";
-                    echo "<td>" . $row['race_type'] . "</td>";
-                    echo "<td>" . $row['registration_price'] . "</td>";
-                    echo "<td>
-                            <form method='POST' style='display:inline;'>
-                                <input type='hidden' name='delete_registration_id' value='" . $row['id'] . "'>
-                                <button type='submit' onclick='return confirm(\"Bu kaydı silmek istediğinizden emin misiniz?\");'>Sil</button>
-                            </form>
-                          </td>";
-                    echo "</tr>";
-                }
+    <?php
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $row_class = $row['approval_status'] ? 'approved-row' : 'rejected-row';
+            echo "<tr class='$row_class' id='row-{$row['id']}'>";
+            echo "<td>" . $row['Bib'] . "</td>";
+            echo "<td>" . $row['first_name'] . "</td>";
+            echo "<td>" . $row['second_name'] . "</td>";
+            echo "<td>" . $row['category'] . "</td>";
+            echo "<td>" . $row['race_type'] . "</td>";
+            echo "<td>" . $row['registration_price'] . "</td>";
+            echo "<td>" . ($row['feragatname'] ? "<a href='/hasgenesis/documents/feragatname/" . $row['feragatname'] . "' target='_blank'>Feragatname</a>" : "-") . "</td>";
+            echo "<td>" . ($row['price_document'] ? "<a href='/hasgenesis/documents/receipt/" . $row['price_document'] . "' target='_blank'>Ücret Belgesi</a>" : "-") . "</td>";
+            echo "<td id='status-{$row['id']}'>" . ($row['approval_status'] ? "Onaylı" : "Onaysız") . "</td>";
+            echo "<td>";
+            if ($row['approval_status'] == 0) {
+                echo "<button class='approve-btn' data-id='{$row['id']}' onclick='updateStatus({$row['id']}, 1)'>Onayla</button>";
             } else {
-                echo "<tr><td colspan='7'>Kayıt bulunamadı.</td></tr>";
+                echo "<button class='reject-btn' data-id='{$row['id']}' onclick='updateStatus({$row['id']}, 0)'>Reddet</button>";
             }
-            ?>
-        </tbody>
+            echo "</td>";
+            echo "</tr>";
+        }
+    } else {
+        echo "<tr><td colspan='10'>Kayıt bulunamadı.</td></tr>";
+    }
+    ?>
+</tbody>
     </table>
 </div>
+<!-- Onay Durumu Güncelleme Scripti -->
+<script>
+    function updateStatus(registrationId, newStatus) {
+        const action = (newStatus === 1) ? 'approve' : 'reject';
 
+        fetch('', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `registration_id=${registrationId}&action=${action}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const row = document.getElementById(`row-${registrationId}`);
+                const statusCell = document.getElementById(`status-${registrationId}`);
+
+                if (newStatus === 1) {
+                    row.classList.remove('rejected-row');
+                    row.classList.add('approved-row');
+                    statusCell.innerText = 'Onaylı';
+                    row.querySelector('.approve-btn').outerHTML = `<button class="reject-btn" onclick="updateStatus(${registrationId}, 0)">Reddet</button>`;
+                } else {
+                    row.classList.remove('approved-row');
+                    row.classList.add('rejected-row');
+                    statusCell.innerText = 'Onaysız';
+                    row.querySelector('.reject-btn').outerHTML = `<button class="approve-btn" onclick="updateStatus(${registrationId}, 1)">Onayla</button>`;
+                }
+            } else {
+                alert("Bir hata oluştu. Lütfen tekrar deneyin.");
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
 </body>
 </html>

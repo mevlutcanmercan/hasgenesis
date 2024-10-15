@@ -41,7 +41,7 @@ body {
 }
 
 .footer-container {
-    color: black; /* Metin rengi */
+    color: black !important; /* Metin rengi */
     font-size: 0.9em !important; /* Yazı tipini küçült */
 }
 

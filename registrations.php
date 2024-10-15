@@ -234,11 +234,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="css/registrations.css"> <!-- Your CSS -->
-        <link rel="stylesheet" href="css/navbar.css">
+        <link rel="stylesheet" href="css/footer.css">
+        <link rel="stylesheet" href="css/registrations.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
         <script>
         // PHP'den gelen fiyat bilgilerini JavaScript'e aktar
         const prices = <?php echo json_encode($prices_row); ?>;
@@ -336,11 +337,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <form action="" method="post" enctype="multipart/form-data" onsubmit="return validateForm();">
                         <div class="mb-3">
                 <label for="first_name" class="form-label">İsim</label>
-                <input type="text" class="form-control" id="first_name" name="first_name" value="<?php echo htmlspecialchars($user_details['name_users']); ?>" required>
+                <input type="text" class="form-control" id="first_name" name="first_name" value="<?php echo htmlspecialchars($user_details['name_users']); ?>" required readonly>
             </div>
             <div class="mb-3">
                 <label for="second_name" class="form-label">Soyisim</label>
-                <input type="text" class="form-control" id="second_name" name="second_name" value="<?php echo htmlspecialchars($user_details['surname_users']); ?>" required>
+                <input type="text" class="form-control" id="second_name" name="second_name" value="<?php echo htmlspecialchars($user_details['surname_users']); ?>" required readonly>
             </div>
 
                     <div class="mb-3">
@@ -420,13 +421,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="path_to_js/registeralerts.js"></script>
     <footer class="footer mt-auto py-2">
     <div class="footer-container text-center">
-        <span class="text-muted">HAS GENESIS © 2024. Tüm hakları saklıdır.</span>
+        <span class='text-muted'>HAS GENESIS &copy; 2024. Tüm hakları saklıdır.</span>
     </div>
 </footer>
-    </body>
-    </html>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="path_to_js/registeralerts.js"></script>
+    
+</body>
+</html>
