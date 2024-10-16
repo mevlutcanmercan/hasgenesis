@@ -39,6 +39,7 @@ $currentPage = basename($_SERVER['SCRIPT_NAME']);
                 <li><a href="newsmanagement" class="<?php echo ($currentPage == 'newsmanagement.php') ? 'active' : ''; ?>">Haber Yönetimi</a></li>
                 <li><a href="project-managament" class="<?php echo ($currentPage == 'project-managament.php') ? 'active' : ''; ?>">Proje Yönetimi</a></li>
                 <li><a href="sliderManagement" class="<?php echo ($currentPage == 'sliderManagement.php') ? 'active' : ''; ?>">Slider Yönetimi</a></li>
+                <li><a href="ulumega-edit" class="<?php echo ($currentPage == 'ulumega-edit.php') ? 'active' : ''; ?>">Ulumega Düzenle</a></li>
                 <li><a href="whous-managament" class="<?php echo ($currentPage == 'whous-managament.php') ? 'active' : ''; ?>">Hakkımızda Yönetimi</a></li>
                 <li><a href="communication-management" class="<?php echo ($currentPage == 'communication-management.php') ? 'active' : ''; ?>">İletişim Yönetimi</a></li>
                 <li><a href="organizations-admin" class="<?php echo ($currentPage == 'organizations-admin.php') ? 'active' : ''; ?>">Organizasyon Yönetimi</a></li>

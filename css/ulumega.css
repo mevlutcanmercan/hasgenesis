@@ -1,120 +1,134 @@
-/* Sayfa boyutunu kontrol et */
+/* Genel ayarlar */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap");
+
+* {
+    font-family: "Poppins", sans-serif;
+}
+
 body, html {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden; /* Yatay kaydırmayı engelle */
-    overflow-y: auto; /* Dikey kaydırmayı mümkün kıl */
-}
-
-/* Video Konteyneri */
-.video-container {
-    position: fixed; /* Video sabit */
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh; /* Video tam ekran kaplayacak */
-    overflow: hidden;
-    z-index: 1; /* Karartma katmanından daha düşük */
-}
-
-/* Video boyutlandırma */
-#background-video {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    min-width: 100%;
-    min-height: 100%;
-    width: auto;
-    height: auto;
-    transform: translate(-50%, -50%);
-    object-fit: cover; /* Video, ekrana tam olarak oturur */
-}
-
-/* Arka Plan Karartması */
-.video-container::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6); /* Karartma efekti */
-    z-index: 2; /* İçerik alanının altında ama videonun üstünde */
-}
-
-/* Ortadaki Başlık, Paragraf ve Buton (Tam Ortada) */
-.overlay-content {
-    position: relative; /* Üst katmanlar için relative konumlandırma */
+    padding-top: 3% ;
     display: flex;
-    flex-direction: column; /* İçeriği dikey hizalıyoruz */
-    justify-content: center; /* Dikey olarak ortalama */
-    align-items: center; /* Yatay olarak ortalama */
-    min-height: 100vh; /* İçeriğin tam ekran ortalanması için */
-    text-align: center; /* Tüm metinlerin ortalanması */
-    color: white;
-    z-index: 3; /* Karartmanın ve videonun üzerinde olacak şekilde ayarladık */
-    padding: 20px; /* Kenarlardan biraz boşluk bırakmak için */
+    justify-content: center;
+    align-items: center;
+    background-color: #000; /* Arka plan rengini siyah yapıyoruz, video netleşsin diye */
 }
 
-/* Başlık Stili */
-.overlay-content h1 {
+.container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 2; /* İçeriğin videonun üstünde kalması için */
+}
+
+/* Arka plan video */
+.background-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+    filter: brightness(50%); /* Video karartma efekti */
+}
+
+.content {
+    position: relative;
+    z-index: 2;
+    color: #fff; /* Beyaz renk */
+    padding: 2%;
+    max-width: 80%; /* İçeriğin ekranın ortasında yer almasını sağlamak */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Başlık ve metin */
+.content h1 {
     font-size: 4rem;
     font-weight: bold;
     margin-bottom: 20px;
     text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
 }
 
-/* Açıklama Stili */
-.overlay-content p {
+.content p {
     font-size: 1.5rem;
     margin-bottom: 30px;
-    max-width: 800px;
+    max-width: 100%;
     line-height: 1.6;
     text-shadow: 1px 1px 8px rgba(0, 0, 0, 0.8);
 }
 
-/* Buton Stili (Gri ve tonları) */
-.overlay-content .btn {
-    padding: 15px 30px;
-    background-color: #4f4f4f;
-    color: white;
-    font-size: 1.25rem;
-    border: none;
-    border-radius: 50px;
+ /* Modal stili */
+ .modal {
+    display: none; /* Varsayılan olarak gizli */
+    position: fixed; /* Sabit pozisyon */
+    z-index: 10; /* Diğer içeriklerin üstünde */
+    left: 50%; /* Ortalamak için soldan %50 */
+    top: 50%; /* Ortalamak için üstten %50 */
+    transform: translate(-50%, -50%) scale(0); /* Ortalamak için kaydırma ve başlangıçta küçültme */
+    width: 70%; /* Tam genişlik */
+    height: 70%; /* Tam yükseklik */
+    overflow: auto; /* Taşma durumunda kaydırma */
+    border-radius: 8px; /* Köşeleri yuvarlama */
+    transition: transform 0.3s ease, opacity 0.3s ease; /* Efekt geçişi */
+    opacity: 0; /* Başlangıçta görünmez */
+}
+
+.modal.show {
+    opacity: 1; /* Görünür hale gel */
+    transform: translate(-50%, -50%) scale(1); /* Modal açıldığında normal boyuta getir */
+}
+
+.modal-content {
+    margin: auto;
+    display: block; /* Görünür yap */
+    max-width: 100%; /* Maksimum genişlik */
+    max-height: 100%; /* Maksimum yükseklik */
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 25px;
+    color: white; /* Beyaz çarpı rengi */
+    font-size: 35px;
+    font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4);
+    z-index: 11; /* Çarpı butonu modalın üstünde görünmesi için */
+    background: rgba(0, 0, 0, 0.5); /* Çarpı butonunun arka planı */
+    border-radius: 50%; /* Çarpı butonunun köşelerini yuvarla */
+    padding: 5px 10px; /* Çarpı butonuna boşluk ekle */
+}
+
+.close:hover,
+.close:focus {
+    color: #bbb; /* Hover durumu için renk */
     text-decoration: none;
-    z-index: 4; /* En üst katman olması için yüksek z-index */
-    display: block !important;
-    
+    cursor: pointer;
 }
 
-/* Buton Hover Efekti */
-.overlay-content .btn:hover {
-    background-color: #6f6f6f;
-    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.6);
-}
-
-/* Resim Galerisi */
+/* Galeri resmi stili */
 .image-gallery {
     display: flex; /* Resimleri yan yana dizmek için flex kullan */
-    flex-wrap: wrap; /* Resimlerin taşmasını engellemek için wrap ekle */
     justify-content: center; /* Yatayda ortala */
-    align-items: center; /* Dikeyde ortala */
+    align-items: flex-start; /* Dikeyde üstte hizala */
     margin: 20px 0; /* Yukarıdan ve alttan 20px boşluk bırak */
-    z-index: 3; /* Diğer içeriklerin üstünde olmasını sağla */
-    position: relative; /* Diğer içeriklerle karışmaması için */
-    margin-top: auto; /* Galeriyi sayfanın en altına itmek için */
+    
+    
+    flex-wrap: wrap; /* Taşmayı engellemek için sar */
 }
 
-/* Resim */
 .image-gallery img {
     display: inline-block; /* Resimleri inline-block olarak ayarla */
-    width: calc(33.33% - 20px); /* Üç resim yan yana yerleştirmek için genişliği ayarla */
+    width: 150px; /* Resimlerin genişliğini ayarlayın */
     height: auto; /* Yükseklik oranını koru */
-    margin: 10px; /* Resimler arasında 10px boşluk bırak */
+    margin: 0 10px; /* Resimler arasında boşluk bırak */
     transition: transform 0.3s ease; /* Yumuşak geçiş efekti */
     cursor: pointer; /* İmleci tıklanabilir işaretine dönüştür */
     z-index: 5; /* Arka plandan önde görünmesi için */
@@ -125,94 +139,111 @@ body, html {
     transform: scale(1.05); /* Resmi biraz büyüt */
 }
 
-/* Responsive Düzenleme */
+
+/* Buton Stili (Dinamik genişlik ve yükseklik ayarı) */
+.btn {
+    padding: 1vw 1vw; /* Ekran genişliğine göre padding ayarla */
+    font-size: 1vw !important; /* Dinamik font boyutu */
+    background-color: #4f4f4f;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4);
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 3%;
+}
+
+/* Buton Hover Efekti */
+.btn:hover {
+    background-color: #6f6f6f;
+    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.6);
+}
+
+/* Mobil stil ayarlamaları */
 @media (max-width: 768px) {
-
-    .overlay-content{
-        margin-top: 5%;
+    .modal {
+        width: 100%; /* Mobilde genişliği artır */
+        height: 100%; /* Mobilde yükseklik artır */
+        background: none;
+        margin-top: 80%;
     }
 
-
-    /* Mobil cihazlarda Başlık ve metin boyutları */
-    .overlay-content h1 {
-        font-size: 1.5rem; /* Daha küçük başlık */
+    .modal-content {
+        max-width: 90%; /* Resmin mobilde maksimum genişliğini ayarlayın */
+        max-height: 90%; /* Resmin mobilde maksimum yüksekliğini ayarlayın */
     }
 
-    .overlay-content p {
-        
-        font-size: 1.00rem; /* Daha okunabilir boyut */
-        margin-bottom: 20px;
-        padding: 0 10px; /* Kenarlara boşluk ekle */
+   
+
+    .close {
+        display: none;
     }
 
-    .overlay-content .btn {
-        font-size: 1rem; /* Buton boyutunu ayarla */
-        padding: 10px 20px; /* Daha küçük buton */
-    }
-
-    /* Resim Galerisi için mobil uyum */
+    /* Galeri için mobil uyum */
     .image-gallery img {
-        width: calc(50% - 20px); /* Mobilde iki resim yan yana */
-        margin: 10px; /* Resimler arasında 10px boşluk bırak */
+        width: 100px;
+        margin: 10px; /* Resimler arasında boşluk bırak */
     }
-
-    
-    
 }
 
 
-/* 950px ve altındaki genişliklerde başlık, açıklama, buton ve galeri stili */
-@media (max-width: 950px) {
-    
-    
-    /* Başlık boyutunu küçült */
-    .overlay-content h1 {
-        font-size: 1.2rem; /* 4rem'den 2.5rem'e küçült */
-        margin-top: 3%;
+@media (max-width: 480px) {
+    .content h1 {
+        font-size: 6vw;
     }
 
-    /* Açıklama metnini küçült */
-    .overlay-content p {
-        font-size: 0.8rem; /* 1.5rem'den 1.2rem'e küçült */
-        margin-bottom: 20px; /* Daha az boşluk bırak */
-        max-width: 90%; /* İçeriğin genişliğini sınırla */
+    .btn {
+        font-size: 4vw !important; /* Daha küçük ekranlarda font boyutunu artır */
+        padding: 4vw 6vw; /* Daha küçük ekranlarda padding değerini artır */
     }
 
-    /* Buton boyutunu küçült */
-    .overlay-content .btn {
-        font-size: 0.7rem; /* 1.25rem'den 1rem'e küçült */
-        padding: 10px 20px; /* Daha küçük padding */
-        margin-bottom: 50px;
+    .content p {
+        font-size: 3vw;
     }
 
-    /* Galerideki resimler */
     .image-gallery img {
-        width: 100px !important; /* Genişliği daha küçük tut */
-        margin: 10px; /* Resimler arasındaki boşluğu azalt */
+        width: 30%; /* Daha küçük ekranlarda resimleri daha da büyüt */
     }
 }
 
-/* 768px ve altındaki genişlikler (mobil cihazlar için daha da küçültme) */
-@media (max-width: 768px) {
-    
-    /* Başlık ve açıklama daha da küçülsün */
-    .overlay-content h1 {
-        font-size: 2rem; /* 2.5rem'den 2rem'e küçült */
+
+
+@media (max-width: 1180px) and (orientation: landscape) {
+    body {
+        padding-top: 50% !important; /* Yatayda üst padding ayarla */
     }
 
-    .overlay-content p {
-        font-size: 1rem; /* 1.2rem'den 1rem'e küçült */
+    .btn {
+        font-size: 2vw !important; /* Daha küçük ekranlarda font boyutunu ayarla */
     }
 
-    /* Buton boyutunu daha da küçült */
-    .overlay-content .btn {
-        font-size: 0.9rem; /* 1rem'den 0.9rem'e küçült */
-        padding: 8px 16px; /* Daha küçük padding */
+    .content h1 {
+        font-size: 5vw; /* Yatayda başlık boyutunu ayarla */
     }
 
-    /* Mobil cihazlarda galerideki resimler */
+    .content p {
+        font-size: 2vw; /* Yatayda paragrafların font boyutunu ayarla */
+    }
+
     .image-gallery img {
-        width: calc(50% - 10px); /* İki resim yan yana olacak şekilde ayarla */
-        margin: 5px; /* Daha küçük boşluk */
+        width: 20%; /* Yatayda resimleri daha geniş yap */
     }
+
+    .btn {
+        font-size: 2vw; /* Yatayda buton font boyutunu ayarla */
+        padding: 2vw 4vw; /* Yatayda buton padding ayarla */
+    }
+}
+
+@media (max-width: 1180px){
+    
+
+    .btn {
+        font-size: 4vw !important; /* Daha küçük ekranlarda font boyutunu ayarla */
+    }
+
+    
 }
