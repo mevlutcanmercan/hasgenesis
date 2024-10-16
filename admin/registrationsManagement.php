@@ -269,7 +269,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
 
         <!-- Filtrele ve Sırala Butonu -->
         <button type="submit">Filtrele ve Sırala</button>
-        <a href="registrationsManagement.php?action=export&organization_id=<?php echo $organization_id; ?>" class="btn btn-primary">Excel Olarak İndir </a>
+        <a href="registrationsManagement.php?action=export&organization_id=<?php echo $organization_id; ?>" class="btn btn-primary">Excel İndir </a>
+        <a href="editBibNumbers.php?organization_id=<?php echo $organization_id; ?>" class="btn btn-primary">Bib</a>
     </form>
 </div>
 
