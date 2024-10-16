@@ -292,7 +292,8 @@ $user_bikes_result = $user_bikes_stmt->get_result();
                 <a href="#profile" class="nav-link active" data-bs-toggle="tab"><i class='bx bxs-user'></i> Profil</a>
                 <a href="#change-password" class="nav-link" data-bs-toggle="tab"><i class='bx bxs-lock'></i> Şifre Değiştir</a>
                 <a href="#bicycle" class="nav-link" data-bs-toggle="tab"><i class='bx bx-trip'></i> Bisikletlerim</a>
-
+                <a href="#races" class="nav-link" data-bs-toggle="tab"><i class='bx bx-trip'></i> Yarışlarım</a>
+                <a href="#races" class="nav-link" data-bs-toggle="tab"><i class='bx bx-trip'></i> Kayıtlarım</a>
                 <!-- Admin Tab: Eğer kullanıcı admin ise göster -->
                   <?php if ($isAdmin == 1): ?>
              <a href="admin/adminmainpage.php" class="nav-link"><i class='bx bxs-shield'></i> Admin Paneli</a>
@@ -380,7 +381,50 @@ $user_bikes_result = $user_bikes_stmt->get_result();
             </form>
         </div>
 
-
+                    <!-- My Races Tab -->
+            <div class="tab-pane fade" id="races">
+                <h2>Yarışlarım</h2>
+                
+                <?php
+                // Kullanıcının katıldığı yarış sonuçlarını al
+                $stmt = $conn->prepare("SELECT * FROM race_results WHERE user_id = ?");
+                $stmt->bind_param("i", $user_id);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                
+                if ($result->num_rows > 0): ?>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Yarış Adı</th>
+                                <th>Yarış Türü</th>
+                                <th>Kategori</th>
+                                <th>Yer</th>
+                                <th>Bib</th>
+                                <th>Zaman</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php while ($row = $result->fetch_assoc()): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($row['name']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['race_type']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['category']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['place']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['Bib']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['time']); ?></td>
+                                </tr>
+                            <?php endwhile; ?>
+                        </tbody>
+                    </table>
+                <?php else: ?>
+                    <p class="alert alert-warning">Henüz katıldığınız bir yarış bulunmamaktadır.</p>
+                <?php endif; 
+                
+                $stmt->close();
+                ?>
+            </div>
+            
             <!-- Bicycles Tab -->
             <div class="tab-pane fade" id="bicycle">
                 <h2>Bisikletlerim</h2>
