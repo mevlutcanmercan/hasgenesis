@@ -182,6 +182,13 @@ $result = $conn->query($sql);
                 }
                 echo "</p>";
 
+                                // Yarış Sonuçları Kontrolü (mevcutsa gösterilecek)
+                $race_result_sql = "SELECT COUNT(*) AS result_count FROM race_results WHERE organization_id = {$row['id']}";
+                $race_result_result = $conn->query($race_result_sql);
+                $race_result_row = $race_result_result->fetch_assoc();
+                $has_results = $race_result_row['result_count'] > 0; // Sonuç var mı kontrolü
+
+
                 // Kayıt Ol butonu
                 $current_time = time(); // Şu anki zaman
                 $register_start_time = strtotime($row['register_start_date']); // Kayıt başlangıç zamanı
@@ -201,7 +208,10 @@ $result = $conn->query($sql);
                         echo "<a href='login.php' class='btn btn-primary'>Giriş Yap ve Kayıt Ol</a>";
                     }
                 }
-
+                                    // Sonuçları Görüntüle butonunu ekleme
+                if ($has_results) {
+                    echo "<a href='raceresults.php?organization_id={$row['id']}' class='btn btn-primary' style='margin-left: 20px;'>Sonuçları Görüntüle</a>";
+                }
                 echo "      </div>
                             <div class='map-container'>
                                 <h6 class='map-title'>Konum</h6> <!-- Konum başlığı -->
