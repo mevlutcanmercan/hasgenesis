@@ -172,7 +172,7 @@ $result = $conn->query($sql);
                 }
 
                 // Yarış detayları ve kuralları için PDF bağlantısı
-                echo "<p class='card-text'><strong>Organizasyon detaylarını ve kurallarını indirmek için tıklayınız:</strong> ";
+                echo "<p class='card-text'><strong>Detaylarını ve kurallarını indirmek için tıklayınız:</strong> ";
 
                 // PDF dosyası var mı kontrol et
                 if (!empty($row['race_details_pdf'])) {
@@ -227,7 +227,8 @@ $result = $conn->query($sql);
     </div>
 
     <!-- Sayfalama -->
-    <div class="pagination-container">
+<!-- Sayfalama -->
+<div class="pagination-container">
     <nav aria-label="Page navigation">
         <ul class="pagination">
             <?php if ($current_page > 1): ?>
@@ -251,7 +252,8 @@ $result = $conn->query($sql);
             <?php endif; ?>
         </ul>
     </nav>
-    </div>
+</div>
+
 </div>
 <footer class="footer mt-auto py-2">
     <div class="footer-container text-center">

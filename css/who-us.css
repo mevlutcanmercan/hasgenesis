@@ -124,3 +124,41 @@ body {
         margin-top: 20px;
     }
 }
+
+/* Yatay mobil ekranlar için medya sorgusu */
+@media (max-width: 950px) and (orientation: landscape) {
+
+    body{
+        margin-top: 30% !important;
+    }
+
+
+    .who-us-container {
+        flex-direction: column; /* İçeriği dikey düzenle */
+        text-align: center;
+        padding: 15px;
+        width: 90%;
+        margin: 20px 0;
+        transform: none; /* Yatay modda animasyon olmadan sabit kalır */
+        
+    }
+
+    .who-us-container img {
+        max-width: 25%; /* Resmi küçült */
+        margin: 10px auto; /* Ortala ve boşluk bırak */
+    }
+
+    .who-us-content h1 {
+        text-align: center;
+        font-size: 2rem; /* Başlık boyutunu küçült */
+    }
+
+    .who-us-content p {
+        font-size: 1rem; /* Metin boyutunu küçült */
+        line-height: 1.4; /* Satır aralığını küçült */
+    }
+
+    .social-icons i {
+        font-size: 1.5rem; /* Sosyal medya ikonlarını küçült */
+    }
+}

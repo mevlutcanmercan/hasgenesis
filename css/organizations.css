@@ -17,14 +17,14 @@ h1 {
 }
 
 .organization-card {
-    display: flex; /* Flexbox düzeni */
+    display: inline-flex; /* Flexbox düzeni */
     flex-direction: row; /* Yana doğru yerleşim */
     align-items: stretch; /* Kart içeriklerinin yüksekliğini eşitle */
     border: none; /* Kart sınırını kaldırdık */
     border-radius: 15px; /* Yuvarlak köşe */
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Gölgeli efekt */
     transition: transform 0.3s; /* Animasyon efekti */
-    background-color: rgba(255, 255, 255, 0.671); /* Kart arka plan rengi */
+    background: linear-gradient(135deg, #d8d8d8cb, #d3d3d3c2, #79797994);
     overflow: hidden; /* Taşan içeriği gizler */
 }
 
@@ -68,7 +68,7 @@ h1 {
 
 .map-container iframe {
     width: 100%; /* İframe genişliği */
-    height: 100%; /* İframe yüksekliği */
+    height: 90%; /* İframe yüksekliği */
     border: 0; /* Kenar çizgisi yok */
 }
 
@@ -96,6 +96,7 @@ h1 {
 
 /* Sayfalama Stili */
 .pagination-container {
+    
     display: flex;
     justify-content: center;
     margin-bottom: 20px;
@@ -117,7 +118,7 @@ h1 {
     color: white;
 }
 
-.pagination-link.active {
+.pagination .active .pagination-link {
     border-color: #5a6268;
     background: linear-gradient(135deg, #8f8f8f, #858585, #000000a1);
     color: white;
@@ -125,6 +126,10 @@ h1 {
 }
 
 @media (max-width: 768px) {
+    body {
+        margin-top: 5% !important;
+    }
+
     .organization-card {
         flex-direction: column; /* Kart içeriğini dikey yerleştir */
     }
@@ -135,17 +140,30 @@ h1 {
     }
 
     .map-container {
+        flex: 0 0 auto; /* Genişlik ayarı */
         width: 100%; /* Harita alanını %100 genişlikte yap */
-        height: 300px; /* Harita yüksekliğini belirle (gerekirse ayarlayabilirsiniz) */
+        max-height: 300px; /* Harita yüksekliğini sabit ayarla */
         margin-left: 0; /* Sol boşluğu kaldır */
         border-radius: 10px; /* Yuvarlak köşe */
         overflow: hidden; /* Taşan içeriği gizle */
+        margin-bottom: 10px;
+    }
+
+    .map-container iframe {
+        width: 100%; /* İframe genişliği */
+        height: 100%; /* İframe yüksekliği */
+        border: 0; /* Kenar çizgisi yok */
     }
     
-    .map-container iframe {
-        width: 100%; /* İframe genişliğini %100 yap */
-        height: 100%; /* İframe yüksekliğini %100 yap */
+
+    .pagination-container {
+        margin-top: 9%;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
     }
+    
+
 
     .disabled-btn {
         width: 100%; /* Butonun genişliğini %100 yap */
