@@ -21,7 +21,7 @@ if ($newsID > 0) {
 
 // Haber verisi mevcut değilse hata ver ve yönlendir
 if (!$news) {
-    header("Location: news-management.php?status=notfound");
+    header("Location: newsmanagement.php?status=notfound");
     exit;
 }
 

@@ -69,6 +69,7 @@ if (isset($_SESSION['id_users'])) {
                 <a class="nav-link <?php echo ($currentPage == 'projects.php') ? 'active' : ''; ?>" href="projects">PROJELER</a>
                 <a class="nav-link <?php echo ($currentPage == 'news.php') ? 'active' : ''; ?>" href="news">HABER BÜLTENİ</a>
                 <a class="nav-link <?php echo ($currentPage == 'organizations.php') ? 'active' : ''; ?>" href="organizations">ORGANİZASYONLAR</a>
+                <a class="nav-link <?php echo ($currentPage == 'raceresults.php') ? 'active' : ''; ?>" href="raceresults">SONUÇLAR</a>
                 <a class="nav-link <?php echo ($currentPage == 'ulumega.php') ? 'active' : ''; ?>" href="ulumega">ULUMEGA</a>
                 <a class="nav-link <?php echo ($currentPage == 'whous.php') ? 'active' : ''; ?>" href="whous">BİZ KİMİZ ?</a>
                 <a class="nav-link <?php echo ($currentPage == 'communication.php') ? 'active' : ''; ?>" href="communication">İLETİŞİM</a>

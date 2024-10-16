@@ -193,10 +193,12 @@ body {
 }
 
 .pagination-link.active {
-    border-color: #6c757d;
-    background-color: #6c757d;
+    border-color:#5a6268;
+    background: linear-gradient(135deg, #8f8f8f, #858585, #000000a1);
     color: white;
+    border-color: #6c757d;
 }
+
 
 /* Responsive */
 @media (max-width: 1200px) {

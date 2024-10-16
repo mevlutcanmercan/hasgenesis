@@ -20,7 +20,7 @@
 
 .navbar-brand img {
     margin: 20px;
-    width: 150px; /* Logo genişliği */
+    width: 150px !important; /* Logo genişliği */
     height: auto;
     transition: transform 0.3s ease, color 0.3s ease;
     display: block; /* Flex yerine block */
