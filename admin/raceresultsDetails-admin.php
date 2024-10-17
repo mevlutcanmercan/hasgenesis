@@ -19,6 +19,9 @@ $org_stmt->bind_result($organization_name);
 $org_stmt->fetch();
 $org_stmt->close();
 
+// Yarış Türü
+$race_type = isset($_GET['race_type']) ? $_GET['race_type'] : '';
+
 // Yarış Sonuçlarını Filtrele
 $query = "SELECT * FROM race_results WHERE organization_id = ?";
 $params = [$organization_id];
@@ -30,12 +33,8 @@ if ($category_filter) {
     $types .= "s";
 }
 
-if ($race_type_filter) {
-    $query .= " AND race_type = ?";
-    $params[] = $race_type_filter;
-    $types .= "s";
-}
 
+// Sorgu çalıştırma
 $stmt = $conn->prepare($query);
 $stmt->bind_param($types, ...$params);
 $stmt->execute();
@@ -62,10 +61,7 @@ $result = $stmt->get_result();
                 <label for="category_filter" class="form-label">Kategori:</label>
                 <input type="text" name="category_filter" id="category_filter" class="form-control" placeholder="Kategori (Örn: JUNIOR)" value="<?php echo htmlspecialchars($category_filter); ?>">
             </div>
-            <div class="col-md-4">
-                <label for="race_type_filter" class="form-label">Yarış Türü:</label>
-                <input type="text" name="race_type_filter" id="race_type_filter" class="form-control" placeholder="Yarış Türü (Örn: Dh1,Downhill)" value="<?php echo htmlspecialchars($race_type_filter); ?>">
-            </div>
+
             <div class="col-md-4 d-flex align-items-end">
                 <button type="submit" class="btn btn-primary">Filtrele</button>
             </div>
