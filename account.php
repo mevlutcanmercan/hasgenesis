@@ -1,7 +1,6 @@
 <?php
 include 'dB/database.php';
 include 'navbar.php'; 
-include 'bootstrap.php';
 include 'auth.php';
 
 requireLogin(); // Kullanıcının giriş yapıp yapmadığını kontrol eder
@@ -15,6 +14,56 @@ $stmt->execute();
 $stmt->bind_result($email, $name, $surname, $telefon, $birthday, $isAdmin);
 $stmt->fetch();
 $stmt->close();
+
+
+// İptal Sebebi Gönderme
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $registration_id = isset($_POST['registration_id']) ? intval($_POST['registration_id']) : null;
+    $reason = isset($_POST['reason']) ? trim($_POST['reason']) : null;
+
+    if ($registration_id && $reason) {
+        // İptal kayıtlarını ekle
+        $stmt = $conn->prepare("INSERT INTO cancellations (registration_id, user_id, reason) VALUES (?, ?, ?)");
+        $stmt->bind_param("iis", $registration_id, $user_id, $reason);
+
+        if ($stmt->execute()) {
+            echo "<script>
+                    Swal.fire({
+                        title: 'Başarılı!',
+                        text: 'İptal isteğiniz gönderildi.',
+                        icon: 'success',
+                        confirmButtonText: 'Tamam'
+                    }).then(() => {
+                        window.location = 'account.php';
+                    });
+                  </script>";
+        } else {
+            echo "Kayıt başarısız: " . $conn->error;
+        }
+        $stmt->close();
+    } else {
+        echo "<script>
+                Swal.fire({
+                    title: 'Hata!',
+                    text: 'Geçersiz veri girişi.',
+                    icon: 'error',
+                    confirmButtonText: 'Tamam'
+                });
+              </script>";
+    }
+}
+include 'bootstrap.php';
+// Kullanıcının kayıtlarını almak için sorgu
+$sql = "SELECT r.id AS registration_id, o.name AS organization_name, r.race_type, r.approval_status, r.organization_id
+        FROM user_registrations ur
+        JOIN registrations r ON ur.registration_id = r.id
+        JOIN organizations o ON r.organization_id = o.id
+        WHERE ur.user_id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
 
 
 // Profil güncelleme
@@ -293,7 +342,7 @@ $user_bikes_result = $user_bikes_stmt->get_result();
                 <a href="#change-password" class="nav-link" data-bs-toggle="tab"><i class='bx bxs-lock'></i> Şifre Değiştir</a>
                 <a href="#bicycle" class="nav-link" data-bs-toggle="tab"><i class='bx bx-trip'></i> Bisikletlerim</a>
                 <a href="#races" class="nav-link" data-bs-toggle="tab"><i class='bx bx-trip'></i> Yarışlarım</a>
-                <a href="#races" class="nav-link" data-bs-toggle="tab"><i class='bx bx-trip'></i> Kayıtlarım</a>
+                <a href="#registrations" class="nav-link" data-bs-toggle="tab"><i class='bx bx-trip'></i> Kayıtlarım</a>
                 <!-- Admin Tab: Eğer kullanıcı admin ise göster -->
                   <?php if ($isAdmin == 1): ?>
              <a href="admin/adminmainpage.php" class="nav-link"><i class='bx bxs-shield'></i> Admin Paneli</a>
@@ -381,6 +430,43 @@ $user_bikes_result = $user_bikes_stmt->get_result();
             </form>
         </div>
 
+               <!-- Cancellation Tab -->
+
+                <div class="tab-pane fade" id="registrations">
+            <h2>Kayıtlarım</h2>
+            <div class="tab-content">
+                <table>
+                    <tr>
+                        <th>Organizasyon</th>
+                        <th>Yarış Türü</th>
+                        <th>Onay Durumu</th>
+                        <th>İptal Et</th>
+                    </tr>
+                    <?php while($row = $result->fetch_assoc()): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($row['organization_name']); ?></td>
+                            <td><?php echo htmlspecialchars($row['race_type']); ?></td>
+                            <td><?php echo $row['approval_status'] ? 'Onaylandı' : 'Beklemede'; ?></td>
+                            <td>
+                                <?php if ($row['approval_status'] == 0): ?>
+                                    <button class="cancel-button" onclick="showReasonForm(<?php echo $row['registration_id']; ?>)">İptal Et</button>
+                                    <div id="reason-form-<?php echo $row['registration_id']; ?>" class="cancel-reason">
+                                        <form action="account.php" method="post">
+                                            <label for="reason">İptal Sebebi:</label>
+                                            <textarea name="reason" id="reason" rows="3" required></textarea>
+                                            <input type="hidden" name="registration_id" value="<?php echo $row['registration_id']; ?>">
+                                            <button type="submit" class="submit-reason">Gönder</button>
+                                        </form>
+                                    </div>
+                                <?php else: ?>
+                                    Onaylandı
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                </table>
+            </div>
+        </div>
                     <!-- My Races Tab -->
             <div class="tab-pane fade" id="races">
                 <h2>Yarışlarım</h2>
@@ -555,7 +641,14 @@ $user_bikes_result = $user_bikes_stmt->get_result();
         event.preventDefault(); // Formun gönderilmesini engeller
     }
 });
-
+function showReasonForm(id) {
+    var form = document.getElementById('reason-form-' + id);
+    if (form.style.display === "none" || form.style.display === "") {
+        form.style.display = "block";
+    } else {
+        form.style.display = "none";
+    }
+}
 </script>
 
 </body>

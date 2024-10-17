@@ -160,7 +160,6 @@ $result = $conn->query($sql);
                 $categories_list = implode(', ', $categories); // Kategorileri birleştir
             
                 echo "<div class='col-lg-12 mb-4'>
-                <a href='/hasgenesis/admin/registrationsManagement.php?organization_id=$organization_id' class='organization-link' style='text-decoration: none;'>
                             <div class='card organization-card'>
                                 <div class='card-content p-4'>
                                     <h5 class='card-title'>{$row['name']}</h5>
@@ -202,6 +201,7 @@ $result = $conn->query($sql);
                 echo "<div class='mt-3'>
                         <a href='edit-organizations.php?id={$row['id']}' class='btn btn-secondary'>Düzenle</a>
                         <a href='?delete_id={$row['id']}' class='btn btn-danger' onclick='return confirm(\"Bu organizasyonu silmek istediğinizden emin misiniz?\");'>Sil</a>
+                        <a href='/hasgenesis/admin/registrationsManagement.php?organization_id=$organization_id' class='btn btn-secondary' style='text-decoration: none;'>Kayıtları Görüntüle</a>
                       </div>";
             
                 echo "  </div>

@@ -109,13 +109,27 @@ $user_details = getUserDetails($conn, $user_id);
 $age = calculateAge($user_details['birthday_users']);
 $category = determineCategory($age, $user_details['sex']);
 
-// Organizasyon ve fiyat bilgileri
 if (isset($_GET['organization_id'])) {
     $organization_id = intval($_GET['organization_id']);
     $organization = getOrganizationDetails($conn, $organization_id);
     $prices_row = getPrices($conn, $organization_id);
-    $active_races = ['downhill', 'enduro', 'tour', 'ulumega', 'e_bike'];
-
+    
+    // Aktif olan yarışları almak için sorgu
+    $sql = "SELECT downhill, enduro, tour, ulumega, e_bike FROM organizations WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $organization_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    
+    // Aktif olan yarışları diziye ekleyin
+    $active_races = [];
+    if ($row['downhill'] == 1) $active_races[] = 'downhill';
+    if ($row['enduro'] == 1) $active_races[] = 'enduro';
+    if ($row['tour'] == 1) $active_races[] = 'tour';
+    if ($row['ulumega'] == 1) $active_races[] = 'ulumega';
+    if ($row['e_bike'] == 1) $active_races[] = 'e_bike';
+    
     // Bisiklet seçeneklerini al
     $bike_options = getBicycles($conn, $user_id);
 } else {
