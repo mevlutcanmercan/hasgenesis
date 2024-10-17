@@ -2,6 +2,9 @@
 include 'sidebar.php';
 include '../db/database.php'; // Veritabanı bağlantısı
 include '../bootstrap.php';
+require '../vendor/autoload.php'; // PhpSpreadsheet için gerekli
+
+use PhpOffice\PhpSpreadsheet\IOFactory; // PhpSpreadsheet IOFactory sınıfını kullan
 
 // Kullanıcı giriş kontrolü
 $user_id = isset($_SESSION['id_users']) ? $_SESSION['id_users'] : null;
@@ -9,69 +12,90 @@ $user_id = isset($_SESSION['id_users']) ? $_SESSION['id_users'] : null;
 // Organizasyon Seçimi
 $organization_id = isset($_POST['organization_id']) ? (int)$_POST['organization_id'] : null;
 
+// Yarış Tipi Seçimi
+$race_type = isset($_POST['race_type']) ? $_POST['race_type'] : null;
+
 // Yükleme İşlemi
-if (isset($_FILES['file']) && $organization_id) {
+if (isset($_FILES['file']) && $organization_id && $race_type) {
     $file = $_FILES['file']['tmp_name'];
-    
-    if (($handle = fopen($file, 'r')) !== false) {
+
+    // PhpSpreadsheet ile XLS dosyasını aç
+    $spreadsheet = IOFactory::load($file);
+    $sheet = $spreadsheet->getActiveSheet();
+
+    // Veriyi okuma (satır satır)
+    foreach ($sheet->getRowIterator() as $rowIndex => $row) {
         // İlk satırı atla (başlıklar)
-        fgetcsv($handle, 1000, ',');
+        if ($rowIndex == 1) {
+            continue;
+        }
 
-        while (($data = fgetcsv($handle, 1000, ',')) !== false) {
-            $place = (int)$data[0]; // Place
-            $bib = (int)$data[1]; // Bib No
-            $name = $data[2]; // Name
-            $distance = $data[3]; // Distance (bunu race_type olarak alacağız)
-            // Kategoriyi düzenle ve '- (-)' kısmını kaldır
-            $category = preg_replace('/\d/', '', $data[4]); // Kategori (sadece yazılar)
-            $category = preg_replace('/\s*-\s*\(.*?\)/', '', $category); // Kategori değerinden '- (-)' kısmını kaldır
-            $category = trim($category); // Boşlukları temizle
-             $time = $data[11]; // Time (son sütun)
+        $cellIterator = $row->getCellIterator();
+        $cellIterator->setIterateOnlyExistingCells(false); // Tüm hücreleri oku, boş hücreler de dahil
 
-            // Zaman formatını kontrol et ve düzenle
+        $data = [];
+        foreach ($cellIterator as $cell) {
+            $data[] = $cell->getValue(); // Hücre değerini al
+        }
+
+        // Verileri işleme
+        $place = (int)$data[0]; // Place
+        $bib = (int)$data[1]; // Bib No
+        $first_name = $data[3]; // First Name
+        $last_name = $data[4]; // Last Name
+        $name = $first_name . ' ' . $last_name; // Tam isim (First Name + Last Name)
+        $category = preg_replace('/\d/', '', $data[5]); // Kategori (sadece yazılar)
+        $category = preg_replace('/\s*-\s*\(.*?\)/', '', $category); // Kategori değerinden '- (-)' kısmını kaldır
+        $category = trim($category); // Boşlukları temizle
+        $time = $data[6]; // Time
+        $difference = $data[7]; // Difference
+
+        // Zaman formatını kontrol et ve düzenle
+        if (strtolower($time) !== 'dns') {
             $time = date('H:i:s', strtotime($time));
-
-            // Kullanıcı ID'sini adıyla eşleştir
-            $user_query = "SELECT u.id_users 
-                           FROM users u 
-                           WHERE LOWER(CONCAT(u.name_users, ' ', u.surname_users)) = LOWER(?)";
-                           
-            $stmt = $conn->prepare($user_query);
-            if (!$stmt) {
-                die("Sorgu hazırlanamadı: " . $conn->error);
-            }
-
-            $stmt->bind_param("s", $name);
-            $stmt->execute();
-            $stmt->store_result();
-
-            $user_id = null; // Varsayılan değer olarak null ata
-
-            if ($stmt->num_rows > 0) {
-                $stmt->bind_result($user_id);
-                $stmt->fetch();
-            } else {
-                // Kullanıcı bulunamadığında null kalacak
-            }
-
-            // Elde edilen veriyi veritabanına ekle
-            $insert_query = "INSERT INTO race_results (organization_id, user_id, place, Bib, name, race_type, category, time)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        $insert_stmt = $conn->prepare($insert_query);
-        $insert_stmt->bind_param("iiisssss", $organization_id, $user_id, $place, $bib, $name, $distance, $category, $time);
-        $insert_stmt->execute();
-        }
-        fclose($handle);
-        echo "<script>alert('Veriler başarıyla yüklendi.');</script>";
         } else {
-        echo "<script>alert('Dosya yüklenirken bir hata oluştu.');</script>";
+            $time = null; // Eğer DNS ise null atayın
         }
+
+        // Kullanıcı ID'sini adıyla eşleştir
+        $user_query = "SELECT u.id_users 
+                       FROM users u 
+                       WHERE LOWER(CONCAT(u.name_users, ' ', u.surname_users)) = LOWER(?)";
+                       
+        $stmt = $conn->prepare($user_query);
+        if (!$stmt) {
+            die("Sorgu hazırlanamadı: " . $conn->error);
         }
+
+        $stmt->bind_param("s", $name);
+        $stmt->execute();
+        $stmt->store_result();
+
+        $user_id = null; // Varsayılan değer olarak null ata
+
+        if ($stmt->num_rows > 0) {
+            $stmt->bind_result($user_id);
+            $stmt->fetch();
+        }
+
+        // Elde edilen veriyi veritabanına ekle
+        $insert_query = "INSERT INTO race_results (organization_id, user_id, place, Bib, name, race_type, category, time, difference)
+                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $insert_stmt = $conn->prepare($insert_query);
+        $insert_stmt->bind_param("iiissssss", $organization_id, $user_id, $place, $bib, $name, $race_type, $category, $time, $difference);
+        $insert_stmt->execute();
+    }
+
+    echo "<script>alert('Veriler başarıyla yüklendi.');</script>";
+} else {
+}
 
 // Organizasyonları getir
 $org_query = "SELECT id, name FROM organizations";
 $org_result = $conn->query($org_query);
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="tr">
@@ -100,6 +124,20 @@ $org_result = $conn->query($org_query);
                     ?>
                 </select>
             </div>
+
+            <div class="col-md-4">
+              <!-- Yarış Tipi Seçimi -->
+            <label for="race_type" class="form-label">Yarış Tipi Seç:</label>
+            <select name="race_type" id="race_type" class="form-control" required>
+                <option value="">-- Yarış Tipi Seçiniz --</option>
+                <option value="downhill">Downhill</option>
+                <option value="enduro">Enduro</option>
+                <option value="tour">Tour</option>
+                <option value="ulumega">Ulumega</option>
+                <option value="ulumega">E-bike</option>
+            </select>
+        </div>
+
             <div class="col-md-4">
                 <label for="file" class="form-label">Sonuç Dosyasını Yükle:</label>
                 <input type="file" name="file" id="file" class="form-control" required>
@@ -111,31 +149,35 @@ $org_result = $conn->query($org_query);
     </form>
 
     <!-- Organizasyonlar Tablosu -->
-    <table class="table table-bordered">
-        <thead>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Organizasyon</th>
+            <th>Yarış Türleri</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        // Organizasyonları tekrar sorgula, kullanıcıdan gelen organizasyonları göstermek için
+        $org_result->data_seek(0); // İkinci kez sorgulamak için verileri sıfırla
+        while ($org = $org_result->fetch_assoc()): ?>
             <tr>
-                <th>Organizasyon</th>
-                <th>Görüntüle</th>
+                <td><?= htmlspecialchars($org['name']); ?></td>
+                <td>
+                    <form action="raceresultsDetails-admin.php" method="GET">
+                        <input type="hidden" name="organization_id" value="<?= $org['id']; ?>">
+                        <button type="submit" name="race_type" value="Downhill" class="btn btn-info">Downhill</button>
+                        <button type="submit" name="race_type" value="Enduro" class="btn btn-info">Enduro</button>
+                        <button type="submit" name="race_type" value="Tour" class="btn btn-info">Tour</button>
+                        <button type="submit" name="race_type" value="Ulumega" class="btn btn-info">Ulumega</button>
+                    </form>
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            <?php
-            // Organizasyonları tekrar sorgula, kullanıcıdan gelen organizasyonları göstermek için
-            $org_result->data_seek(0); // İkinci kez sorgulamak için verileri sıfırla
-            while ($org = $org_result->fetch_assoc()): ?>
-                <tr>
-                    <td><?= htmlspecialchars($org['name']); ?></td>
-                    <td>
-                        <form action="raceresultsDetails-admin.php" method="GET">
-                            <input type="hidden" name="organization_id" value="<?= $org['id']; ?>">
-                            <button type="submit" class="btn btn-info">Görüntüle</button>
-                        </form>
-                    </td>
-                </tr>
-            <?php endwhile; ?>
-        </tbody>
-    </table>
+        <?php endwhile; ?>
+    </tbody>
+</table>
 </div>
+
 
 </body>
 </html>
