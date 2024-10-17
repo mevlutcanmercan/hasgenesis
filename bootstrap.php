@@ -14,6 +14,7 @@
     
     <!-- SweetAlert CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.1.7/sweetalert2.min.css">
+    
     <link rel="shortcut icon" href="images/logo-has.png" type="image/x-icon">
 </head>
 

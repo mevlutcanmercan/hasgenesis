@@ -110,7 +110,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <!-- Boxicons, Bootstrap ve Stil Dosyaları -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="css/login.css"> <!-- Kendi stil dosyanızı buraya ekleyin -->
-    <link rel="shortcut icon" href="images/logo-has.png" type="image/x-icon">
+    
 </head>
 <body>
     <!-- Üst Kısım -->
