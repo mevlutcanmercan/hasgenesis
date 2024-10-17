@@ -43,20 +43,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_registration_id
     }
 }
 
+
 // Kayıt Onaylama ve Reddetme İşlemi
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['registration_id']) && isset($_POST['approval_status'])) {
     $registration_id = intval($_POST['registration_id']);
-    $new_status = ($_POST['action'] == 'approve') ? 1 : 0;
+    $approval_status = intval($_POST['approval_status']);
 
-    $status_stmt = $conn->prepare("UPDATE registrations SET approval_status = ? WHERE id = ?");
-    $status_stmt->bind_param("ii", $new_status, $registration_id);
+    $update_stmt = $conn->prepare("UPDATE registrations SET approval_status = ? WHERE id = ?");
+    $update_stmt->bind_param("ii", $approval_status, $registration_id);
 
-    if ($status_stmt->execute()) {
-        echo json_encode(['success' => true, 'status' => $new_status]);
+    if ($update_stmt->execute()) {
+        echo "<script>showSuccessAlert('Kayıt durumu güncellendi!');</script>";
     } else {
-        echo json_encode(['success' => false]);
+        echo "<script>showErrorAlert('Kayıt durumu güncellenirken bir hata oluştu.');</script>";
     }
-    exit();
 }
 
 // Filtreleme ve sıralama işlemleri
@@ -292,69 +292,47 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
             </tr>
         </thead>
         <tbody>
-    <?php
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $row_class = $row['approval_status'] ? 'approved-row' : 'rejected-row';
-            echo "<tr class='$row_class' id='row-{$row['id']}'>";
-            echo "<td>" . $row['Bib'] . "</td>";
-            echo "<td>" . $row['first_name'] . "</td>";
-            echo "<td>" . $row['second_name'] . "</td>";
-            echo "<td>" . $row['category'] . "</td>";
-            echo "<td>" . $row['race_type'] . "</td>";
-            echo "<td>" . $row['registration_price'] . "</td>";
-            echo "<td>" . ($row['feragatname'] ? "<a href='/hasgenesis/documents/feragatname/" . $row['feragatname'] . "' target='_blank'>Feragatname</a>" : "-") . "</td>";
-            echo "<td>" . ($row['price_document'] ? "<a href='/hasgenesis/documents/receipt/" . $row['price_document'] . "' target='_blank'>Ücret Belgesi</a>" : "-") . "</td>";
-            echo "<td id='status-{$row['id']}'>" . ($row['approval_status'] ? "Onaylı" : "Onaysız") . "</td>";
-            echo "<td>";
-            if ($row['approval_status'] == 0) {
-                echo "<button class='approve-btn' data-id='{$row['id']}' onclick='updateStatus({$row['id']}, 1)'>Onayla</button>";
-            } else {
-                echo "<button class='reject-btn' data-id='{$row['id']}' onclick='updateStatus({$row['id']}, 0)'>Reddet</button>";
-            }
-            echo "</td>";
-            echo "</tr>";
-        }
-    } else {
-        echo "<tr><td colspan='10'>Kayıt bulunamadı.</td></tr>";
+        <?php
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        echo "<tr id='row-{$row['id']}'>";
+        echo "<td>" . $row['Bib'] . "</td>";
+        echo "<td>" . $row['first_name'] . "</td>";
+        echo "<td>" . $row['second_name'] . "</td>";
+        echo "<td>" . $row['category'] . "</td>";
+        echo "<td>" . $row['race_type'] . "</td>";
+        echo "<td>" . $row['registration_price'] . "</td>";
+        
+        // Feragatname ve Ücret Belgesi sütunları
+        echo "<td>" . ($row['feragatname'] ? "<a href='../documents/feragatname/" . $row['feragatname'] . "' target='_blank'>Feragatname</a>" : "-") . "</td>";
+        echo "<td>" . ($row['price_document'] ? "<a href='../documents/receipt/" . $row['price_document'] . "' target='_blank'>Ücret Belgesi</a>" : "-") . "</td>";
+
+        // Onay durumu
+        // Onaylı ise yeşil, onaysız ise kırmızı arka plan
+        $statusClass = $row['approval_status'] ? "approved" : "rejected";
+        echo "<td class='$statusClass' id='status-{$row['id']}'>" . ($row['approval_status'] ? "Onaylı" : "Onaysız") . "</td>";
+        echo "<td>";
+        
+        // Onaylama ve reddetme işlemleri için form ekle
+        echo "<form method='POST' action='registrationsManagement.php?organization_id=$organization_id' style='display:inline;'>";
+        echo "<input type='hidden' name='registration_id' value='{$row['id']}'>";
+        echo "<input type='hidden' name='approval_status' value='" . ($row['approval_status'] ? 0 : 1) . "'>";
+        echo "<button type='submit' class='" . ($row['approval_status'] ? "reject-btn" : "approve-btn") . "'>" . ($row['approval_status'] ? "Reddet" : "Onayla") . "</button>";
+        echo "</form>";
+        echo "</td>";
+        echo "</tr>";
     }
-    ?>
+} else {
+    echo "<tr><td colspan='10'>Kayıt bulunamadı.</td></tr>";
+}
+?>
+
+
 </tbody>
     </table>
 </div>
-<!-- Onay Durumu Güncelleme Scripti -->
-<script>
-    function updateStatus(registrationId, newStatus) {
-        const action = (newStatus === 1) ? 'approve' : 'reject';
 
-        fetch('', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `registration_id=${registrationId}&action=${action}`
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                const row = document.getElementById(`row-${registrationId}`);
-                const statusCell = document.getElementById(`status-${registrationId}`);
 
-                if (newStatus === 1) {
-                    row.classList.remove('rejected-row');
-                    row.classList.add('approved-row');
-                    statusCell.innerText = 'Onaylı';
-                    row.querySelector('.approve-btn').outerHTML = `<button class="reject-btn" onclick="updateStatus(${registrationId}, 0)">Reddet</button>`;
-                } else {
-                    row.classList.remove('approved-row');
-                    row.classList.add('rejected-row');
-                    statusCell.innerText = 'Onaysız';
-                    row.querySelector('.reject-btn').outerHTML = `<button class="approve-btn" onclick="updateStatus(${registrationId}, 1)">Onayla</button>`;
-                }
-            } else {
-                alert("Bir hata oluştu. Lütfen tekrar deneyin.");
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    }
-</script>
+
 </body>
 </html>

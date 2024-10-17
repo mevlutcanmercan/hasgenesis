@@ -155,6 +155,16 @@ tbody tr:hover {
         cursor: pointer;
     }
 
+    .approved {
+        background-color: #00ff3c; /* Yeşil arka plan */
+        color: #155724; /* Koyu yeşil yazı */
+    }
+
+    .rejected {
+        background-color: #ff4252; /* Kırmızı arka plan */
+        color: #721c24; /* Koyu kırmızı yazı */
+    }
+
 /* Mobil CSS */
 @media (max-width: 768px) {
     h2 {
