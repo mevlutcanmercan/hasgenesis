@@ -128,6 +128,12 @@ tbody tr:hover {
     background-color: #e9ecef;
 }
 
+.bib-input {
+    width: 60px;
+    padding: 3px;
+}
+
+
     .approved-row {
         background-color: #e6ffe6 !important; /* Yeşil ton */
     }
