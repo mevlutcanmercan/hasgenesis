@@ -27,32 +27,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->bind_param("iis", $registration_id, $user_id, $reason);
 
         if ($stmt->execute()) {
-            echo "<script>
-                    Swal.fire({
-                        title: 'Başarılı!',
-                        text: 'İptal isteğiniz gönderildi.',
-                        icon: 'success',
-                        confirmButtonText: 'Tamam'
-                    }).then(() => {
-                        window.location = 'account.php';
-                    });
-                  </script>";
+            echo "İptal sebebiniz başarıyla iletildi.";
+            header("Location: account.php"); // Tekrar yönlendirme yaparak formun tekrar gönderilmesini önler
+            exit();
         } else {
             echo "Kayıt başarısız: " . $conn->error;
         }
         $stmt->close();
     } else {
-        echo "<script>
-                Swal.fire({
-                    title: 'Hata!',
-                    text: 'Geçersiz veri girişi.',
-                    icon: 'error',
-                    confirmButtonText: 'Tamam'
-                });
-              </script>";
+        echo "Kayıt başarısız: Geçersiz veri";
     }
 }
+
 include 'bootstrap.php';
+
 // Kullanıcının kayıtlarını almak için sorgu
 $sql = "SELECT r.id AS registration_id, o.name AS organization_name, r.race_type, r.approval_status, r.organization_id
         FROM user_registrations ur

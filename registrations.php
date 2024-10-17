@@ -204,44 +204,50 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
 
-        // Kayıt işlemi
-        $stmt = $conn->prepare("INSERT INTO registrations (Bib, first_name, second_name, organization_id, race_type, category, feragatname, price_document, registration_price, created_time, approval_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)");
-        $race_type_string = implode(',', $selected_races);  // Düz metin olarak
-        $feragatname = $_FILES['waiver']['name'] ?? null;
-        $price_document = $_FILES['receipt']['name'] ?? null;
-        $status = 0; // Beklemede
+       // Kayıt işlemi
+$stmt = $conn->prepare("INSERT INTO registrations (Bib, first_name, second_name, organization_id, race_type, category, feragatname, price_document, registration_price, created_time, approval_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)");
+$race_type_string = implode(',', $selected_races);  // Düz metin olarak
+$feragatname = $_FILES['waiver']['name'] ?? null;
+$price_document = $_FILES['receipt']['name'] ?? null;
+$status = 0; // Beklemede
 
-        $stmt->bind_param("issssssssd", $bib, $user_details['name_users'], $user_details['surname_users'], $organization_id, $race_type_string, $category2, $feragatname, $price_document, $total_price, $status);
+$stmt->bind_param("issssssssd", $bib, $user_details['name_users'], $user_details['surname_users'], $organization_id, $race_type_string, $category2, $feragatname, $price_document, $total_price, $status);
 
-        if ($stmt->execute()) {
-            // En son eklenen kaydın ID'sini al
-            $registration_id = $conn->insert_id;
+if ($stmt->execute()) {
+    // En son eklenen kaydın ID'sini al
+    $registration_id = $conn->insert_id;
 
-            // Kategori bilgilerini yeni tabloya ekle
-            $stmt_category = $conn->prepare("INSERT INTO registration_categories (registration_id, category) VALUES (?, ?)");
-            $stmt_category->bind_param("is", $registration_id, $category);
-            if (!$stmt_category->execute()) {
-                echo "Kategori kaydı sırasında bir hata oluştu: " . $stmt_category->error;
-            }
+    // Kategori bilgilerini yeni tabloya ekle
+    $stmt_category = $conn->prepare("INSERT INTO registration_categories (registration_id, category) VALUES (?, ?)");
+    $stmt_category->bind_param("is", $registration_id, $category);
+    if (!$stmt_category->execute()) {
+        echo "Kategori kaydı sırasında bir hata oluştu: " . $stmt_category->error;
+    }
 
-            // Seçilen bisikletleri kaydet
-            foreach ($selected_races as $race) {
-                $bicycle_id = intval($selected_bicycles[$race]);
-                $stmt_bicycles = $conn->prepare("INSERT INTO registred_bicycles (registration_id, bicycles_id, race_type) VALUES (?, ?, ?)");
-                $stmt_bicycles->bind_param("iis", $registration_id, $bicycle_id, $race);
-                if (!$stmt_bicycles->execute()) {
-                    echo "Bisiklet kaydı sırasında bir hata oluştu: " . $stmt_bicycles->error;
-                }
-            }
-
-            echo "<script>alert('Kayıt başarılı!'); window.location.href = '/hasgenesis/account';</script>";
-
-        } else {
-            echo "<script>alert('Kayıt sırasında bir hata oluştu.');</script>";
+    // Seçilen bisikletleri kaydet
+    foreach ($selected_races as $race) {
+        $bicycle_id = intval($selected_bicycles[$race]);
+        $stmt_bicycles = $conn->prepare("INSERT INTO registred_bicycles (registration_id, bicycles_id, race_type) VALUES (?, ?, ?)");
+        $stmt_bicycles->bind_param("iis", $registration_id, $bicycle_id, $race);
+        if (!$stmt_bicycles->execute()) {
+            echo "Bisiklet kaydı sırasında bir hata oluştu: " . $stmt_bicycles->error;
         }
     }
-}
 
+    // Kullanıcı kayıtları tablosuna ekle
+    $stmt_user_registration = $conn->prepare("INSERT INTO user_registrations (user_id, registration_id) VALUES (?, ?)");
+    $stmt_user_registration->bind_param("ii", $user_id, $registration_id);
+    if (!$stmt_user_registration->execute()) {
+        echo "Kullanıcı kayıtları sırasında bir hata oluştu: " . $stmt_user_registration->error;
+    }
+
+    echo "<script>alert('Kayıt başarılı!'); window.location.href = '/hasgenesis/account';</script>";
+
+} else {
+    echo "<script>alert('Kayıt sırasında bir hata oluştu.');</script>";
+}
+}
+}
 ?>
     <!DOCTYPE html>
     <html lang="tr">
