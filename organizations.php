@@ -6,6 +6,10 @@ include 'bootstrap.php';     // Bootstrap CSS
 // Kullanıcı giriş kontrolü
 $user_id = isset($_SESSION['id_users']) ? $_SESSION['id_users'] : null; // Kullanıcı ID'si
 
+
+
+
+
 // Filtreleme değişkenleri
 $registration_time = isset($_POST['registration_time']) ? $_POST['registration_time'] : (isset($_GET['registration_time']) ? $_GET['registration_time'] : null);
 $category = isset($_POST['category']) ? $_POST['category'] : (isset($_GET['category']) ? $_GET['category'] : null);
@@ -116,115 +120,147 @@ $result = $conn->query($sql);
     </form>
 
     <div class="row">
-        <?php
-        // Eğer sonuç varsa, organizasyonları döngü ile yazdır
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                // Adres sütunundaki iframe kodu
-                $iframe = $row['adress']; // Adres (iframe) sütunu
+    <?php
+    // Eğer sonuç varsa, organizasyonları döngü ile yazdır
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            // Adres sütunundaki iframe kodu
+            $iframe = $row['adress']; // Adres (iframe) sütunu
 
-                // Kategorileri kontrol et
-                $categories = [];
-                if ($row['downhill']) {
-                    $categories[] = 'Downhill';
-                }
-                if ($row['enduro']) {
-                    $categories[] = 'Enduro';
-                }
-                if ($row['tour']) {
-                    $categories[] = 'Tour';
-                }
-                if ($row['ulumega']) {
-                    $categories[] = 'Ulumega';
-                }
-                if ($row['e_bike']) { // E-Bike kategorisi kontrolü
-                    $categories[] = 'E-Bike'; // E-Bike kategorisini ekle
-                }
-                $categories_list = implode(', ', $categories); // Kategorileri birleştir
-
-                echo "<div class='col-lg-12 mb-4'>
-                        <div class='card organization-card d-flex flex-row flex-wrap'> <!-- Flex-wrap ekledik -->
-                            <div class='card-content flex-grow-1 p-4'>
-                                <h5 class='card-title'>{$row['name']}</h5>
-                                <p class='card-text'><strong>Kategoriler:</strong> {$categories_list}</p>
-                                <p class='card-text'><strong>Tür:</strong> {$row['type']}</p> <!-- Tür bilgisi eklendi -->
-                                <p class='card-text'><strong>Kayıt Başlangıç Tarihi:</strong> {$row['register_start_date']}</p>
-                                <p class='card-text'><strong>Son Kayıt Günü:</strong> {$row['last_register_day']}</p>
-                                <p class='card-text'><strong>Detaylar:</strong> {$row['details']}</p>";
-
-                // Fiyatları yazdır
-                if (strtotime($row['last_register_day']) >= time()) { // Kayıt süresi geçmemişse fiyatları göster
-                    if (!is_null($row['downhill_price'])) {
-                        echo "<p class='card-text'><strong>Downhill Kategorisi Yarış Ücreti:</strong> {$row['downhill_price']} TL</p>";
-                    }
-                    if (!is_null($row['enduro_price'])) {
-                        echo "<p class='card-text'><strong>Enduro Kategorisi Yarış Ücreti:</strong> {$row['enduro_price']} TL</p>";
-                    }
-                    if (!is_null($row['tour_price'])) {
-                        echo "<p class='card-text'><strong>Tour Fiyatı:</strong> {$row['tour_price']} TL</p>";
-                    }
-                    if (!is_null($row['ulumega_price'])) {
-                        echo "<p class='card-text'><strong>Ulumega Fiyatı:</strong> {$row['ulumega_price']} TL</p>";
-                    }
-                    if (!is_null($row['ebike_price'])) { // E-Bike fiyatı kontrolü
-                        echo "<p class='card-text'><strong>E-Bike Fiyatı:</strong> {$row['ebike_price']} TL</p>"; // E-Bike fiyatını yazdır
-                    }
-                }
-
-                // Yarış detayları ve kuralları için PDF bağlantısı
-                echo "<p class='card-text'><strong>Detaylarını ve kurallarını indirmek için tıklayınız:</strong> ";
-
-                // PDF dosyası var mı kontrol et
-                if (!empty($row['race_details_pdf'])) {
-                    echo "<a href='{$row['race_details_pdf']}' target='_blank' class='btn btn-link'>PDF'i Aç</a>";
-                } else {
-                    echo "PDF mevcut değil.";
-                }
-                echo "</p>";
-
-                                // Yarış Sonuçları Kontrolü (mevcutsa gösterilecek)
-                $race_result_sql = "SELECT COUNT(*) AS result_count FROM race_results WHERE organization_id = {$row['id']}";
-                $race_result_result = $conn->query($race_result_sql);
-                $race_result_row = $race_result_result->fetch_assoc();
-                $has_results = $race_result_row['result_count'] > 0; // Sonuç var mı kontrolü
-
-
-                // Kayıt Ol butonu
-                $current_time = time(); // Şu anki zaman
-                $register_start_time = strtotime($row['register_start_date']); // Kayıt başlangıç zamanı
-                $register_end_time = strtotime($row['last_register_day']); // Kayıt bitiş zamanı
-
-                if ($current_time < $register_start_time) {
-                    // Kayıt süresi henüz başlamamışsa
-                    echo "<a href='#' class='btn btn-primary disabled-btn'>Kayıtlar Henüz Başlamamıştır!</a>";
-                } elseif ($current_time > $register_end_time) {
-                    // Kayıt süresi geçmişse, "Kayıt Süresi Bitmiştir!" mesajını göster
-                    echo "<a href='#' class='btn btn-primary disabled-btn'>Kayıt Süresi Bitmiştir!</a>";
-                } else {
-                    // Kayıt süresi devam ediyorsa, giriş yapmışsa "Kayıt Ol", giriş yapmamışsa "Giriş Yap ve Kayıt Ol" butonunu göster
-                    if ($user_id) {
-                        echo "<a href='registrations.php?organization_id={$row['id']}' class='btn btn-primary'>Kayıt Ol</a>";
-                    } else {
-                        echo "<a href='login.php' class='btn btn-primary'>Giriş Yap ve Kayıt Ol</a>";
-                    }
-                }
-                                    // Sonuçları Görüntüle butonunu ekleme
-                if ($has_results) {
-                    echo "<a href='raceresults.php?organization_id={$row['id']}' class='btn btn-primary' style='margin-left: 20px;'>Sonuçları Görüntüle</a>";
-                }
-                echo "      </div>
-                            <div class='map-container'>
-                                <h6 class='map-title'>Konum</h6> <!-- Konum başlığı -->
-                                {$iframe} <!-- Harita iframe burada gösteriliyor -->
-                            </div>
-                        </div>
-                      </div>";
+            // Kategorileri kontrol et
+            $categories = [];
+            if ($row['downhill']) {
+                $categories[] = 'Downhill';
             }
-        } else {
-            echo "<div class='col-12'><p class='text-center'>Kayıt bulunamadı.</p></div>";
+            if ($row['enduro']) {
+                $categories[] = 'Enduro';
+            }
+            if ($row['tour']) {
+                $categories[] = 'Tour';
+            }
+            if ($row['ulumega']) {
+                $categories[] = 'Ulumega';
+            }
+            if ($row['e_bike']) { // E-Bike kategorisi kontrolü
+                $categories[] = 'E-Bike'; // E-Bike kategorisini ekle
+            }
+            $categories_list = implode(', ', $categories); // Kategorileri birleştir
+
+            echo "<div class='col-lg-12 mb-4'>
+                    <div class='card organization-card d-flex flex-row flex-wrap'> <!-- Flex-wrap ekledik -->
+                        <div class='card-content flex-grow-1 p-4'>
+                            <h5 class='card-title'>{$row['name']}</h5>
+                            <p class='card-text'><strong>Kategoriler:</strong> {$categories_list}</p>
+                            <p class='card-text'><strong>Tür:</strong> {$row['type']}</p> <!-- Tür bilgisi eklendi -->
+                            <p class='card-text'><strong>Kayıt Başlangıç Tarihi:</strong> {$row['register_start_date']}</p>
+                            <p class='card-text'><strong>Son Kayıt Günü:</strong> {$row['last_register_day']}</p>
+                            <p class='card-text'><strong>Detaylar:</strong> {$row['details']}</p>";
+
+            // Fiyatları yazdır
+            if (strtotime($row['last_register_day']) >= time()) { // Kayıt süresi geçmemişse fiyatları göster
+                if (!is_null($row['downhill_price'])) {
+                    echo "<p class='card-text'><strong>Downhill Kategorisi Yarış Ücreti:</strong> {$row['downhill_price']} TL</p>";
+                }
+                if (!is_null($row['enduro_price'])) {
+                    echo "<p class='card-text'><strong>Enduro Kategorisi Yarış Ücreti:</strong> {$row['enduro_price']} TL</p>";
+                }
+                if (!is_null($row['tour_price'])) {
+                    echo "<p class='card-text'><strong>Tour Fiyatı:</strong> {$row['tour_price']} TL</p>";
+                }
+                if (!is_null($row['ulumega_price'])) {
+                    echo "<p class='card-text'><strong>Ulumega Fiyatı:</strong> {$row['ulumega_price']} TL</p>";
+                }
+                if (!is_null($row['ebike_price'])) { // E-Bike fiyatı kontrolü
+                    echo "<p class='card-text'><strong>E-Bike Fiyatı:</strong> {$row['ebike_price']} TL</p>"; // E-Bike fiyatını yazdır
+                }
+            }
+
+            // Yarış detayları ve kuralları için PDF bağlantısı
+            echo "<p class='card-text'><strong>Detaylarını ve kurallarını indirmek için tıklayınız:</strong> ";
+
+            // PDF dosyası var mı kontrol et
+            if (!empty($row['race_details_pdf'])) {
+                echo "<a href='{$row['race_details_pdf']}' target='_blank' class='btn btn-link'>PDF'i Aç</a>";
+            } else {
+                echo "PDF mevcut değil.";
+            }
+            echo "</p>";
+
+            // Yarış Sonuçları Kontrolü (mevcutsa gösterilecek)
+            $race_result_sql = "SELECT COUNT(*) AS result_count FROM race_results WHERE organization_id = {$row['id']}";
+            $race_result_result = $conn->query($race_result_sql);
+            $race_result_row = $race_result_result->fetch_assoc();
+            $has_results = $race_result_row['result_count'] > 0; // Sonuç var mı kontrolü
+
+            // Kayıt Ol/Kayıt Olundu butonu
+            $current_time = time(); // Şu anki zaman
+            $register_start_time = strtotime($row['register_start_date']); // Kayıt başlangıç zamanı
+            $register_end_time = strtotime($row['last_register_day']); // Kayıt bitiş zamanı
+
+            // Kullanıcının kayıt olduğu organizasyonları kontrol et
+            $is_registered = false; // Kullanıcının kayıtlı olup olmadığını tutan değişken
+            $approval_status = null; // Onay durumunu tutan değişken
+
+            if ($user_id) {
+                $registration_sql = "
+                    SELECT r.organization_id, r.approval_status
+                    FROM user_registrations ur
+                    JOIN registrations r ON ur.registration_id = r.id
+                    WHERE ur.user_id = $user_id
+                ";
+                $registration_result = $conn->query($registration_sql);
+
+                // Kayıtlı organizasyonları kontrol et
+                while ($registration_row = $registration_result->fetch_assoc()) {
+                    if ($registration_row['organization_id'] == $row['id']) {
+                        $is_registered = true; // Kullanıcı kayıtlıysa true olarak ayarla
+                        $approval_status = $registration_row['approval_status']; // Onay durumunu al
+                        break;
+                    }
+                }
+            }
+
+            if ($current_time < $register_start_time) {
+                // Kayıt süresi henüz başlamamışsa
+                echo "<a href='#' class='btn btn-primary disabled-btn'>Kayıtlar Henüz Başlamamıştır!</a>";
+            } elseif ($current_time > $register_end_time) {
+                // Kayıt süresi geçmişse, "Kayıt Süresi Bitmiştir!" mesajını göster
+                echo "<a href='#' class='btn btn-primary disabled-btn'>Kayıt Süresi Bitmiştir!</a>";
+            } elseif ($is_registered) {
+                // Eğer kullanıcı kayıtlıysa onay durumuna göre mesaj göster
+                if ($approval_status == 0) {
+                    echo "<a href='#' class='btn btn-warning disabled-btn'>Kayıt Olundu - Onay Bekleniyor</a>";
+                } elseif ($approval_status == 1) {
+                    echo "<a href='#' class='btn btn-success disabled-btn'>Kayıt Olundu - Onaylandı</a>";
+                }
+            } else {
+                // Kayıt süresi devam ediyorsa ve kullanıcı kayıtlı değilse "Kayıt Ol" butonunu göster
+                if ($user_id) {
+                    echo "<a href='registrations.php?organization_id={$row['id']}' class='btn btn-primary'>Kayıt Ol</a>";
+                } else {
+                    echo "<a href='login.php' class='btn btn-primary'>Giriş Yap ve Kayıt Ol</a>";
+                }
+            }
+
+            // Sonuçları Görüntüle butonunu ekleme
+            if ($has_results) {
+                echo "<a href='raceresults.php?organization_id={$row['id']}' class='btn btn-primary' style='margin-left: 20px;'>Sonuçları Görüntüle</a>";
+            }
+
+            echo "      </div>
+                        <div class='map-container'>
+                            <h6 class='map-title'>Konum</h6> <!-- Konum başlığı -->
+                            {$iframe} <!-- Harita iframe burada gösteriliyor -->
+                        </div>
+                    </div>
+                </div>";
         }
-        ?>
-    </div>
+    } else {
+        echo "<div class='col-12'><p class='text-center'>Kayıt bulunamadı.</p></div>";
+    }
+    ?>
+</div>
+
 
     <!-- Sayfalama -->
 <!-- Sayfalama -->
