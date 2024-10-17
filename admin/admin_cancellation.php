@@ -90,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <td><?php echo htmlspecialchars($row['reason']); ?></td>
                         <td>Beklemede</td>
                         <td>
-                            <form action="admin_cancellations.php" method="post" id="action-form-<?php echo $row['cancellation_id']; ?>">
+                            <form action="admin_cancellation.php" method="post" id="action-form-<?php echo $row['cancellation_id']; ?>">
                                 <input type="hidden" name="cancellation_id" value="<?php echo $row['cancellation_id']; ?>">
                                 <input type="hidden" name="registration_id" value="<?php echo $row['registration_id']; ?>">
                                 <button type="button" class="approve-button" onclick="confirmAction('approve', <?php echo $row['cancellation_id']; ?>)">Onayla</button>
