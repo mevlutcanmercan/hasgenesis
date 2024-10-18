@@ -21,13 +21,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $registration_id = isset($_POST['registration_id']) ? intval($_POST['registration_id']) : null;
     $reason = isset($_POST['reason']) ? trim($_POST['reason']) : null;
 
-    if ($registration_id && $reason) {
+    // Kullanıcı id'sini oturumdan alıyoruz (id_users yerine)
+    $user_id = $_SESSION['id_users']; // Oturumdan doğru user_id alınmalı
+
+    // Kullanıcı ID boşsa işlem yapılmaz
+    if (!$user_id) {
+        echo "Kullanıcı oturumunda sorun var. Lütfen tekrar giriş yapınız.";
+        exit();
+    }
+
+    // Aynı kayda daha önce iptal talebi gönderilmiş mi kontrol et
+    $checkStmt = $conn->prepare("SELECT id FROM cancellations WHERE registration_id = ? AND user_id = ?");
+    $checkStmt->bind_param("ii", $registration_id, $user_id);
+    $checkStmt->execute();
+    $checkStmt->store_result();
+
+    if ($checkStmt->num_rows == 0 && $registration_id && $reason) {
         // İptal kayıtlarını ekle
         $stmt = $conn->prepare("INSERT INTO cancellations (registration_id, user_id, reason) VALUES (?, ?, ?)");
         $stmt->bind_param("iis", $registration_id, $user_id, $reason);
 
         if ($stmt->execute()) {
-            echo "İptal sebebiniz başarıyla iletildi.";
+            $_SESSION['success_message'] = "İptal sebebiniz başarıyla iletildi.";
             header("Location: account.php"); // Tekrar yönlendirme yaparak formun tekrar gönderilmesini önler
             exit();
         } else {
@@ -35,14 +50,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         $stmt->close();
     } else {
-        echo "Kayıt başarısız: Geçersiz veri";
+        echo "Kayıt başarısız: Zaten iptal talebi gönderildi veya geçersiz veri.";
     }
+    $checkStmt->close();
 }
+
 
 include 'bootstrap.php';
 
 // Kullanıcının kayıtlarını almak için sorgu
-$sql = "SELECT r.id AS registration_id, o.name AS organization_name, r.race_type, r.approval_status, r.organization_id
+$sql = "SELECT r.id AS registration_id, r.Bib, o.name AS organization_name, r.race_type, r.approval_status, r.organization_id
         FROM user_registrations ur
         JOIN registrations r ON ur.registration_id = r.id
         JOIN organizations o ON r.organization_id = o.id
@@ -418,9 +435,9 @@ $user_bikes_result = $user_bikes_stmt->get_result();
             </form>
         </div>
 
-               <!-- Cancellation Tab -->
-
-                    <div class="tab-pane fade" id="registrations">
+        
+        <!-- Kayıtlarım kısmı -->
+                <div class="tab-pane fade" id="registrations">
             <h2>Kayıtlarım</h2>
             <div class="tab-content">
                 <table>
@@ -428,17 +445,60 @@ $user_bikes_result = $user_bikes_stmt->get_result();
                         <th>Organizasyon</th>
                         <th>Yarış Türü</th>
                         <th>Onay Durumu</th>
+                        <th>Bib Numarası</th> <!-- Yeni sütun -->
                         <th>İptal Et</th>
                     </tr>
                     <?php while($row = $result->fetch_assoc()): ?>
                         <tr>
                             <td><?php echo htmlspecialchars($row['organization_name']); ?></td>
                             <td><?php echo htmlspecialchars($row['race_type']); ?></td>
-                            <td><?php echo $row['approval_status'] ? 'Onaylandı' : 'Beklemede'; ?></td>
                             <td>
-                                <?php if ($row['approval_status'] == 0): ?>
+                                <?php 
+                                // Onay durumu kontrolü
+                                if ($row['approval_status'] == 0) {
+                                    echo 'Beklemede';
+                                } elseif ($row['approval_status'] == 1) {
+                                    echo 'Onaylandı';
+                                } elseif ($row['approval_status'] == 2) {
+                                    echo 'İptal Talebiniz Reddedildi';
+                                }
+                                ?>
+                            </td>
+                            <td>
+                                <?php 
+                                // Kayıtlar tablosundaki Bib numarasını kontrol et
+                                if (isset($row['Bib']) && $row['Bib'] != 0) {
+                                    echo htmlspecialchars($row['Bib']);
+                                } else {
+                                    echo 'Henüz atanmamıştır';
+                                }
+                                ?>
+                            </td>
+                            <td>
+                                <?php
+                                // Kullanıcı daha önce iptal talebi gönderdi mi kontrol et
+                                $cancelCheckSql = "SELECT is_approved FROM cancellations WHERE registration_id = ? AND user_id = ?";
+                                $cancelCheckStmt = $conn->prepare($cancelCheckSql);
+                                $cancelCheckStmt->bind_param("ii", $row['registration_id'], $_SESSION['id_users']);
+                                $cancelCheckStmt->execute();
+                                $cancelCheckStmt->store_result();
+                                $cancelCheckStmt->bind_result($is_approved);
+                                $cancelCheckStmt->fetch();
+
+                                // İptal talebi daha önce gönderilmiş mi ve onay durumu ne
+                                if ($cancelCheckStmt->num_rows > 0) {
+                                    // Eğer iptal talebi reddedilmişse (is_approved == 2)
+                                    if ($is_approved == 2) {
+                                        echo '<span>İptal Talebiniz Reddedildi</span>';
+                                    } elseif ($is_approved == 1) {
+                                        echo '<span>İptal Talebi Onaylandı</span>';
+                                    } else {
+                                        echo '<span>İptal Talebi Gönderildi</span>';
+                                    }
+                                } elseif ($row['approval_status'] == 0) { ?>
+                                    <!-- İptal butonu sadece onaylanmamışsa gösterilecek -->
                                     <button class="cancel-button" onclick="showReasonForm(<?php echo $row['registration_id']; ?>)">İptal Et</button>
-                                    <div id="reason-form-<?php echo $row['registration_id']; ?>" class="cancel-reason">
+                                    <div id="reason-form-<?php echo $row['registration_id']; ?>" class="cancel-reason" style="display: none;">
                                         <form action="account.php" method="post">
                                             <label for="reason">İptal Sebebi:</label>
                                             <textarea name="reason" id="reason" rows="3" required></textarea>
@@ -446,15 +506,27 @@ $user_bikes_result = $user_bikes_stmt->get_result();
                                             <button type="submit" class="submit-reason">Gönder</button>
                                         </form>
                                     </div>
-                                <?php else: ?>
-                                    Onaylandı
-                                <?php endif; ?>
+                                <?php } else {
+                                    echo 'Onaylandı';
+                                }
+                                $cancelCheckStmt->close();
+                                ?>
                             </td>
                         </tr>
                     <?php endwhile; ?>
                 </table>
             </div>
         </div>
+
+        <script>
+            function showReasonForm(registrationId) {
+                document.getElementById('reason-form-' + registrationId).style.display = 'block';
+            }
+        </script>
+
+
+
+
                     <!-- My Races Tab -->
             <div class="tab-pane fade" id="races">
                 <h2>Yarışlarım</h2>

@@ -56,7 +56,7 @@ body {
 
 .tab-content {
     color: white;
-    width: 60%;
+    width: 90%;
     max-width: 800px;
     background: linear-gradient(135deg, #8f8f8f, #858585, #000000e3);
     padding: 30px; /* Daha geniş padding */
