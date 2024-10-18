@@ -16,6 +16,12 @@ h1 {
     text-shadow: 3px 3px 3px #999;
 }
 
+h3 {
+    
+    text-align: center;
+    
+}
+
 /* Ekip Üyesi Kartları CSS */
 .medya-list {
     display: flex; /* Flexbox kullanıldı */

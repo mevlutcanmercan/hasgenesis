@@ -26,9 +26,10 @@ if (isset($_POST['delete'])) {
                     '../' . $rowImages['detailsImagePath4'],
                     '../' . $rowImages['detailsImagePath5'],
                 ];
-                
+
                 foreach ($imagePaths as $path) {
-                    if (!empty($path) && file_exists($path)) {
+                    // Hem boşluk hem de dosyanın var olup olmadığını kontrol et
+                    if (!empty($path) && $path !== '../' && file_exists($path)) {
                         unlink($path); // Dosyayı sil
                     }
                 }

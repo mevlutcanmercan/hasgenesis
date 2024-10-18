@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=1100">
     <link rel="stylesheet" href="admincss/project-add.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.1/css/boxicons.min.css" rel="stylesheet"> <!-- Boxicons CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11">
     <title>Proje Düzenle</title>
 </head>
 <body>
@@ -110,17 +110,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="form-group">
                 <label for="name">Proje Adı:</label>
                 <input type="text" id="name" name="name" maxlength="100" value="<?php echo htmlspecialchars($project['name']); ?>" required>
-                <span class="char-count" id="name-count">0/55</span>
+                <span class="char-count" id="name-count">0/100</span>
             </div>
             <div class="form-group">
                 <label for="summary">Proje Özeti:</label>
                 <textarea id="summary" name="summary" rows="4" maxlength="200" required><?php echo htmlspecialchars($project['summary']); ?></textarea>
-                <span class="char-count" id="summary-count">0/175</span>
+                <span class="char-count" id="summary-count">0/200</span>
             </div>
             <div class="form-group">
                 <label for="text">Proje Metni:</label>
                 <textarea id="text" name="text" rows="4" required><?php echo htmlspecialchars($project['text']); ?></textarea>
             </div>
+            <h3>Resimler (Max: 5mb)</h3>
             <div class="form-group">
                 <label for="image1">Karttaki Vitrin Fotoğrafı (Zorunlu):</label>
                 <input type="file" id="image1" name="image1" accept="image/*" onchange="previewImage(this, 'preview1')">
@@ -173,8 +174,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         // Karakter sayacı ve sınır kontrolü
-        const maxNameLength = 55;
-        const maxSummaryLength = 175;
+        const maxNameLength = 100;
+        const maxSummaryLength = 200;
 
         // Proje Adı için karakter sınırı
         const nameInput = document.getElementById('name');
@@ -207,11 +208,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             window.location.href = 'project-managament.php'; // Belirtilen URL'ye yönlendirme
         });
 
-        // Resim önizleme fonksiyonu
+        // Resim önizleme ve boyut kontrolü fonksiyonu
         function previewImage(input, previewID) {
             const preview = document.getElementById(previewID);
             const file = input.files[0];
+
             if (file) {
+                // Dosya boyutunu kontrol et (5MB)
+                const maxFileSize = 5 * 1024 * 1024; // 5 MB
+                if (file.size > maxFileSize) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Hata!',
+                        text: 'Dosya boyutu 5 MB\'dan büyük olamaz! Lütfen başka bir dosya seçin.',
+                    });
+                    input.value = ''; // Hatalı dosyayı temizle
+                    preview.style.display = "none"; // Önizlemeyi gizle
+                    return;
+                }
+
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     preview.src = e.target.result;

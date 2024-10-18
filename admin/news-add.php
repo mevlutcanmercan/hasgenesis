@@ -24,12 +24,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Resim yollarını saklamak için bir dizi oluştur
     $imagePaths = [];
 
+    // Maksimum dosya boyutu 5MB (byte cinsinden)
+    $maxFileSize = 5 * 1024 * 1024;
+
     // Her bir resmi yükle
     for ($i = 1; $i <= 3; $i++) {
         if (!empty($_FILES['image' . $i]['name'])) {
             $imagePath = $_FILES['image' . $i]['name'];
             $targetDirectory = "../images/"; // Resimlerin yükleneceği klasör
             $targetFile = $targetDirectory . basename($imagePath);
+            $imageSize = $_FILES['image' . $i]['size']; // Dosya boyutunu al
+
+            // Eğer dosya boyutu 5 MB'tan büyükse hata mesajı oluştur
+            if ($imageSize > $maxFileSize) {
+                $alertMessage = "Resim " . $i . " 5 MB'tan büyük olamaz!";
+                $alertType = 'error';
+                break; // Döngüden çık
+            }
 
             // Resmi yükle
             if (move_uploaded_file($_FILES['image' . $i]['tmp_name'], $targetFile)) {
@@ -43,29 +54,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // İlk resmi vitrin fotoğrafı olarak ayarla
-    if (empty($imagePaths[0])) {
-        $alertMessage = "En az bir vitrin fotoğrafı eklemelisiniz!";
-        $alertType = 'error';
-    } else {
-        // SQL sorgusunu hazırla
-        $sql = "INSERT INTO news (name, summary, text, image_path1, image_path2, image_path3) VALUES (?, ?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-
-        // Bind param ile değişkenleri bağla
-        $stmt->bind_param("ssssss", $name, $summary, $text, $imagePaths[0], $imagePaths[1], $imagePaths[2]);
-
-        // Sorguyu çalıştır
-        if ($stmt->execute()) {
-            // Yönlendirme yap
-            header("Location: " . $_SERVER['PHP_SELF'] . "?status=success");
-            exit; // Yönlendirme yaptıktan sonra çıkış yap
-        } else {
-            $alertMessage = "Hata: " . $conn->error;
+    // Eğer hata mesajı yoksa ve ilk resim vitrin fotoğrafı ise veritabanına ekle
+    if ($alertMessage === '') {
+        if (empty($imagePaths[0])) {
+            $alertMessage = "En az bir vitrin fotoğrafı eklemelisiniz!";
             $alertType = 'error';
-        }
+        } else {
+            // SQL sorgusunu hazırla
+            $sql = "INSERT INTO news (name, summary, text, image_path1, image_path2, image_path3) VALUES (?, ?, ?, ?, ?, ?)";
+            $stmt = $conn->prepare($sql);
 
-        $stmt->close();
+            // Bind param ile değişkenleri bağla
+            $stmt->bind_param("ssssss", $name, $summary, $text, $imagePaths[0], $imagePaths[1], $imagePaths[2]);
+
+            // Sorguyu çalıştır
+            if ($stmt->execute()) {
+                // Yönlendirme yap
+                header("Location: " . $_SERVER['PHP_SELF'] . "?status=success");
+                exit; // Yönlendirme yaptıktan sonra çıkış yap
+            } else {
+                $alertMessage = "Hata: " . $conn->error;
+                $alertType = 'error';
+            }
+
+            $stmt->close();
+        }
     }
 }
 ?>
@@ -76,14 +89,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1100">
     <link rel="stylesheet" href="admincss/news-add.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.1/css/boxicons.min.css" rel="stylesheet"> <!-- Boxicons CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Yeni Haber Ekle</title>
 </head>
 <body>
     <div class="form-container">
-                <!-- Geri Butonu -->
-                <div class="back-button">
+        <div class="back-button">
             <i class='bx bx-arrow-back'></i>
         </div>
         <h1>Yeni Haber Ekle</h1>
@@ -103,6 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="text">Haber Metni:</label>
                 <textarea id="text" name="text" rows="4" required></textarea>
             </div>
+            <h3>Fotoğaflar (Max: 5mb)</h3>
             <div class="form-group">
                 <label for="image1">Vitrin Fotoğrafı (Zorunlu):</label>
                 <input type="file" id="image1" name="image1" accept="image/*" required>
@@ -117,63 +130,72 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <button type="submit" class="submit-button">Ekle</button>
         </form>
-
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
     <script>
-        // Karakter sayacı ve sınır kontrolü
-        const maxNameLength = 55;
-        const maxSummaryLength = 175;
-
-        // Proje Adı için karakter sınırı
-        const nameInput = document.getElementById('name');
-        const nameCount = document.getElementById('name-count');
-        nameInput.addEventListener('input', function() {
-            const count = this.value.length;
-            nameCount.textContent = `${count}/${maxNameLength}`;
-
-            // Karakter sayısı sınırı aşarsa fazla karakterleri kaldır
-            if (count > maxNameLength) {
-                this.value = this.value.substring(0, maxNameLength);
-                nameCount.textContent = `${maxNameLength}/${maxNameLength}`;
+    // SweetAlert2 mesajı göster
+    <?php if ($alertType === 'success' || $alertType === 'error'): ?>
+        Swal.fire({
+            title: "<?php echo ($alertType === 'success') ? 'Başarılı!' : 'Hata!'; ?>",
+            text: "<?php echo $alertMessage; ?>",
+            icon: "<?php echo $alertType; ?>",
+            confirmButtonText: 'Tamam'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "<?php echo $_SERVER['PHP_SELF']; ?>";
             }
         });
+    <?php endif; ?>
 
-        // Proje Özeti için karakter sınırı
-        const summaryInput = document.getElementById('summary');
-        const summaryCount = document.getElementById('summary-count');
-        summaryInput.addEventListener('input', function() {
-            const count = this.value.length;
-            summaryCount.textContent = `${count}/${maxSummaryLength}`;
+    // Karakter sayacı ve sınır kontrolü
+    const maxNameLength = 55;
+    const maxSummaryLength = 175;
 
-            // Karakter sayısı sınırı aşarsa fazla karakterleri kaldır
-            if (count > maxSummaryLength) {
-                this.value = this.value.substring(0, maxSummaryLength);
-                summaryCount.textContent = `${maxSummaryLength}/${maxSummaryLength}`;
+    const nameInput = document.getElementById('name');
+    const nameCount = document.getElementById('name-count');
+    nameInput.addEventListener('input', function() {
+        const count = this.value.length;
+        nameCount.textContent = `${count}/${maxNameLength}`;
+        if (count > maxNameLength) {
+            this.value = this.value.substring(0, maxNameLength);
+            nameCount.textContent = `${maxNameLength}/${maxNameLength}`;
+        }
+    });
+
+    const summaryInput = document.getElementById('summary');
+    const summaryCount = document.getElementById('summary-count');
+    summaryInput.addEventListener('input', function() {
+        const count = this.value.length;
+        summaryCount.textContent = `${count}/${maxSummaryLength}`;
+        if (count > maxSummaryLength) {
+            this.value = this.value.substring(0, maxSummaryLength);
+            summaryCount.textContent = `${maxSummaryLength}/${maxSummaryLength}`;
+        }
+    });
+
+    // Geri butonu tıklandığında belirli bir URL'ye yönlendir
+    document.querySelector('.back-button').addEventListener('click', function() {
+        window.location.href = 'newsManagement'; // Belirtilen URL'ye yönlendirme
+    });
+
+    // Resim dosya boyutu kontrolü (JavaScript tarafı)
+    const maxFileSize = 5 * 1024 * 1024; // 5 MB
+    const imageInputs = document.querySelectorAll('input[type="file"]');
+    imageInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file && file.size > maxFileSize) {
+                Swal.fire({
+                    title: "Hata!",
+                    text: "Dosya boyutu 5 MB'tan büyük olamaz!",
+                    icon: "error",
+                    confirmButtonText: 'Tamam'
+                });
+                this.value = ''; // Dosya seçim alanını temizle
             }
         });
-
-        // Geri butonu tıklandığında belirli bir URL'ye yönlendir
-        document.querySelector('.back-button').addEventListener('click', function() {
-            window.location.href = 'newsManagement'; // Belirtilen URL'ye yönlendirme
-        });
-
-
-        // SweetAlert mesajı göster
-        <?php if ($alertType === 'success' || $alertType === 'error'): ?>
-            swal({
-                title: "<?php echo $alertType === 'success' ? 'Başarılı!' : 'Hata!'; ?>",
-                text: "<?php echo $alertMessage; ?>",
-                icon: "<?php echo $alertType; ?>",
-                buttons: true,
-                dangerMode: true,
-            }).then((willRedirect) => {
-                if (willRedirect) {
-                    window.location.href = "<?php echo $_SERVER['PHP_SELF']; ?>";
-                }
-            });
-        <?php endif; ?>
+    });
     </script>
+
 </body>
 </html>

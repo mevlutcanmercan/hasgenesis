@@ -37,12 +37,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $news['image_path3'],
     ];
 
+    // Maksimum dosya boyutu 5MB (byte cinsinden)
+    $maxFileSize = 5 * 1024 * 1024;
+
     // Her bir resmi yükle
     for ($i = 1; $i <= 3; $i++) {
         if (!empty($_FILES['image' . $i]['name'])) {
             $imagePath = $_FILES['image' . $i]['name'];
             $targetDirectory = "../images/"; // Resimlerin yükleneceği klasör
             $targetFile = $targetDirectory . basename($imagePath);
+            $imageSize = $_FILES['image' . $i]['size']; // Resmin boyutu (byte cinsinden)
+
+            // Eğer dosya boyutu 5 MB'tan büyükse hatayı göster ve yüklemeye izin verme
+            if ($imageSize > $maxFileSize) {
+                $alertMessage = "Resim " . $i . " 5 MB'tan büyük olamaz!";
+                $alertType = 'error';
+                break;
+            }
 
             // Eski resmi sil
             if (!empty($imagePaths[$i - 1])) {
@@ -119,6 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="text">Haber Metni:</label>
                 <textarea id="text" name="text" rows="4" required><?php echo htmlspecialchars($news['text']); ?></textarea>
             </div>
+            <h3>Fotoğaflar (Max: 5mb)</h3>
             <div class="form-group">
                 <label for="image1">Karttaki Vitrin Fotoğrafı (Zorunlu):</label>
                 <input type="file" id="image1" name="image1" accept="image/*" onchange="previewImage(this, 'preview1')">
@@ -191,6 +203,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         function previewImage(input, previewID) {
             const preview = document.getElementById(previewID);
             if (input.files && input.files[0]) {
+                // Eğer dosya boyutu 5 MB'tan büyükse uyarı göster ve önizleme yapma
+                const maxFileSize = 5 * 1024 * 1024;
+                if (input.files[0].size > maxFileSize) {
+                    Swal.fire({
+                        title: 'Hata',
+                        text: 'Dosya boyutu 5 MB\'tan büyük olamaz!',
+                        icon: 'error',
+                        confirmButtonText: 'Tamam'
+                    });
+                    input.value = ''; // Dosya seçimini iptal et
+                    preview.style.display = 'none';
+                    return;
+                }
+
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     preview.src = e.target.result;

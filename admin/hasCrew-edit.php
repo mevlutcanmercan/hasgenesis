@@ -42,9 +42,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $crew['detailsImagePath5'],
     ];
 
+    // Dosya boyutunu kontrol etmek için
+    $maxFileSize = 5 * 1024 * 1024; // 5MB
+
     // Her bir resmi yükle
     for ($i = 1; $i <= 6; $i++) {
         if (!empty($_FILES['image' . $i]['name'])) {
+            // Dosya boyutunu kontrol et
+            if ($_FILES['image' . $i]['size'] > $maxFileSize) {
+                $alertMessage = 'Yüklenen dosya ' . $_FILES['image' . $i]['name'] . ' 5MB\'tan büyük olamaz!';
+                $alertType = 'error';
+                break; // Hata durumunda döngüden çık
+            }
+
             $imagePath = $_FILES['image' . $i]['name'];
             $targetDirectory = "../images/"; // Resimlerin yükleneceği klasör
             $targetFile = $targetDirectory . basename($imagePath);
@@ -68,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($imagePaths[0])) {
         $alertMessage = "Slider fotoğrafı zorunludur!";
         $alertType = 'error';
-    } else {
+    } elseif (empty($alertMessage)) { // Hata yoksa SQL sorgusunu hazırla
         // SQL sorgusunu hazırla
         $sql = "UPDATE has_crew SET memberName = ?, memberDetail = ?, sliderImagePath = ?, detailsImagePath = ?, detailsImagePath2 = ?, detailsImagePath3 = ?, detailsImagePath4 = ?, detailsImagePath5 = ?, instagram = ?, twitter = ?, youtube = ? WHERE id = ?";
         $stmt = $conn->prepare($sql);
@@ -132,6 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="youtube">YouTube (nickname formatında):</label>
                 <input type="text" id="youtube" name="youtube" value="<?php echo htmlspecialchars($crew['youtube']); ?>">
             </div>
+            <h3>Fotoğraflar (Max: 5mb)</h3>
             <div class="form-group">
                 <label for="image1">Slider Fotoğrafı (Zorunlu):</label>
                 <input type="file" id="image1" name="image1" accept="image/*" onchange="previewImage(this, 'preview1')">
@@ -210,6 +221,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         });
     <?php endif; ?>
-</script>
+    </script>
 </body>
 </html>

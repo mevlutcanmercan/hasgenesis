@@ -4,6 +4,7 @@ include 'sidebar.php';
 
 $alertMessage = '';
 $alertType = '';
+$isSuccess = false; // Başarılı olup olmadığını izlemek için değişken ekliyoruz
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $memberName = $_POST['memberName'];
@@ -46,9 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Sorguyu çalıştır
         if ($stmt->execute()) {
-            $alertMessage = "Yeni üye başarıyla eklendi!";
-            $alertType = 'success';
-            header("Location: hascrewmanagement");
+            $isSuccess = true; // Başarı durumunu değiştir
         } else {
             $alertMessage = "Hata: " . $conn->error;
             $alertType = 'error';
@@ -58,6 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="tr">
@@ -105,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php for ($i = 1; $i <= 6; $i++): ?>
             <div class="form-group">
                 <label for="image<?php echo $i; ?>">Resim <?php echo $i; ?><?php echo $i === 1 ? ' (Slider Resmi Zorunlu)' : ''; ?>:</label>
-                <input type="file" id="image<?php echo $i; ?>" name="image<?php echo $i; ?>" accept="image/*" onchange="previewImage(this, 'preview<?php echo $i; ?>')">
+                <input type="file" id="image<?php echo $i; ?>" name="image<?php echo $i; ?>" accept="image/*" onchange="previewImage(this, 'preview<?php echo $i; ?>'); validateFileSize(this)">
                 <img id="preview<?php echo $i; ?>" style="max-width: 100px; display: none;">
             </div>
             <?php endfor; ?>
@@ -115,37 +115,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        function previewImage(input, previewID) {
-            const preview = document.getElementById(previewID);
-            const file = input.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.style.display = "block";
-                };
-                reader.readAsDataURL(file);
-            } else {
-                preview.style.display = "none";
-            }
-        }
-
-        document.querySelector('.back-button').addEventListener('click', function() {
-            window.location.href = 'hasCrewManagement.php';
-        });
-
-        document.getElementById('memberForm').addEventListener('submit', function(event) {
-            const sliderImageInput = document.getElementById('image1');
-            if (!sliderImageInput.files.length) {
-                event.preventDefault(); // Formu gönderme
+<script>
+    function previewImage(input, previewID) {
+        const preview = document.getElementById(previewID);
+        const file = input.files[0];
+        if (file) {
+            // Dosya boyutu kontrolü
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            if (file.size > maxSize) {
                 Swal.fire({
-                    icon: 'error',
                     title: 'Hata!',
-                    text: 'En az bir slider fotoğrafı eklemelisiniz!',
+                    text: 'Yüklenen dosya 5MB\'tan büyük olamaz!',
+                    icon: 'error',
+                    confirmButtonText: 'Tamam',
+                }).then(() => {
+                    input.value = ""; // Hatalı dosyayı sıfırla
+                    preview.style.display = "none"; // Önizlemeyi gizle
                 });
+                return; // Fonksiyonu sonlandır
             }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = "block";
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.style.display = "none";
+        }
+    }
+
+    document.querySelector('.back-button').addEventListener('click', function() {
+        window.location.href = 'hasCrewManagement.php';
+    });
+
+    document.getElementById('memberForm').addEventListener('submit', function(event) {
+        const sliderImageInput = document.getElementById('image1');
+        if (!sliderImageInput.files.length) {
+            event.preventDefault(); // Formu gönderme
+            Swal.fire({
+                icon: 'error',
+                title: 'Hata!',
+                text: 'En az bir slider fotoğrafı eklemelisiniz!',
+            });
+        }
+    });
+
+    // PHP'den gelen başarı durumunu kontrol et
+    <?php if ($isSuccess): ?>
+        Swal.fire({
+            icon: 'success',
+            title: 'Başarılı!',
+            text: 'Yeni üye başarıyla eklendi!',
+            confirmButtonText: 'Tamam'
+        }).then(() => {
+            window.location.href = 'hasCrewManagement.php'; // Başarılı işlemden sonra yönlendir
         });
-    </script>
+    <?php endif; ?>
+</script>
 </body>
 </html>

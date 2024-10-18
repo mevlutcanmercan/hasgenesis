@@ -16,6 +16,12 @@ h1 {
     margin-bottom: 20px; /* Her form grubu arası boşluk */
 }
 
+h3 {
+    
+    text-align: center;
+    text-decoration: underline;
+    
+}
 label {
     display: block; /* Etiketlerin blok olarak görünmesi */
     margin-bottom: 5px; /* Etiket ile alan arasında boşluk */
