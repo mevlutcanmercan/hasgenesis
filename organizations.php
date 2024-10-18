@@ -84,7 +84,7 @@ $org_result = $conn->query($org_query);
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Duyarlı tasarım için önemli -->
+    <meta name="viewport" content="width=1000"> <!-- Duyarlı tasarım için önemli -->
     <title>Organizasyonlar</title>
     <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="css/organizations.css"> <!-- Özel CSS dosyanız -->
@@ -252,7 +252,7 @@ $org_result = $conn->query($org_query);
 
             // Sonuçları Görüntüle butonunu ekleme
             if ($has_results) {
-                echo "<a href='raceresults.php?organization_id={$row['id']}' class='btn btn-primary' style='margin-left: 20px;'>Sonuçları Görüntüle</a>";
+                echo "<a href='raceresults.php?organization_id={$row['id']}' class='btn btn-primary' style='margin-left: 10px;'>Sonuçları Görüntüle</a>";
             }
 
             echo "      </div>
