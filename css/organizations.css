@@ -83,7 +83,7 @@ h1 {
 
 /* Gri ve siyah tonlarında buton stilleri */
 .btn-primary {
-    margin-top: 15px; /* Buton ile üstteki metin arasında boşluk */
+     /* Buton ile üstteki metin arasında boşluk */
     background-color: #6c757d; /* Gri buton rengi */
     border-color: #6c757d; /* Gri buton kenar rengi */
     color: white; /* Buton üzerindeki metin rengi */

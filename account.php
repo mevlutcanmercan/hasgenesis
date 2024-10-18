@@ -420,7 +420,7 @@ $user_bikes_result = $user_bikes_stmt->get_result();
 
                <!-- Cancellation Tab -->
 
-                <div class="tab-pane fade" id="registrations">
+                    <div class="tab-pane fade" id="registrations">
             <h2>Kayıtlarım</h2>
             <div class="tab-content">
                 <table>
