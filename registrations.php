@@ -299,46 +299,43 @@ if ($stmt->execute()) {
         // İlk toplam fiyat güncellemesi
         updatePrice(prices);
 
-        // Bib kontrol butonuna tıklama olayı
-        document.getElementById("check_bib_button").addEventListener('click', function() {
-            const bibInput = document.getElementById("bib_selection");
-            const bibNumber = bibInput.value;
-            const organizationId = <?php echo json_encode($organization_id); ?>;
+        document.getElementById("check_bib_button").addEventListener('click', function(event) {
+    event.preventDefault(); // Formun gönderilmesini engelle
 
-            if (!bibNumber) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Hata',
-                    text: 'Lütfen bir Bib numarası girin.',
-                });
-                return; // Eğer bib numarası yoksa, fonksiyondan çık
-            }
+    const bibInput = document.getElementById("bib_selection");
+    const bibNumber = bibInput.value;
+    const organizationId = <?php echo json_encode($organization_id); ?>;
 
-            checkBibNumber(bibNumber, organizationId)
-                .then(data => {
-                    if (!data.isValid) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Geçersiz Bib Numarası',
-                            text: 'Bu Bib numarası zaten kayıtlı.',
-                        });
-                        bibInput.value = ""; // Yanlış olduğunda inputu sıfırla
-                        bibInput.dataset.isValid = "false"; // Geçersiz olarak işaretle
-                    } else {
-                        bibInput.dataset.isValid = "true"; // Geçerli olarak işaretle
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Geçerli Bib Numarası',
-                            text: 'Bib numaranız geçerli.',
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Bib kontrolü sırasında hata oluştu:', error);
-                });
+    // Bib numarası girilmiş mi kontrol et
+    if (!bibNumber) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Hata',
+            text: 'Lütfen bir Bib numarası girin.',
         });
-    };
+        return; // Eğer bib numarası yoksa, fonksiyondan çık
+    }
 
+    // Bib numarasını kontrol et
+    checkBibNumber(bibNumber, organizationId)
+        .then(data => {
+            if (!data.isValid) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Geçersiz Bib Numarası',
+                    text: 'Bu Bib numarası zaten kayıtlı.',
+                });
+                bibInput.value = ""; // Yanlış olduğunda inputu sıfırla
+            } else {
+                // Eğer bib numarası geçerli ise formu gönder
+                document.getElementById('raceForm').submit();
+            }
+        })
+        .catch(error => {
+            console.error('Bib kontrolü sırasında hata oluştu:', error);
+        });
+});
+}
     function showBikeSelection(checkbox) {
         const raceType = checkbox.value;
         const selectionDiv = document.getElementById('bike_selection_for_' + raceType);
@@ -533,7 +530,6 @@ if ($stmt->execute()) {
                     <div class="section-divider"></div> <!-- Bölüm Çizgisi -->
 
                     <button type="submit"  id="check_bib_button" class="registerbtn btn btn-primary" name="register">Kayıt Ol</button>
-
                 </form>
             </div>
 
