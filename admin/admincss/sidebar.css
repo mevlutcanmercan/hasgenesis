@@ -62,22 +62,22 @@ body {
 
 /* Sidebar başlık ayarları */
 .sidebar h2 {
-    color: #000000;
-    text-align: center;
-    background-color: #8b8b8b;
-    padding: 1%; /* %1 padding */
-    font-weight: bolder;
-    font-size: 1.5vw; /* Ekran boyutuna göre ayarlanmış başlık boyutu */
+    color: #000000 !important;
+    text-align: center !important;
+    background-color: #8b8b8b !important;
+    padding: 1% !important; /* %1 padding */
+    font-weight: bolder !important;
+    font-size: 1.5vw !important; /* Ekran boyutuna göre ayarlanmış başlık boyutu */
 }
 
 /* Menü ayarları */
 .menu ul { 
-    list-style-type: none;
-    padding: 0;
+    list-style-type: none !important;
+    padding: 0 !important;
 }
 
 .menu ul li {
-    padding: 2%; /* %2 padding */
+    padding: 1%; /* %2 padding */
 }
 
 .menu ul li a {

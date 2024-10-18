@@ -1,4 +1,6 @@
 <?php
+ob_start(); // Çıktıyı tamponla
+
 include 'sidebar.php';
 include '../db/database.php'; // Veritabanı bağlantısı
 include '../bootstrap.php';
@@ -62,7 +64,6 @@ if (isset($_FILES['file']) && $organization_id && $race_type) {
         $user_query = "SELECT u.id_users 
                        FROM users u 
                        WHERE LOWER(CONCAT(u.name_users, ' ', u.surname_users)) = LOWER(?)";
-                       
         $stmt = $conn->prepare($user_query);
         if (!$stmt) {
             die("Sorgu hazırlanamadı: " . $conn->error);
@@ -87,16 +88,33 @@ if (isset($_FILES['file']) && $organization_id && $race_type) {
         $insert_stmt->execute();
     }
 
-    echo "<script>alert('Veriler başarıyla yüklendi.');</script>";
-} else {
+    // Başarılı yükleme sonrası yönlendirme
+    // header("Location: ../raceresults.php?organization_id=$organization_id&race_type=$race_type");
+    header("Location: raceresults-admin.php");
+    exit; // Yönlendirmeden sonra işlemi sonlandır
 }
 
 // Organizasyonları getir
-$org_query = "SELECT id, name FROM organizations";
+$org_query = "SELECT id, name, downhill, enduro, tour, ulumega, e_bike FROM organizations";
 $org_result = $conn->query($org_query);
+
+// Yarış türlerini getir
+$race_types = [];
+if ($organization_id) {
+    $organization_query = "SELECT downhill, enduro, tour, ulumega, e_bike FROM organizations WHERE id = ?";
+    $stmt = $conn->prepare($organization_query);
+    $stmt->bind_param("i", $organization_id);
+    $stmt->execute();
+    $stmt->bind_result($downhill, $enduro, $tour, $ulumega, $e_bike);
+    $stmt->fetch();
+
+    if ($downhill) $race_types[] = 'downhill';
+    if ($enduro) $race_types[] = 'enduro';
+    if ($tour) $race_types[] = 'tour';
+    if ($ulumega) $race_types[] = 'ulumega';
+    if ($e_bike) $race_types[] = 'E-bike'; // 'E-bike' için büyük 'E' kullan
+}
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="tr">
@@ -116,7 +134,7 @@ $org_result = $conn->query($org_query);
         <div class="row">
             <div class="col-md-4">
                 <label for="organization_id" class="form-label">Organizasyon Seçin:</label>
-                <select name="organization_id" id="organization_id" class="form-select" required>
+                <select name="organization_id" id="organization_id" class="form-select" required onchange="this.form.submit()">
                     <option value="">Organizasyon Seçin</option>
                     <?php
                     while ($org = $org_result->fetch_assoc()) {
@@ -127,17 +145,16 @@ $org_result = $conn->query($org_query);
             </div>
 
             <div class="col-md-4">
-              <!-- Yarış Tipi Seçimi -->
-            <label for="race_type" class="form-label">Yarış Tipi Seç:</label>
-            <select name="race_type" id="race_type" class="form-control" required>
-                <option value="">-- Yarış Tipi Seçiniz --</option>
-                <option value="downhill">Downhill</option>
-                <option value="enduro">Enduro</option>
-                <option value="tour">Tour</option>
-                <option value="ulumega">Ulumega</option>
-                <option value="E-bike">E-bike</option>
-            </select>
-        </div>
+                <label for="race_type" class="form-label">Yarış Tipi Seç:</label>
+                <select name="race_type" id="race_type" class="form-control" required>
+                    <option value="">-- Yarış Tipi Seçiniz --</option>
+                    <?php
+                    foreach ($race_types as $type) {
+                        echo "<option value='{$type}'" . ($race_type === $type ? ' selected' : '') . ">{$type}</option>";
+                    }
+                    ?>
+                </select>
+            </div>
 
             <div class="col-md-4">
                 <label for="file" class="form-label">Sonuç Dosyasını Yükle:</label>
@@ -150,36 +167,38 @@ $org_result = $conn->query($org_query);
     </form>
 
     <!-- Organizasyonlar Tablosu -->
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Organizasyon</th>
-            <th>Yarış Türleri</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php
-        // Organizasyonları tekrar sorgula, kullanıcıdan gelen organizasyonları göstermek için
-        $org_result->data_seek(0); // İkinci kez sorgulamak için verileri sıfırla
-        while ($org = $org_result->fetch_assoc()): ?>
+    <table class="table table-bordered">
+        <thead>
             <tr>
-                <td><?= htmlspecialchars($org['name']); ?></td>
-                <td>
-                    <form action="raceresultsDetails-admin.php" method="GET">
-                        <input type="hidden" name="organization_id" value="<?= $org['id']; ?>">
-                        <button type="submit" name="race_type" value="Downhill" class="btn btn-info">Downhill</button>
-                        <button type="submit" name="race_type" value="Enduro" class="btn btn-info">Enduro</button>
-                        <button type="submit" name="race_type" value="Tour" class="btn btn-info">Tour</button>
-                        <button type="submit" name="race_type" value="Ulumega" class="btn btn-info">Ulumega</button>
-                        <button type="submit" name="race_type" value="E-Bike" class="btn btn-info">E-Bike</button>
-                    </form>
-                </td>
+                <th>Organizasyon</th>
+                <th>Yarış Türleri</th>
             </tr>
-        <?php endwhile; ?>
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            <?php
+            // Organizasyonları tekrar sorgula, kullanıcıdan gelen organizasyonları göstermek için
+            $org_result->data_seek(0); // İkinci kez sorgulamak için verileri sıfırla
+            while ($org = $org_result->fetch_assoc()): ?>
+                <tr>
+                    <td><?= htmlspecialchars($org['name']); ?></td>
+                    <td>
+                        <form action="raceresultsDetails-admin.php" method="GET">
+                            <input type="hidden" name="organization_id" value="<?= $org['id']; ?>">
+                            <button type="submit" name="race_type" value="downhill" class="btn btn-info" <?= !$org['downhill'] ? 'disabled' : ''; ?>>Downhill</button>
+                            <button type="submit" name="race_type" value="enduro" class="btn btn-info" <?= !$org['enduro'] ? 'disabled' : ''; ?>>Enduro</button>
+                            <button type="submit" name="race_type" value="tour" class="btn btn-info" <?= !$org['tour'] ? 'disabled' : ''; ?>>Tour</button>
+                            <button type="submit" name="race_type" value="ulumega" class="btn btn-info" <?= !$org['ulumega'] ? 'disabled' : ''; ?>>Ulumega</button>
+                            <button type="submit" name="race_type" value="E-bike" class="btn btn-info" <?= !$org['e_bike'] ? 'disabled' : ''; ?>>E-Bike</button>
+                        </form>
+                    </td>
+                </tr>
+            <?php endwhile; ?>
+        </tbody>
+    </table>
 </div>
-
 
 </body>
 </html>
+
+<?php
+ob_end_flush(); // Tamponu boşalt ve çıktıyı gönder

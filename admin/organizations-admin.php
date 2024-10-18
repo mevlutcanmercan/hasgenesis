@@ -3,6 +3,7 @@ include 'sidebar.php';
 include '../db/database.php'; // Veritabanı bağlantısını dahil et
 include '../bootstrap.php';
 
+
 // Kullanıcı giriş kontrolü
 $user_id = isset($_SESSION['id_users']) ? $_SESSION['id_users'] : null; // Kullanıcı ID'si
 

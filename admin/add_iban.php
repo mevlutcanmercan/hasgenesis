@@ -1,7 +1,15 @@
 <?php
 include '../db/database.php';
 include 'sidebar.php';
-// Form gönderildiğinde
+
+// Mesajları oturumdan al
+$error_message = isset($_SESSION['error_message']) ? $_SESSION['error_message'] : '';
+$success_message = isset($_SESSION['success_message']) ? $_SESSION['success_message'] : '';
+
+// Oturumdan mesajları temizle
+unset($_SESSION['error_message']);
+unset($_SESSION['success_message']);
+
 // IBAN ekleme işlemi
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'add') {
     $bank_name = isset($_POST['bank_name']) ? trim($_POST['bank_name']) : '';
@@ -9,25 +17,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $owner_last_name = isset($_POST['owner_last_name']) ? trim($_POST['owner_last_name']) : '';
     $iban_number = isset($_POST['iban_number']) ? trim($_POST['iban_number']) : '';
 
-    // Hata kontrolü
-    $error_message = '';
-    if (empty($bank_name) || empty($owner_first_name) || empty($owner_last_name) || empty($iban_number)) {
-        $error_message = 'Tüm alanlar doldurulmalıdır.';
-    } elseif (strlen($iban_number) < 15 || strlen($iban_number) > 34) {
-        $error_message = 'IBAN numarası 15 ile 34 karakter arasında olmalıdır.';
-    } else {
-        // IBAN bilgilerini veritabanına ekle
-        $query = "INSERT INTO iban (bank_name, owner_first_name, owner_last_name, iban_number) VALUES (?, ?, ?, ?)";
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param("ssss", $bank_name, $owner_first_name, $owner_last_name, $iban_number);
+    // IBAN formatını düzelt (boşluk ekleyerek)
+    $iban_number = strtoupper(str_replace(' ', '', $iban_number)); // Tüm boşlukları kaldır ve büyük harf yap
+    $formatted_iban = $iban_number; // Formatlı IBAN için değişken
 
-        if ($stmt->execute()) {
-            $success_message = 'IBAN başarıyla eklendi!';
-        } else {
-            $error_message = 'Bir hata oluştu. Lütfen tekrar deneyin.';
-        }
-        $stmt->close();
+    // Boşluk ekleyerek formatla
+    if (strlen($iban_number) > 0) {
+        $formatted_iban = implode(' ', str_split($iban_number, 4)); // Her 4 karakterden sonra boşluk ekle
     }
+
+    // Hata kontrolü
+    if (empty($bank_name) || empty($owner_first_name) || empty($owner_last_name) || empty($iban_number)) {
+        $_SESSION['error_message'] = 'Tüm alanlar doldurulmalıdır.';
+    } elseif (strlen($iban_number) < 15 || strlen($iban_number) > 34) {
+        $_SESSION['error_message'] = 'IBAN numarası 15 ile 34 karakter arasında olmalıdır.';
+    } else {
+        // IBAN'ı kontrol et
+        $query = "SELECT * FROM iban WHERE iban_number = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("s", $iban_number);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $_SESSION['error_message'] = 'Bu IBAN zaten kayıtlı!';
+        } else {
+            // IBAN bilgilerini veritabanına ekle
+            $query = "INSERT INTO iban (bank_name, owner_first_name, owner_last_name, iban_number) VALUES (?, ?, ?, ?)";
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("ssss", $bank_name, $owner_first_name, $owner_last_name, $formatted_iban);
+
+            if ($stmt->execute()) {
+                $_SESSION['success_message'] = 'IBAN başarıyla eklendi!';
+            } else {
+                $_SESSION['error_message'] = 'Bir hata oluştu. Lütfen tekrar deneyin.';
+            }
+            $stmt->close();
+        }
+    }
+
+    // Sayfayı yenile
+    header("Location: add_iban.php");
+    exit();
 }
 
 // IBAN silme işlemi
@@ -41,14 +72,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $stmt->bind_param("i", $iban_id);
 
         if ($stmt->execute()) {
-            $success_message = 'IBAN başarıyla silindi!';
+            $_SESSION['success_message'] = 'IBAN başarıyla silindi!';
         } else {
-            $error_message = 'Bir hata oluştu. Lütfen tekrar deneyin.';
+            $_SESSION['error_message'] = 'Bir hata oluştu. Lütfen tekrar deneyin.';
         }
         $stmt->close();
     } else {
-        $error_message = 'Geçersiz IBAN ID.';
+        $_SESSION['error_message'] = 'Geçersiz IBAN ID.';
     }
+
+    // Sayfayı yenile
+    header("Location: add_iban.php");
+    exit();
 }
 
 // IBAN verilerini almak için sorgu
@@ -68,24 +103,15 @@ if ($result->num_rows > 0) {
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=1100">
     <title>IBAN Ekle</title>
     <link rel="stylesheet" href="admincss/iban.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> <!-- SweetAlert Kütüphanesi -->
 </head>
 <body>
 <div class="container mt-5">
     <h2>IBAN Ekle</h2>
-    <?php if (isset($error_message)): ?>
-        <div class="alert alert-danger">
-            <?= htmlspecialchars($error_message); ?>
-        </div>
-    <?php elseif (isset($success_message)): ?>
-        <div class="alert alert-success">
-            <?= htmlspecialchars($success_message); ?>
-        </div>
-    <?php endif; ?>
-    
+
     <form action="add_iban.php" method="post">
         <div class="form-group">
             <label for="bank_name">Banka Adı:</label>
@@ -101,7 +127,7 @@ if ($result->num_rows > 0) {
         </div>
         <div class="form-group">
             <label for="iban_number">IBAN Numarası:</label>
-            <input type="text" class="form-control" id="iban_number" name="iban_number" required>
+            <input type="text" class="form-control" id="iban_number" name="iban_number" required maxlength="34" placeholder="TRxx xxxx xxxx xxxx xxxx xxxx xxxx xx" oninput="formatIBAN()">
         </div>
         <input type="hidden" name="action" value="add">
         <button type="submit" class="btn btn-primary">Ekle</button>
@@ -143,5 +169,25 @@ if ($result->num_rows > 0) {
         </tbody>
     </table>
 </div>
+
+<script>
+    // Sayfa yüklendiğinde SweetAlert ile mesajları göster
+    window.onload = function() {
+        <?php if ($error_message): ?>
+            swal("Hata!", "<?= htmlspecialchars($error_message); ?>", "error");
+        <?php elseif ($success_message): ?>
+            swal("Başarılı!", "<?= htmlspecialchars($success_message); ?>", "success");
+        <?php endif; ?>
+    };
+
+    // IBAN numarasını formatla ve maksimum karakter sayısını kontrol et
+    function formatIBAN() {
+        const ibanInput = document.getElementById('iban_number');
+        let ibanValue = ibanInput.value.replace(/\s+/g, ''); // Tüm boşlukları kaldır
+        ibanValue = ibanValue.slice(0, 34); // Maksimum 34 karaktere kadar sınırla
+        const formattedIBAN = ibanValue.replace(/(.{4})/g, '$1 ').trim(); // Her 4 karakterden sonra boşluk ekle
+        ibanInput.value = formattedIBAN; // Formatlı IBAN'ı geri yükle
+    }
+</script>
 </body>
 </html>

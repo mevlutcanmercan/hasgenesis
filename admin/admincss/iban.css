@@ -1,17 +1,19 @@
 /* Genel stiller */
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f7fa;
-    color: #333;
-    line-height: 1.6;
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa; /* Arka plan rengi */
     margin: 0;
     padding: 20px;
 }
 
 /* Başlık stilleri */
+h2, h3 {
+    margin: 0;
+    padding-bottom: 10px;
+}
+
 h2 {
     color: #007bff;
-    margin-bottom: 20px;
     font-size: 2rem;
     text-align: center;
 }
@@ -39,6 +41,8 @@ h3 {
 
 label {
     font-weight: bold;
+    display: block; /* Label'ların blok eleman olmasını sağla */
+    margin-bottom: 5px; /* Label ile input arasına boşluk ekle */
 }
 
 input[type="text"] {
@@ -49,6 +53,7 @@ input[type="text"] {
     transition: border-color 0.3s;
 }
 
+/* Focus durumunda input stilleri */
 input[type="text"]:focus {
     border-color: #007bff;
     outline: none;
@@ -64,6 +69,7 @@ input[type="text"]:focus {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
+    text-align: center; /* Buton içindeki metni ortala */
 }
 
 .btn:hover {
@@ -74,26 +80,21 @@ input[type="text"]:focus {
 .table {
     margin-top: 20px;
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: collapse; /* Kenar çakışmalarını kaldır */
 }
 
-.table th,
-.table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #dee2e6;
+.table th, .table td {
+    padding: 12px; /* Hücrelerdeki iç boşluk */
+    text-align: left; /* Metni sola yasla */
+    border-bottom: 1px solid #dee2e6; /* Alt kenar çizgisi */
 }
 
 .table th {
-    background-color: #f8f9fa;
-    font-weight: bold;
+    background-color: #f8f9fa; /* Başlık arka plan rengi */
+    color: #495057; /* Başlık metin rengi */
 }
 
-.table tr:hover {
-    background-color: #f1f1f1;
-}
-
-/* Uyarı mesajları */
+/* Alert stilleri */
 .alert {
     padding: 15px;
     margin-bottom: 20px;
@@ -110,4 +111,19 @@ input[type="text"]:focus {
     background-color: #d4edda;
     border-color: #c3e6cb;
     color: #155724;
+}
+
+/* Duyarlı tasarım */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px; /* Mobilde daha az boşluk */
+    }
+
+    h2 {
+        font-size: 1.5rem; /* Başlık boyutunu küçült */
+    }
+
+    h3 {
+        font-size: 1.25rem; /* Alt başlık boyutunu küçült */
+    }
 }

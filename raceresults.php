@@ -45,15 +45,15 @@ $result = $stmt->get_result();
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport">
+    <meta name="viewport" content="width=1100">
     <link rel="stylesheet" href="css/raceresults.css">
     <link rel="stylesheet" href="css/footer.css">
-    <title><?php echo htmlspecialchars($organization_name); ?> Yarış Detayları</title>
+    <title><?php echo htmlspecialchars($organization_name); ?> Yarışı Sonuçları</title>
 </head>
 <body>
 
 <div class="container mt-5">
-    <h1 class="text-center mb-4"><?php echo htmlspecialchars($organization_name); ?> Yarış Detayları</h1>
+    <h1 class="text-center mb-4"><?php echo htmlspecialchars($organization_name); ?> Yarış Sonuçları</h1>
 
     <!-- Kategori ve Yarış Türü Filtreleme -->
     <form method="POST" class="mb-4">
