@@ -56,7 +56,7 @@ body {
 
 .tab-content {
     color: white;
-    width: 90%;
+    
     max-width: 800px;
     background: linear-gradient(135deg, #8f8f8f, #858585, #000000e3);
     padding: 30px; /* Daha geniş padding */
@@ -272,6 +272,8 @@ table {
 
 /* Mobil Cihazlar İçin CSS */
 @media (max-width: 768px) {
+
+    
     body {
         display: flex;
         min-height: 100vh;
@@ -284,7 +286,7 @@ table {
         position: fixed; /* Sidebar'ı sabitle */
         background-color: #111111cb;
         color: #fff;
-        height: 100vh;
+        height: 100%;
         min-width: 200px;
         max-width: 200px;
         transform: translateX(-100%); /* Başlangıçta sidebar gizli */
@@ -318,10 +320,7 @@ table {
         transition: left 0.3s ease;
     }
 
-    .tab-content {
-        width: 100%;
-        padding: 10px;
-    }
+    
 
     /* Sidebar açıldığında genişliği kaplaması için ayarlar */
     .sidebar.show {
