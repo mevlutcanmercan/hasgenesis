@@ -199,11 +199,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
             $bicycle_id = intval($selected_bicycles[$race]);
             if (!checkBicycleSuspension($conn, $bicycle_id, $organization)) {
-                echo "<script>showErrorAlert('Seçtiğiniz bisiklet organizasyon gereksinimlerini karşılamıyor.');</script>";
-                exit();
-            }
-        }
-
+                echo "<script>
+                alert('Seçtiğiniz bisiklet organizasyon gereksinimlerini karşılamıyor.');
+                window.location.href = 'organizations.php'; // Yönlendirme yapılacak sayfa
+              </script>";
+        exit(); // PHP'nin çalışmasını burada durdurmak için
+    }
+    }
        // Kayıt işlemi
 $stmt = $conn->prepare("INSERT INTO registrations (Bib, first_name, second_name, organization_id, race_type, category, feragatname, price_document, registration_price, created_time, approval_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)");
 $race_type_string = implode(',', $selected_races);  // Düz metin olarak
@@ -241,7 +243,7 @@ if ($stmt->execute()) {
         echo "Kullanıcı kayıtları sırasında bir hata oluştu: " . $stmt_user_registration->error;
     }
 
-    echo "<script>alert('Kayıt başarılı!'); window.location.href = '/hasgenesis/account';</script>";
+    echo "<script>alert('Kayıt başarılı!'); window.location.href = 'account';</script>";
 
 } else {
     echo "<script>alert('Kayıt sırasında bir hata oluştu.');</script>";
@@ -258,9 +260,12 @@ if ($stmt->execute()) {
         <link rel="stylesheet" href="css/registrations.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="js/registeralerts.js"></script>
+
 
         <script>
+            
         // PHP'den gelen fiyat bilgilerini JavaScript'e aktar
         const prices = <?php echo json_encode($prices_row); ?>;
 
@@ -354,7 +359,7 @@ if ($stmt->execute()) {
                 <h3>Organizasyona Kayıt</h3>
                 <div class="section-divider"></div> <!-- Bölüm Çizgisi -->
 
-                <form action="" method="post" enctype="multipart/form-data" onsubmit="return validateForm();">
+                <form action="registrations.php?organization_id=<?= $organization_id ?>" method="post" enctype="multipart/form-data" onsubmit="return validateForm();">
                         <div class="mb-3">
                 <label for="first_name" class="form-label">İsim</label>
                 <input type="text" class="form-control" id="first_name" name="first_name" value="<?php echo htmlspecialchars($user_details['name_users']); ?>" required readonly>
@@ -445,10 +450,6 @@ if ($stmt->execute()) {
     <div class="footer-container text-center">
         <span class='text-muted'>HAS GENESIS &copy; 2024. Tüm hakları saklıdır.</span>
     </div>
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="path_to_js/registeralerts.js"></script>
-    
+</footer>   
 </body>
 </html>

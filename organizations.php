@@ -66,6 +66,14 @@ $total_pages = ceil($total_items / $items_per_page); // Toplam sayfa sayısı
 // Sorguya limit ekle
 $sql .= " LIMIT $offset, $items_per_page";
 $result = $conn->query($sql);
+
+
+// Yarış Tipi Seçimi
+$race_type = isset($_POST['race_type']) ? $_POST['race_type'] : null;
+
+// Organizasyonları getir
+$org_query = "SELECT id, name FROM organizations";
+$org_result = $conn->query($org_query);
 ?>
 
 <!DOCTYPE html>

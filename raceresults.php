@@ -7,7 +7,7 @@ $organization_id = isset($_GET['organization_id']) ? (int)$_GET['organization_id
 
 // Kategori ve Yarış Türü Filtreleme
 $category_filter = isset($_POST['category_filter']) ? $_POST['category_filter'] : '';
-$race_type_filter = isset($_POST['race_type_filter']) ? $_POST['race_type_filter'] : '';
+$race_type_filter = isset($_POST['race_type_filter']) ? $_POST['race_type_filter'] : 'Downhill'; // Varsayılan olarak 'Downhill' seçili
 
 // Organizasyon adını çek
 $org_query = "SELECT name FROM organizations WHERE id = ?";
@@ -60,11 +60,25 @@ $result = $stmt->get_result();
         <div class="row">
             <div class="col-md-4">
                 <label for="category_filter" class="form-label">Kategori:</label>
-                <input type="text" name="category_filter" id="category_filter" class="form-control" placeholder="Kategori (Örn: JUNIOR)" value="<?php echo htmlspecialchars($category_filter); ?>">
+                <select name="category_filter" id="category_filter" class="form-select">
+                    <option value="">Tüm Kategoriler</option>
+                    <option value="JUNIOR" <?php echo ($category_filter == 'JUNIOR') ? 'selected' : ''; ?>>Junior</option>
+                    <option value="ELITLER" <?php echo ($category_filter == 'ELITLER') ? 'selected' : ''; ?>>Elitler</option>
+                    <option value="MASTER B" <?php echo ($category_filter == 'MASTER B') ? 'selected' : ''; ?>>Master B</option>
+                    <option value="MASTER A" <?php echo ($category_filter == 'MASTER A') ? 'selected' : ''; ?>>Master A</option>
+                    <!-- Diğer kategoriler eklenebilir -->
+                </select>
             </div>
             <div class="col-md-4">
                 <label for="race_type_filter" class="form-label">Yarış Türü:</label>
-                <input type="text" name="race_type_filter" id="race_type_filter" class="form-control" placeholder="Yarış Türü (Örn: Dh1, Downhill)" value="<?php echo htmlspecialchars($race_type_filter); ?>">
+                <select name="race_type_filter" id="race_type_filter" class="form-select">
+                    <option value="Downhill" <?php echo ($race_type_filter == 'Downhill') ? 'selected' : ''; ?>>Downhill</option>
+                    <option value="Enduro" <?php echo ($race_type_filter == 'Enduro') ? 'selected' : ''; ?>>Enduro</option>
+                    <option value="Tour" <?php echo ($race_type_filter == 'Tour') ? 'selected' : ''; ?>>Tour</option>
+                    <option value="Ulumega" <?php echo ($race_type_filter == 'Ulumega') ? 'selected' : ''; ?>>Ulumega</option>
+                    <option value="E-Bike" <?php echo ($race_type_filter == 'E-Bike') ? 'selected' : ''; ?>>E-Bike</option>
+                    <!-- Diğer yarış türleri eklenebilir -->
+                </select>
             </div>
             <div class="col-md-4 d-flex align-items-end">
                 <button type="submit" class="btn btn-primary">Filtrele</button>
@@ -82,18 +96,23 @@ $result = $stmt->get_result();
                 <th>Yarış Türü</th>
                 <th>Kategori</th>
                 <th>Süre</th>
+                <th>Fark</th>
             </tr>
         </thead>
         <tbody>
             <?php if ($result->num_rows > 0): ?>
+                <?php 
+                    $counter = 1; // Sayaç her kategoriye göre sıralamaya başlar
+                ?>
                 <?php while ($row = $result->fetch_assoc()): ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($row['place']); ?></td>
+                        <td><?php echo $counter++; ?></td> <!-- Sayaç her satırda 1 artacak -->
                         <td><?php echo htmlspecialchars($row['Bib']); ?></td>
                         <td><?php echo htmlspecialchars($row['name']); ?></td>
                         <td><?php echo htmlspecialchars($row['race_type']); ?></td>
                         <td><?php echo htmlspecialchars($row['category']); ?></td>
                         <td><?php echo htmlspecialchars($row['time']); ?></td>
+                        <td><?php echo htmlspecialchars($row['difference']); ?></td>
                     </tr>
                 <?php endwhile; ?>
             <?php else: ?>
