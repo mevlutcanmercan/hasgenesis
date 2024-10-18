@@ -190,9 +190,9 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1100">
     <title>Kayıt Yönetimi</title>
-    <link rel="stylesheet" href="/hasgenesis/admin/admincss/regmanegement.css">
+    <link rel="stylesheet" href="admincss/regmanegement.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-    <script src="/hasgenesis/js/registeralerts.js"></script>
+    <script src="../js/registeralerts.js"></script>
 </head>
 <script>
     function confirmDelete(registrationId) {
