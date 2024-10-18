@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="youtube">YouTube (nickname formatında):</label>
                 <input type="text" id="youtube" name="youtube">
             </div>
-
+            <h3>Resimler (Max: 5Mb)</h3>
             <!-- Resim Yükleme Alanları -->
             <?php for ($i = 1; $i <= 6; $i++): ?>
             <div class="form-group">
@@ -147,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     document.querySelector('.back-button').addEventListener('click', function() {
-        window.location.href = 'hasCrewManagement.php';
+        window.location.href = 'hascrewmanagement.php';
     });
 
     document.getElementById('memberForm').addEventListener('submit', function(event) {
@@ -170,7 +170,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             text: 'Yeni üye başarıyla eklendi!',
             confirmButtonText: 'Tamam'
         }).then(() => {
-            window.location.href = 'hasCrewManagement.php'; // Başarılı işlemden sonra yönlendir
+            window.location.href = 'hascrewmanagement.php'; // Başarılı işlemden sonra yönlendir
         });
     <?php endif; ?>
 </script>
