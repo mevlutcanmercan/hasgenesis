@@ -46,6 +46,7 @@ if (isset($_FILES['file']) && $organization_id && $race_type) {
         $name = $first_name . ' ' . $last_name; // Tam isim (First Name + Last Name)
         $category = preg_replace('/\d/', '', $data[5]); // Kategori (sadece yazılar)
         $category = preg_replace('/\s*-\s*\(.*?\)/', '', $category); // Kategori değerinden '- (-)' kısmını kaldır
+        $category = preg_replace('/\s*\+\s*\(.*?\)/', '', $category); // '+ (1984 VE ALTI)' kısmını temizle
         $category = trim($category); // Boşlukları temizle
         $time = $data[6]; // Time
         $difference = $data[7]; // Difference
@@ -134,7 +135,7 @@ $org_result = $conn->query($org_query);
                 <option value="enduro">Enduro</option>
                 <option value="tour">Tour</option>
                 <option value="ulumega">Ulumega</option>
-                <option value="ulumega">E-bike</option>
+                <option value="E-bike">E-bike</option>
             </select>
         </div>
 
@@ -170,6 +171,7 @@ $org_result = $conn->query($org_query);
                         <button type="submit" name="race_type" value="Enduro" class="btn btn-info">Enduro</button>
                         <button type="submit" name="race_type" value="Tour" class="btn btn-info">Tour</button>
                         <button type="submit" name="race_type" value="Ulumega" class="btn btn-info">Ulumega</button>
+                        <button type="submit" name="race_type" value="E-Bike" class="btn btn-info">E-Bike</button>
                     </form>
                 </td>
             </tr>
