@@ -523,53 +523,7 @@ $user_bikes_result = $user_bikes_stmt->get_result();
                 document.getElementById('reason-form-' + registrationId).style.display = 'block';
             }
         </script>
-
-
-
-
-                    <!-- My Races Tab -->
-            <div class="tab-pane fade" id="races">
-                <h2>Yarışlarım</h2>
-                
-                <?php
-                // Kullanıcının katıldığı yarış sonuçlarını al
-                $stmt = $conn->prepare("SELECT * FROM race_results WHERE user_id = ?");
-                $stmt->bind_param("i", $user_id);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                
-                if ($result->num_rows > 0): ?>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Yarış Adı</th>
-                                <th>Yarış Türü</th>
-                                <th>Kategori</th>
-                                <th>Yer</th>
-                                <th>Bib</th>
-                                <th>Zaman</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php while ($row = $result->fetch_assoc()): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($row['name']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['race_type']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['category']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['place']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['Bib']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['time']); ?></td>
-                                </tr>
-                            <?php endwhile; ?>
-                        </tbody>
-                    </table>
-                <?php else: ?>
-                    <p class="alert alert-warning">Henüz katıldığınız bir yarış bulunmamaktadır.</p>
-                <?php endif; 
-                
-                $stmt->close();
-                ?>
-            </div>
+        
             
             <!-- Bicycles Tab -->
             <div class="tab-pane fade" id="bicycle">
@@ -623,9 +577,64 @@ $user_bikes_result = $user_bikes_stmt->get_result();
                     </tbody>
                 </table>
             </div>
+
+<!-- My Races Tab -->
+<div class="tab-pane fade" id="races">
+    
+    <h2>Yarışlarım</h2>
+    
+    <?php
+    // Kullanıcının katıldığı yarış sonuçlarını al
+    $stmt = $conn->prepare("
+        SELECT rr.*, o.name AS organization_name
+        FROM race_results rr
+        JOIN organizations o ON rr.organization_id = o.id
+        WHERE rr.user_id = ?
+    ");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows > 0): ?>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Organizasyon Adı</th>
+                    <th>Sıra</th>
+                    <th>Bib</th>
+                    <th>Yarış Adı</th>
+                    <th>Yarış Türü</th>
+                    <th>Kategori</th>
+                    <th>Zaman</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php while ($row = $result->fetch_assoc()): ?>
+                    <tr onclick="window.location.href='https://localhost/hasgenesis/raceresults.php?organization_id=<?= $row['organization_id']; ?>'">
+                        <td><?php echo htmlspecialchars($row['organization_name']); ?></td>
+                        <td><?php echo htmlspecialchars($row['place']); ?></td>
+                        <td><?php echo htmlspecialchars($row['Bib']); ?></td>
+                        <td><?php echo htmlspecialchars($row['name']); ?></td>
+                        <td><?php echo htmlspecialchars($row['race_type']); ?></td>
+                        <td><?php echo htmlspecialchars($row['category']); ?></td>
+                        <td><?php echo htmlspecialchars($row['time']); ?></td>
+                    </tr>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+    <?php else: ?>
+        <p class="alert alert-warning">Henüz katıldığınız bir yarış bulunmamaktadır.</p>
+    <?php endif; 
+    
+    $stmt->close();
+    ?>
+</div>
+
         </div>
     </div>
 
+
+    
      <script>
     function validateChangePassword() {
         const newPassword = document.getElementById('new_password').value;

@@ -184,11 +184,11 @@ if ($organization_id) {
                     <td>
                         <form action="raceresultsDetails-admin.php" method="GET">
                             <input type="hidden" name="organization_id" value="<?= $org['id']; ?>">
-                            <button type="submit" name="race_type" value="downhill" class="btn btn-info" <?= !$org['downhill'] ? 'disabled' : ''; ?>>Downhill</button>
-                            <button type="submit" name="race_type" value="enduro" class="btn btn-info" <?= !$org['enduro'] ? 'disabled' : ''; ?>>Enduro</button>
-                            <button type="submit" name="race_type" value="tour" class="btn btn-info" <?= !$org['tour'] ? 'disabled' : ''; ?>>Tour</button>
-                            <button type="submit" name="race_type" value="ulumega" class="btn btn-info" <?= !$org['ulumega'] ? 'disabled' : ''; ?>>Ulumega</button>
-                            <button type="submit" name="race_type" value="E-bike" class="btn btn-info" <?= !$org['e_bike'] ? 'disabled' : ''; ?>>E-Bike</button>
+                            <button type="submit" name="race_type" value="downhill" class="btn btn-info" <?= !$org['downhill'] ? '' : ''; ?>>Downhill</button>
+                            <button type="submit" name="race_type" value="enduro" class="btn btn-info" <?= !$org['enduro'] ? '' : ''; ?>>Enduro</button>
+                            <button type="submit" name="race_type" value="tour" class="btn btn-info" <?= !$org['tour'] ? '' : ''; ?>>Tour</button>
+                            <button type="submit" name="race_type" value="ulumega" class="btn btn-info" <?= !$org['ulumega'] ? '' : ''; ?>>Ulumega</button>
+                            <button type="submit" name="race_type" value="E-bike" class="btn btn-info" <?= !$org['e_bike'] ? '' : ''; ?>>E-Bike</button>
                         </form>
                     </td>
                 </tr>

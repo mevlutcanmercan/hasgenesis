@@ -1,7 +1,6 @@
 <?php
 include 'sidebar.php';
 include '../db/database.php'; // Veritabanı bağlantısı
-include '../bootstrap.php';
 
 // Organizasyon ID'sini al
 $organization_id = isset($_GET['organization_id']) ? (int)$_GET['organization_id'] : null;
@@ -44,6 +43,29 @@ $stmt = $conn->prepare($query);
 $stmt->bind_param($types, ...$params);
 $stmt->execute();
 $result = $stmt->get_result();
+
+// Seçili satırları silme işlemi
+if (isset($_POST['delete_selected'])) {
+    if (!empty($_POST['selected_rows'])) {
+        $selected_rows = $_POST['selected_rows'];
+
+        // Seçili satırları silme sorgusu
+        $placeholders = implode(',', array_fill(0, count($selected_rows), '?'));
+        $delete_query = "DELETE FROM race_results WHERE id IN ($placeholders)";
+        $delete_stmt = $conn->prepare($delete_query);
+
+        // Parametre bağlama
+        $types = str_repeat('i', count($selected_rows));
+        $delete_stmt->bind_param($types, ...$selected_rows);
+        $delete_stmt->execute();
+
+        // Silme işlemi tamamlandıktan sonra sayfayı yenileyin
+        header("Location: raceresultsDetails-admin.php?organization_id=$organization_id&race_type=$race_type");
+        exit();
+    }
+}
+include '../bootstrap.php';
+
 ?>
 
 <!DOCTYPE html>
@@ -62,7 +84,7 @@ $result = $stmt->get_result();
     <!-- Kategori ve Yarış Türü Filtreleme -->
     <form method="POST" class="mb-4">
         <div class="row">
-        <div class="col-md-4">
+            <div class="col-md-4">
                 <label for="category_filter" class="form-label">Kategori:</label>
                 <select name="category_filter" id="category_filter" class="form-select">
                     <option value="">Tüm Kategoriler</option>
@@ -81,41 +103,51 @@ $result = $stmt->get_result();
     </form>
     
     <!-- Yarış Sonuçları Tablosu -->
-    <table>
-        <thead>
-            <tr>
-                <th>Sıra</th>
-                <th>Bib No</th>
-                <th>Ad</th>
-                <th>Yarış Türü</th>
-                <th>Kategori</th>
-                <th>Süre</th>
-                <th>Fark</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if ($result->num_rows > 0): ?>
-                <?php 
-                    $counter = 1; // Sayaç her kategoriye göre sıralamaya başlar
-                ?>
-                <?php while ($row = $result->fetch_assoc()): ?>
-                    <tr>
-                        <td><?php echo $counter++; ?></td> <!-- Sayaç her satırda 1 artacak -->
-                        <td><?php echo htmlspecialchars($row['Bib']); ?></td>
-                        <td><?php echo htmlspecialchars($row['name']); ?></td>
-                        <td><?php echo htmlspecialchars($row['race_type']); ?></td>
-                        <td><?php echo htmlspecialchars($row['category']); ?></td>
-                        <td><?php echo htmlspecialchars($row['time']); ?></td>
-                        <td><?php echo htmlspecialchars($row['difference']); ?></td>
-                    </tr>
-                <?php endwhile; ?>
-            <?php else: ?>
+    <form method="POST">
+        <table>
+            <thead>
                 <tr>
-                    <td colspan="6" class="text-center">Bu kriterlere uygun sonuç bulunamadı.</td>
+                    <th>Seç</th>
+                    <th>Sıra</th>
+                    <th>Bib No</th>
+                    <th>Ad</th>
+                    <th>Yarış Türü</th>
+                    <th>Kategori</th>
+                    <th>Süre</th>
+                    <th>Fark</th>
                 </tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <?php if ($result->num_rows > 0): ?>
+                    <?php 
+                        $counter = 1; // Sayaç her kategoriye göre sıralamaya başlar
+                    ?>
+                    <?php while ($row = $result->fetch_assoc()): ?>
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="selected_rows[]" value="<?php echo $row['id']; ?>">
+                            </td>
+                            <td><?php echo $counter++; ?></td> <!-- Sayaç her satırda 1 artacak -->
+                            <td><?php echo htmlspecialchars($row['Bib']); ?></td>
+                            <td><?php echo htmlspecialchars($row['name']); ?></td>
+                            <td><?php echo htmlspecialchars($row['race_type']); ?></td>
+                            <td><?php echo htmlspecialchars($row['category']); ?></td>
+                            <td><?php echo htmlspecialchars($row['time']); ?></td>
+                            <td><?php echo htmlspecialchars($row['difference']); ?></td>
+                        </tr>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="8" class="text-center">Bu kriterlere uygun sonuç bulunamadı.</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+
+        <div class="mt-3">
+            <button type="submit" name="delete_selected" class="btn btn-danger">Seçili Satırları Sil</button>
+        </div>
+    </form>
 </div>
 </body>
 </html>

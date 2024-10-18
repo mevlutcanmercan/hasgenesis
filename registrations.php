@@ -172,15 +172,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         mkdir($receipt_dir, 0755, true); // Eğer dizin yoksa oluştur
     }
     
-    // Feragatname dosyasını yükleme
-    $feragatname = null;
-    if (isset($_FILES['waiver']['name']) && $_FILES['waiver']['name'] != '') {
+// Maksimum dosya boyutu
+$max_file_size = 3 * 1024 * 1024; // 7 MB
+
+// Feragatname dosyasını yükleme
+if (isset($_FILES['waiver']) && $_FILES['waiver']['error'] === UPLOAD_ERR_OK) {
+    // Dosya boyutunu kontrol et
+    if ($_FILES['waiver']['size'] <= $max_file_size) {
         $feragatname_filename = basename($_FILES['waiver']['name']);
-        $feragatname_target = $feragatname_dir . $feragatname_filename; // Doğru dizin
+        $feragatname_target = $feragatname_dir . $feragatname_filename;
         if (move_uploaded_file($_FILES['waiver']['tmp_name'], $feragatname_target)) {
-            $feragatname = '/documents/feragatname/' . $feragatname_filename; // URL yapısı
+            $feragatname = '/documents/feragatname/' . $feragatname_filename;
         }
+    } else {
+        // Yükleme işlemini engelle ve tüm işlemleri durdur
+        exit('Feragatname belgesi 7 MB\'dan büyük olamaz. Lütfen uygun boyutta bir dosya yükleyin.');
     }
+}
     
     // Fiyat belgesi dosyasını yükleme
     $price_document = null;
@@ -263,7 +271,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
         <script>
-            
+
         // PHP'den gelen fiyat bilgilerini JavaScript'e aktar
         const prices = <?php echo json_encode($prices_row); ?>;
 
@@ -536,5 +544,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <span class='text-muted'>HAS GENESIS &copy; 2024. Tüm hakları saklıdır.</span>
     </div>
 </footer>   
+<script>
+    // Dosya boyutunu kontrol eden fonksiyon
+    function checkFileSize(inputId, maxFileSize) {
+        const fileInput = document.getElementById(inputId);
+        fileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file && file.size > maxFileSize) {
+                alert('Seçtiğiniz dosya 7 MB\'dan büyük olamaz. Lütfen uygun boyutta bir dosya yükleyin.');
+                this.value = ''; // Dosya alanını temizle
+                return false; // Yüklemeyi engelle
+            }
+        });
+    }
+
+    // Boyut sınırı
+    const maxFileSize = 7 * 1024 * 1024; // 7 MB
+
+    // Dosya boyutlarını kontrol et
+    checkFileSize('waiver', maxFileSize);
+    checkFileSize('receipt', maxFileSize);
+</script>
 </body>
 </html>
