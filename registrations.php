@@ -1,5 +1,4 @@
 <?php
-
 // Veritabanı bağlantısı ve gerekli dosyaların dahil edilmesi
 include 'dB/database.php'; 
 include 'navbar.php';
@@ -9,6 +8,18 @@ include 'auth.php';
 // Kullanıcının giriş yapmasını sağla
 requireLogin(); 
 $user_id = $_SESSION['id_users'];
+
+// IBAN verilerini almak için sorgu
+$query = "SELECT bank_name, owner_first_name, owner_last_name, iban_number FROM iban";
+$result = $conn->query($query);
+
+// IBAN verilerini diziye alma
+$ibanList = [];
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $ibanList[] = $row;
+    }
+}
 
 // Bisiklet seçeneklerini veritabanından çek
 function getBicycles($conn, $user_id) {
@@ -88,7 +99,7 @@ function checkBibExistence($conn, $bib, $organization_id) {
     return $stmt->get_result()->num_rows > 0;
 }
 
-// Bisikletin süspansiyon uygunluğunu kontrol eden fonksiyon
+// Seçilen bisikletin yarışa uygun olup olmadığını kontrol et
 function checkBicycleSuspension($conn, $bicycle_id, $organization) {
     $front_travel = 0;
     $rear_travel = 0;
@@ -135,121 +146,108 @@ if (isset($_GET['organization_id'])) {
 } else {
     die('Organizasyon ID bulunamadı.');
 }
-
 // POST işlemleri
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $category2 = isset($_POST['category']) ? $_POST['category'] : null; // Sabit kategori değeri
-    $category = isset($_POST['category']) ? $_POST['category'] : null;
+    $category = $_POST['category'] ?? null; // Sabit kategori değeri
     $bib = intval($_POST['bib_selection']);
     $selected_races = $_POST['races'] ?? [];
     $selected_bicycles = $_POST['bicycle_for'] ?? [];
     $special_bib = isset($_POST['custom_bib']);
+    $error_message = 'Bu bib numarası zaten kayıtlı. Lütfen başka bir bib numarası girin.'; // Hata mesajı
+
     
     // Toplam fiyatı hesapla
     $total_price = calculateTotalPrice($selected_races, $prices_row, $bib, $special_bib);
 
-        // Dosyaların yüklenmesi için hedef klasörler
-        $base_url = '/hasgenesis'; // Ana URL
-        $feragatname_dir = $base_url . '/documents/feragatname/';
-        $receipt_dir = $base_url . '/documents/receipt/';
-
-        // Feragatname dosyasını yükleme
-        $feragatname = null;
-        if (isset($_FILES['waiver']['name']) && $_FILES['waiver']['name'] != '') {
-            $feragatname_filename = basename($_FILES['waiver']['name']);
-            $feragatname_target = $_SERVER['DOCUMENT_ROOT'] . $feragatname_dir . $feragatname_filename;
-
-            // Dosyayı taşı
-            if (move_uploaded_file($_FILES['waiver']['tmp_name'], $feragatname_target)) {
-                // Veritabanına kaydetmek için tam URL'yi oluştur
-                $feragatname = $feragatname_dir . $feragatname_filename;
-            } else {
-                echo "<script>showErrorAlert('Feragatname dosyası yüklenirken bir hata oluştu.');</script>";
-                exit();
-            }
+    $base_url = ''; // Base URL burada tanımlanmalı
+    $feragatname_dir = $_SERVER['DOCUMENT_ROOT'] . '/documents/feragatname/';
+    $receipt_dir = $_SERVER['DOCUMENT_ROOT'] . '/documents/receipt/';
+    
+    // Dizinlerin varlığını kontrol et ve oluştur
+    if (!is_dir($feragatname_dir)) {
+        mkdir($feragatname_dir, 0755, true); // Eğer dizin yoksa oluştur
+    }
+    
+    if (!is_dir($receipt_dir)) {
+        mkdir($receipt_dir, 0755, true); // Eğer dizin yoksa oluştur
+    }
+    
+    // Feragatname dosyasını yükleme
+    $feragatname = null;
+    if (isset($_FILES['waiver']['name']) && $_FILES['waiver']['name'] != '') {
+        $feragatname_filename = basename($_FILES['waiver']['name']);
+        $feragatname_target = $feragatname_dir . $feragatname_filename; // Doğru dizin
+        if (move_uploaded_file($_FILES['waiver']['tmp_name'], $feragatname_target)) {
+            $feragatname = '/documents/feragatname/' . $feragatname_filename; // URL yapısı
         }
-
-        // Fiyat belgesi dosyasını yükleme
-        $price_document = null;
-        if (isset($_FILES['receipt']['name']) && $_FILES['receipt']['name'] != '') {
-            $price_document_filename = basename($_FILES['receipt']['name']);
-            $price_document_target = $_SERVER['DOCUMENT_ROOT'] . $receipt_dir . $price_document_filename;
-
-            // Dosyayı taşı
-            if (move_uploaded_file($_FILES['receipt']['tmp_name'], $price_document_target)) {
-                // Veritabanına kaydetmek için tam URL'yi oluştur
-                $price_document = $receipt_dir . $price_document_filename;
-            } else {
-                echo "<script>showErrorAlert('Fiyat belgesi dosyası yüklenirken bir hata oluştu.');</script>";
-                exit();
-            }
+    }
+    
+    // Fiyat belgesi dosyasını yükleme
+    $price_document = null;
+    if (isset($_FILES['receipt']['name']) && $_FILES['receipt']['name'] != '') {
+        $price_document_filename = basename($_FILES['receipt']['name']);
+        $price_document_target = $receipt_dir . $price_document_filename; // Doğru dizin
+        if (move_uploaded_file($_FILES['receipt']['tmp_name'], $price_document_target)) {
+            $price_document = '/documents/receipt/' . $price_document_filename; // URL yapısı
         }
-
-    // Bib kontrolü
+    }
     if ($bib > 0 && checkBibExistence($conn, $bib, $organization_id)) {
-        echo "<script>showErrorAlert('Bu Bib numarası zaten kayıtlı.');</script>";
-        exit(); // Uyarı gösterildikten sonra işlem sonlandırılacak
+        ?>
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Hata!',
+                text: '<?= $error_message ?>',
+            });
+        </script>
+        <?php 
+    } else{
 
-    } else {
-        // Bisiklet uygunluk kontrolü
-        foreach ($selected_races as $race) {
-            if (!isset($selected_bicycles[$race])) {
-                echo "<script>showWarningAlert('Yarış türü için bir bisiklet seçmelisiniz.');</script>";
-                exit();
-            }
-            $bicycle_id = intval($selected_bicycles[$race]);
-            if (!checkBicycleSuspension($conn, $bicycle_id, $organization)) {
-                echo "<script>
-                alert('Seçtiğiniz bisiklet organizasyon gereksinimlerini karşılamıyor.');
-                window.location.href = 'organizations.php'; // Yönlendirme yapılacak sayfa
-              </script>";
-        exit(); // PHP'nin çalışmasını burada durdurmak için
-    }
-    }
-       // Kayıt işlemi
-$stmt = $conn->prepare("INSERT INTO registrations (Bib, first_name, second_name, organization_id, race_type, category, feragatname, price_document, registration_price, created_time, approval_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)");
-$race_type_string = implode(',', $selected_races);  // Düz metin olarak
-$feragatname = $_FILES['waiver']['name'] ?? null;
-$price_document = $_FILES['receipt']['name'] ?? null;
-$status = 0; // Beklemede
-
-$stmt->bind_param("issssssssd", $bib, $user_details['name_users'], $user_details['surname_users'], $organization_id, $race_type_string, $category2, $feragatname, $price_document, $total_price, $status);
-
-if ($stmt->execute()) {
-    // En son eklenen kaydın ID'sini al
-    $registration_id = $conn->insert_id;
-
-    // Kategori bilgilerini yeni tabloya ekle
-    $stmt_category = $conn->prepare("INSERT INTO registration_categories (registration_id, category) VALUES (?, ?)");
-    $stmt_category->bind_param("is", $registration_id, $category);
-    if (!$stmt_category->execute()) {
-        echo "Kategori kaydı sırasında bir hata oluştu: " . $stmt_category->error;
-    }
-
-    // Seçilen bisikletleri kaydet
+    // Bisiklet uygunluk kontrolü
     foreach ($selected_races as $race) {
+        if (!isset($selected_bicycles[$race])) {
+            exit(); // Yarış türü için bisiklet seçilmemişse işlemi sonlandır
+        }
         $bicycle_id = intval($selected_bicycles[$race]);
-        $stmt_bicycles = $conn->prepare("INSERT INTO registred_bicycles (registration_id, bicycles_id, race_type) VALUES (?, ?, ?)");
-        $stmt_bicycles->bind_param("iis", $registration_id, $bicycle_id, $race);
-        if (!$stmt_bicycles->execute()) {
-            echo "Bisiklet kaydı sırasında bir hata oluştu: " . $stmt_bicycles->error;
+        if (!checkBicycleSuspension($conn, $bicycle_id, $organization)) {
+            exit(); // Bisiklet organizasyon gereksinimlerini karşılamıyorsa işlemi sonlandır
         }
     }
 
-    // Kullanıcı kayıtları tablosuna ekle
-    $stmt_user_registration = $conn->prepare("INSERT INTO user_registrations (user_id, registration_id) VALUES (?, ?)");
-    $stmt_user_registration->bind_param("ii", $user_id, $registration_id);
-    if (!$stmt_user_registration->execute()) {
-        echo "Kullanıcı kayıtları sırasında bir hata oluştu: " . $stmt_user_registration->error;
+    // Kayıt işlemi
+    $stmt = $conn->prepare("INSERT INTO registrations (Bib, first_name, second_name, organization_id, race_type, category, feragatname, price_document, registration_price, created_time, approval_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)");
+    $race_type_string = implode(',', $selected_races); // Düz metin olarak
+    $status = 0; // Beklemede
+
+    $stmt->bind_param("issssssssd", $bib, $user_details['name_users'], $user_details['surname_users'], $organization_id, $race_type_string, $category, $feragatname, $price_document, $total_price, $status);
+
+    if ($stmt->execute()) {
+        // En son eklenen kaydın ID'sini al
+        $registration_id = $conn->insert_id;
+
+        // Kategori bilgilerini yeni tabloya ekle
+        $stmt_category = $conn->prepare("INSERT INTO registration_categories (registration_id, category) VALUES (?, ?)");
+        $stmt_category->bind_param("is", $registration_id, $category);
+        $stmt_category->execute(); // Hata kontrolü yapılmadı
+
+        // Seçilen bisikletleri kaydet
+        foreach ($selected_races as $race) {
+            $bicycle_id = intval($selected_bicycles[$race]);
+            $stmt_bicycles = $conn->prepare("INSERT INTO registred_bicycles (registration_id, bicycles_id, race_type) VALUES (?, ?, ?)");
+            $stmt_bicycles->bind_param("iis", $registration_id, $bicycle_id, $race);
+            $stmt_bicycles->execute(); // Hata kontrolü yapılmadı
+        }
+
+        // Kullanıcı kayıtları tablosuna ekle
+        $stmt_user_registration = $conn->prepare("INSERT INTO user_registrations (user_id, registration_id) VALUES (?, ?)");
+        $stmt_user_registration->bind_param("ii", $user_id, $registration_id);
+        $stmt_user_registration->execute(); // Hata kontrolü yapılmadı
+
+        echo "<script>window.location.href = 'account';</script>"; // Başarılı işlem sonrasında yönlendirme
+    } else {
+        exit(); // Kayıt hatası durumunda işlemi sonlandır
     }
-
-    echo "<script>alert('Kayıt başarılı!'); window.location.href = 'account';</script>";
-
-} else {
-    echo "<script>alert('Kayıt sırasında bir hata oluştu.');</script>";
-}
-}
-}
+}}
 ?>
     <!DOCTYPE html>
     <html lang="tr">
@@ -261,30 +259,40 @@ if ($stmt->execute()) {
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="js/registeralerts.js"></script>
+
+
         <script>
-    const prices = <?php echo json_encode($prices_row); ?>;
+            
+        // PHP'den gelen fiyat bilgilerini JavaScript'e aktar
+        const prices = <?php echo json_encode($prices_row); ?>;
 
-    function updatePrice(prices) {
-        let total = 0;
-        const selectedRaces = document.querySelectorAll('input[name="races[]"]:checked');
+        function updatePrice(prices) {
+    let total = 0;
+    const selectedRaces = document.querySelectorAll('input[name="races[]"]:checked');
 
-        selectedRaces.forEach((checkbox) => {
-            total += parseFloat(prices[checkbox.value + '_price']) || 0;
-        });
+    selectedRaces.forEach((checkbox) => {
+        total += parseFloat(prices[checkbox.value + '_price']) || 0; // Yarış fiyatını kontrol et
+    });
 
-        const bibInput = document.getElementById("bib_selection").value;
-        const customBibChecked = document.getElementById('custom_bib').checked;
-        if (bibInput >= 0) {
-            total += parseFloat(prices['bib_price']) || 0;
-        }
-        if (customBibChecked) {
-            total += parseFloat(prices['special_bib_price']) || 0;
-        }
-
-        document.getElementById('total_price').value = total.toFixed(2) + " TL";
+    // Bib fiyatını ekle
+    const bibInput = document.getElementById("bib_selection").value;
+    const customBibChecked = document.getElementById('custom_bib').checked;
+    if (bibInput >= 0) { // Bib numarası girilmişse
+        total += parseFloat(prices['bib_price']) || 0; // Normal bib fiyatını ekle
+    }
+    if (customBibChecked) {
+        total += parseFloat(prices['special_bib_price']) || 0; // Özel bib fiyatını ekle
     }
 
+    document.getElementById('total_price').value = total.toFixed(2) + " TL";
+}
+
+
+
+
     window.onload = function() {
+        // Checkbox ve Bib girişi değiştiğinde fiyatı güncelle
         document.querySelectorAll('input[name="races[]"]').forEach((checkbox) => {
             checkbox.addEventListener('change', function() {
                 updatePrice(prices);
@@ -298,44 +306,8 @@ if ($stmt->execute()) {
 
         // İlk toplam fiyat güncellemesi
         updatePrice(prices);
+    };
 
-        document.getElementById("check_bib_button").addEventListener('click', function(event) {
-    event.preventDefault(); // Formun gönderilmesini engelle
-
-    const bibInput = document.getElementById("bib_selection");
-    const bibNumber = bibInput.value;
-    const organizationId = <?php echo json_encode($organization_id); ?>;
-
-    // Bib numarası girilmiş mi kontrol et
-    if (!bibNumber) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Hata',
-            text: 'Lütfen bir Bib numarası girin.',
-        });
-        return; // Eğer bib numarası yoksa, fonksiyondan çık
-    }
-
-    // Bib numarasını kontrol et
-    checkBibNumber(bibNumber, organizationId)
-        .then(data => {
-            if (!data.isValid) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Geçersiz Bib Numarası',
-                    text: 'Bu Bib numarası zaten kayıtlı.',
-                });
-                bibInput.value = ""; // Yanlış olduğunda inputu sıfırla
-            } else {
-                // Eğer bib numarası geçerli ise formu gönder
-                document.getElementById('raceForm').submit();
-            }
-        })
-        .catch(error => {
-            console.error('Bib kontrolü sırasında hata oluştu:', error);
-        });
-});
-}
     function showBikeSelection(checkbox) {
         const raceType = checkbox.value;
         const selectionDiv = document.getElementById('bike_selection_for_' + raceType);
@@ -344,66 +316,56 @@ if ($stmt->execute()) {
 
     function toggleBibInput() {
         const bibInputDiv = document.getElementById("bib_input");
+        const bibInput = document.getElementById("bib_selection");
         const customBibChecked = document.getElementById("custom_bib").checked;
         bibInputDiv.style.display = customBibChecked ? "block" : "none";
         
         if (!customBibChecked) {
-            document.getElementById("bib_selection").value = "";
+            // Inputu sıfırla
+            bibInput.value = "";
+            bibInput.removeAttribute("required");
+        } else {
+            bibInput.setAttribute("required", "required");
         }
         
+        // Fiyatı güncelle
         updatePrice(prices);
     }
 
-    function checkBibNumber(bibNumber, organizationId) {
-        const formData = new FormData();
-        formData.append('bib_number', bibNumber);
-        formData.append('organization_id', organizationId);
 
-        return fetch('check_bib_number.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json());
-    }
+    
+    function validateBib(bib, organizationId) {
+    return new Promise((resolve, reject) => {
+        // AJAX isteği
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'check_bib_number.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
-    function validateBikeSelection(bikeSelect, organizationId) {
-        const selectedOption = bikeSelect.options[bikeSelect.selectedIndex];
-        const bicycleId = selectedOption.value;
-
-        if (!bicycleId) {
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('bicycle_id', bicycleId);
-        formData.append('organization_id', organizationId);
-
-        fetch('suslevel.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (!data.isValid) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Geçersiz Bisiklet Seçimi',
-                    text: 'Bu bisiklet organizasyon gereksinimlerini karşılamıyor.',
-                });
-                bikeSelect.selectedIndex = 0; // Seçimi sıfırla
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
+                if (response.exists) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Hata!',
+                        text: 'Bu bib zaten kayıtlı.',
+                    });
+                    resolve(false); // Bib mevcut, form gönderilmesin
+                } else {
+                    resolve(true); // Bib mevcut değil, form gönderilebilir
+                }
+            } else {
+                reject(xhr.statusText);
             }
-        })
-        .catch(error => {
-            console.error('Bisiklet kontrolü sırasında hata oluştu:', error);
-        });
-    }
+        };
+
+        xhr.send(`bib=${bib}&organization_id=${organizationId}`);
+    });
+}
 
     function validateForm() {
-        const selectedRaces = document.querySelectorAll('input[name="races[]"]:checked');
-        const bicycleSelections = document.querySelectorAll('select[name^="bicycle_for"]');
-        const bibInput = document.getElementById("bib_selection");
 
-        // Yarış türü seçilmediyse uyarı göster ve formu durdur
+        const selectedRaces = document.querySelectorAll('input[name="races[]"]:checked');
         if (selectedRaces.length === 0) {
             Swal.fire({
                 icon: 'error',
@@ -412,43 +374,48 @@ if ($stmt->execute()) {
             });
             return false; // Formun gönderilmesini engelle
         }
+        return true; // Form gönderilebilir
 
-        // Seçilen her yarış için bisiklet seçilmiş mi kontrol et
-        for (let i = 0; i < selectedRaces.length; i++) {
-            const raceValue = selectedRaces[i].value;
-            const bikeSelection = document.querySelector(`select[name="bicycle_for[${raceValue}]"]`);
-
-            if (bikeSelection && bikeSelection.value === "") {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Uyarı!',
-                    text: `Yarış türü ${raceValue} için bir bisiklet seçmelisiniz.`,
-                });
-                return false; // Formun gönderilmesini engelle
-            }
-        }
-
-        // Bib numarasının kontrolü
-        if (bibInput.value && bibInput.dataset.isValid === "false") {
-            Swal.fire({
-                icon: 'error',
-                title: 'Hata!',
-                text: 'Geçersiz Bib numarası, lütfen kontrol edin.',
-            });
-            return false; // Formun gönderilmesini engelle
-        }
-
-        return true; // Tüm kontroller geçtiyse form gönderilebilir
     }
 
-    document.getElementById('raceForm').addEventListener('submit', function(event) {
-        // Form gönderilmeden önce validateForm fonksiyonunu çalıştır
-        if (!validateForm()) {
-            event.preventDefault(); // Formu gönderme
-        }
-    });
-</script>
+    
 
+    function validateBikeSelection(bikeSelect, organizationId) {
+    const selectedOption = bikeSelect.options[bikeSelect.selectedIndex];
+    const bicycleId = selectedOption.value;
+
+    if (!bicycleId) {
+        return; // Seçim yapılmamış, kontrol etme
+    }
+
+    // Bisiklet ID ve organizasyon ID'si ile AJAX isteği yap
+    const formData = new FormData();
+    formData.append('bicycle_id', bicycleId);
+    formData.append('organization_id', organizationId);
+
+    fetch('suslevel.php', { // Dosya yolunu kontrol edin
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.isValid) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Geçersiz Bisiklet Seçimi',
+                text: 'Seçtiğiniz bisiklet organizasyon gereksinimlerini karşılamıyor.'
+            });
+
+            // Yanlış seçim yapıldığında combobox'u sıfırla
+            bikeSelect.value = "";
+        }
+    })
+    .catch(error => {
+        console.error('Bisiklet kontrolü sırasında hata oluştu:', error);
+    });
+}
+
+        </script>
     </head>
     <body>
 
@@ -459,8 +426,8 @@ if ($stmt->execute()) {
                 <h3>Organizasyona Kayıt</h3>
                 <div class="section-divider"></div> <!-- Bölüm Çizgisi -->
 
-                <form id="raceForm" action="registrations.php?organization_id=<?= $organization_id ?>" method="post" enctype="multipart/form-data" onsubmit="return validateForm();">
-                <div class="mb-3">
+                <form action="" method="post" enctype="multipart/form-data" onsubmit="return validateForm();">
+                        <div class="mb-3">
                 <label for="first_name" class="form-label">İsim</label>
                 <input type="text" class="form-control" id="first_name" name="first_name" value="<?php echo htmlspecialchars($user_details['name_users']); ?>" required readonly>
             </div>
@@ -475,46 +442,44 @@ if ($stmt->execute()) {
                     </div>
 
                     <div id="bib_input" style="display:none;">
-    <label for="bib_selection" class="form-label">Bib Numarası</label>
-    <input type="number" class="form-control" id="bib_selection" name="bib_selection" required>
-</div>
+                        <label for="bib_selection" class="form-label">Bib Numarası</label>
+                        <input type="number" class="form-control" id="bib_selection" name="bib_selection">
+                    </div>
 
+                 <div class="mb-3">
+                    <label class="form-label">Kategori</label>
+                <!-- Kategori bilgisi görüntülenen, ama sunucuya gönderilmeyen bir alan -->
+                <input type="text" class="form-control" id="category_display" name="category_display" value="<?php echo htmlspecialchars($category); ?>" disabled>
 
-                            <div class="mb-3">
-                                <label class="form-label">Kategori</label>
-            <!-- Kategori bilgisi görüntülenen, ama sunucuya gönderilmeyen bir alan -->
-            <input type="text" class="form-control" id="category_display" name="category_display" value="<?php echo htmlspecialchars($category); ?>" disabled>
+                <!-- Kategori bilgisi sunucuya gönderilecek olan gizli bir alan -->
+                <input type="hidden" id="category_hidden" name="category" value="<?php echo htmlspecialchars($category); ?>">
 
-            <!-- Kategori bilgisi sunucuya gönderilecek olan gizli bir alan -->
-            <input type="hidden" id="category_hidden" name="category" value="<?php echo htmlspecialchars($category); ?>">
-
-                            </div>
+                </div>
 
                     <div class="section-divider"></div> <!-- Bölüm Çizgisi -->
 
                     <div class="mb-3">
-    <!-- Yarış türleri -->
-    <label class="form-label">Yarış Türleri:</label>
-    <?php foreach ($active_races as $race): ?>
-        <div>
-            <input type="checkbox" name="races[]" value="<?php echo $race; ?>" id="<?php echo $race; ?>" onclick="showBikeSelection(this)">
-            <label for="<?php echo $race; ?>"><?php echo ucfirst($race); ?></label>
+                        <!-- Yarış türleri -->
+                        <label class="form-label">Yarış Türleri:</label>
+                        <?php foreach ($active_races as $race): ?>
+                            <div>
+                                <input type="checkbox" name="races[]" value="<?php echo $race; ?>" id="<?php echo $race; ?>" onclick="showBikeSelection(this)">
+                                <label for="<?php echo $race; ?>"><?php echo ucfirst($race); ?></label>
 
-            <div id="bike_selection_for_<?php echo $race; ?>" style="display: none;">
-                <label for="bicycle_for_<?php echo $race; ?>">Bisiklet Seç:</label>
-                <select name="bicycle_for[<?php echo $race; ?>]" class="form-control" onchange="validateBikeSelection(this, <?php echo $organization_id; ?>)">
-                    <option value="">Seçiniz</option>
-                    <?php foreach ($bike_options as $bike): ?>
+                                <div id="bike_selection_for_<?php echo $race; ?>" style="display: none;">
+                                    <label for="bicycle_for_<?php echo $race; ?>">Bisiklet Seç:</label>
+                                    <select name="bicycle_for[<?php echo $race; ?>]" class="form-control" onchange="validateBikeSelection(this, <?php echo $organization_id; ?>)">
+                                    <option value="">Seçiniz</option>
+                                    <?php foreach ($bike_options as $bike): ?>
                         <option value="<?php echo $bike['id']; ?>">
                             <?php echo $bike['brandName'] . ' - Ön Süspansiyon: ' . $bike['front_travel'] . ' mm, Arka Süspansiyon: ' . $bike['rear_travel'] . ' mm'; ?>
                         </option>
                     <?php endforeach; ?>
-                </select>
-            </div>
-        </div>
-    <?php endforeach; ?>
-</div>
-
+                                    </select>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
 
                     <div class="section-divider"></div> <!-- Bölüm Çizgisi -->
 
@@ -529,22 +494,41 @@ if ($stmt->execute()) {
                     </div>
                     <div class="section-divider"></div> <!-- Bölüm Çizgisi -->
 
-                    <button type="submit"  id="check_bib_button" class="registerbtn btn btn-primary" name="register">Kayıt Ol</button>
+                    <button type="submit" class="registerbtn btn btn-primary" name="register">Kayıt Ol</button>
+
                 </form>
             </div>
 
-            <!-- Sağ sütun: Organizasyon bilgileri -->
-            <div class="col-md-4">
-                <h3>Organizasyon Bilgileri</h3>
-                <div class="section-divider"></div> <!-- Bölüm Çizgisi -->
+                <!-- Sağ sütun: Organizasyon bilgileri -->
+        <div class="col-md-4">
+            <h3>Organizasyon Bilgileri</h3>
+            <div class="section-divider"></div> <!-- Bölüm Çizgisi -->
 
-                <p><strong>Organizasyon Adı:</strong> <?php echo htmlspecialchars($organization['name']); ?></p>
-                <div class="section-divider"></div> <!-- Bölüm Çizgisi -->
+            <p><strong>Organizasyon Adı:</strong> <?php echo htmlspecialchars($organization['name']); ?></p>
+            <div class="section-divider"></div> <!-- Bölüm Çizgisi -->
 
-                <h4>Toplam Fiyat</h4>
-                    <input type="text" id="total_price" class="form-control mb-3" value="0.00 TL" readonly>
+            <h4>Toplam Fiyat</h4>
+            <input type="text" id="total_price" class="form-control mb-3" value="0.00 TL" readonly>
 
+            <div class="section-divider"></div> <!-- Bölüm Çizgisi -->
+
+            <h4>IBAN Bilgileri</h4>
+            <div class="iban-list">
+                <?php if (!empty($ibanList)): ?>
+                    <ul class="list-group">
+                        <?php foreach ($ibanList as $iban): ?>
+                            <li class="list-group-item">
+                                <strong>Banka:</strong> <?php echo htmlspecialchars($iban['bank_name']); ?><br>
+                                <strong>Sahibi:</strong> <?php echo htmlspecialchars($iban['owner_first_name'] . ' ' . $iban['owner_last_name']); ?><br>
+                                <strong>IBAN:</strong> <?php echo htmlspecialchars($iban['iban_number']); ?>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php else: ?>
+                    <p>IBAN bilgisi bulunmamaktadır.</p>
+                <?php endif; ?>
             </div>
+        </div>
         </div>
     </div>
     <footer class="footer mt-auto py-2">
