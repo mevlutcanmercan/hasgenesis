@@ -6,18 +6,28 @@ include '../db/database.php'; // Veritabanı bağlantısını dahil et
 $sliders = $conn->query("SELECT * FROM main_page_sliders");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $title = $_POST['title'];
-    $summary = $_POST['summary'];
-    $link = $_POST['link'];
-    
     // Resim yükleme
     $imagePath = null;
     if (isset($_FILES['slider_image']) && $_FILES['slider_image']['error'] == UPLOAD_ERR_OK) {
         $targetDir = '../images/'; // Resimlerin yükleneceği klasör
         $targetFile = $targetDir . basename($_FILES['slider_image']['name']);
+        
+        // Dosya boyutunu kontrol et (7 MB)
+        if ($_FILES['slider_image']['size'] > 7 * 1024 * 1024) {
+            header("Location: sliderManagement.php?error=Dosya%20boyutu%207MB'dan%20büyük%20olamaz!");
+            exit();
+        }
+
         move_uploaded_file($_FILES['slider_image']['tmp_name'], $targetFile);
         $imagePath = 'images/' . basename($_FILES['slider_image']['name']); // Veritabanına kaydedilecek yol
+    } else {
+        header("Location: sliderManagement.php?error=Resim%20yüklenmesi%20gerekiyor!");
+        exit();
     }
+
+    $title = $_POST['title'] ?? null; // Başlık isteğe bağlı
+    $summary = $_POST['summary'] ?? null; // Özet isteğe bağlı
+    $link = $_POST['link'] ?? null; // Bağlantı isteğe bağlı
 
     // Karakter sınırını kontrol et
     if (mb_strlen($title, 'UTF-8') > 30 || mb_strlen($summary, 'UTF-8') > 30) {
@@ -54,13 +64,19 @@ if (isset($_GET['delete'])) {
 // Slider güncelleme işlemi
 if (isset($_POST['updateSlider'])) {
     $id = $_POST['id'];
-    $title = $_POST['title'];
-    $summary = $_POST['summary'];
-    $link = $_POST['link'];
-    
+    $title = $_POST['title'] ?? null; // Başlık isteğe bağlı
+    $summary = $_POST['summary'] ?? null; // Özet isteğe bağlı
+    $link = $_POST['link'] ?? null; // Bağlantı isteğe bağlı
+
     // Mevcut resmi kullan eğer yeni resim yüklenmemişse
     $imagePath = $_POST['current_image_path']; // Varsayılan olarak mevcut resim
     if (isset($_FILES['slider_image']) && $_FILES['slider_image']['error'] == UPLOAD_ERR_OK) {
+        // Dosya boyutunu kontrol et (7 MB)
+        if ($_FILES['slider_image']['size'] > 7 * 1024 * 1024) {
+            header("Location: sliderManagement.php?error=Dosya%20boyutu%207MB'dan%20büyük%20olamaz!");
+            exit();
+        }
+
         // Mevcut resmi sil
         if (file_exists('../' . $imagePath)) {
             unlink('../' . $imagePath);
@@ -111,6 +127,23 @@ if (isset($_POST['updateSlider'])) {
                 confirmButtonText: 'Tamam'
             });
         }
+
+        // Dosya boyutu kontrolü (Ekleme ve Düzenleme formu için)
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        fileInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file && file.size > 7 * 1024 * 1024) { // 7 MB kontrolü
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Hata!',
+                        text: 'Seçtiğiniz dosya boyutu 7MB\'dan büyük olamaz!',
+                        confirmButtonText: 'Tamam'
+                    });
+                    this.value = ''; // Hata durumunda dosya girişini temizle
+                }
+            });
+        });
     });
 </script>
 </head>
@@ -130,7 +163,7 @@ if (isset($_POST['updateSlider'])) {
                 <label for="slider_image">Slider Resmi Yükle:</label>
                 <input type="file" id="slider_image" name="slider_image" accept="image/*" required>
                 
-                <input type="text" name="link" placeholder="Bağlantı" >
+                <input type="text" name="link" placeholder="Bağlantı">
                 <button type="submit" name="addSlider">Slider Ekle</button>
             </form>
         </div>
@@ -150,9 +183,9 @@ if (isset($_POST['updateSlider'])) {
             
             <!-- Resim Yükleme Alanı -->
             <label for="slider_image">Yeni Slider Resmi Yükle (İsteğe Bağlı):</label>
-            <input type="file" id="slider_image" name="slider_image" accept="image/*">
+            <input type="file" id="slider_image_edit" name="slider_image" accept="image/*"> <!-- ID'yi değiştirdik -->
             
-            <input type="text" name="link" value="<?php echo $slider['link']; ?>" >
+            <input type="text" name="link" value="<?php echo $slider['link']; ?>">
             <button type="submit" name="updateSlider">Slider Güncelle</button>
         </form>
     </div>

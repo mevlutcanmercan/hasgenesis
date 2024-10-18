@@ -15,6 +15,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Resim yükleme
     $logoPath = $whoUs['logo_path']; // Varsayılan logo yolu
     if (isset($_FILES['logo']) && $_FILES['logo']['error'] == UPLOAD_ERR_OK) {
+        // Dosya boyutunu kontrol et (5 MB)
+        if ($_FILES['logo']['size'] > 5 * 1024 * 1024) {
+            header("Location: " . $_SERVER['PHP_SELF'] . "?error=Dosya%20boyutu%205MB'dan%20büyük%20olamaz!");
+            exit();
+        }
+
         // Mevcut logo dosyasını sil
         if (file_exists('../' . $logoPath)) {
             unlink('../' . $logoPath);
@@ -46,6 +52,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=1100">
     <title>Hakkımızda Yönetimi</title>
     <link rel="stylesheet" href="admincss/whous-managament.css"> <!-- CSS dosyası -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Dosya boyutu kontrolü
+            const fileInput = document.getElementById('logo');
+            fileInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file && file.size > 5 * 1024 * 1024) { // 5 MB kontrolü
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Hata!',
+                        text: 'Seçtiğiniz dosya boyutu 5MB\'dan büyük olamaz!',
+                        confirmButtonText: 'Tamam'
+                    });
+                    this.value = ''; // Hata durumunda dosya girişini temizle
+                }
+            });
+        });
+    </script>
 </head>
 <body>
 
@@ -64,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
 
         <div class="form-group">
-            <label for="logo">Logo Yükle:</label>
+            <label for="logo">Logo Yükle (Max: 5Mb):</label>
             <input type="file" id="logo" name="logo" accept="image/*">
         </div>
 
