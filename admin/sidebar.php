@@ -45,6 +45,7 @@ $currentPage = basename($_SERVER['SCRIPT_NAME']);
                 <li><a href="organizations-admin" class="<?php echo ($currentPage == 'organizations-admin.php') ? 'active' : ''; ?>">Organizasyon Yönetimi</a></li>
                 <li><a href="raceresults-admin" class="<?php echo ($currentPage == 'raceresults-admin.php') ? 'active' : ''; ?>">Yarış Sonuçları</a></li>
                 <li><a href="admin_cancellation" class="<?php echo ($currentPage == 'admin_cancellation.php') ? 'active' : ''; ?>">İptal İşlemleri</a></li>
+                <li><a href="add_iban" class="<?php echo ($currentPage == 'add_iban.php') ? 'active' : ''; ?>">IBAN İşlemleri</a></li>
                 <li class="cikisyap"><a href="adminlogout.php">Çıkış Yap</a></li>
             </ul>
         </div>

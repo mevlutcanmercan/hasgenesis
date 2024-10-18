@@ -5,9 +5,23 @@ include 'dB/database.php';
 $bicycle_id = $_POST['bicycle_id'];
 $organization_id = $_POST['organization_id'];
 
-// Organizasyon bilgilerini al (örnek olarak sabit değerler kullanılıyor)
-$min_front_suspension_travel = 100; // Örnek değer
-$min_rear_suspension_travel = 100; // Örnek değer
+// Organizasyonun süspansiyon değerlerini al
+$organization_query = "SELECT min_front_suspension_travel, min_rear_suspension_travel FROM organizations WHERE id = ?";
+$org_stmt = $conn->prepare($organization_query);
+$org_stmt->bind_param("i", $organization_id);
+$org_stmt->execute();
+$org_stmt->bind_result($min_front_suspension_travel, $min_rear_suspension_travel);
+
+if (!$org_stmt->fetch()) {
+    // Organizasyon bulunamazsa hata mesajı döndür
+    $org_stmt->close();
+    $conn->close();
+    header('Content-Type: application/json');
+    echo json_encode(['error' => 'Organization not found.']);
+    exit;
+}
+
+$org_stmt->close();
 
 // Bisikletin süspansiyon değerlerini al
 $query = "SELECT front_travel, rear_travel FROM bicycles WHERE id = ?";
