@@ -602,7 +602,6 @@ $user_bikes_result = $user_bikes_stmt->get_result();
                     <th>Organizasyon Adı</th>
                     <th>Sıra</th>
                     <th>Bib</th>
-                    <th>Yarış Adı</th>
                     <th>Yarış Türü</th>
                     <th>Kategori</th>
                     <th>Zaman</th>
@@ -614,7 +613,6 @@ $user_bikes_result = $user_bikes_stmt->get_result();
                         <td><?php echo htmlspecialchars($row['organization_name']); ?></td>
                         <td><?php echo htmlspecialchars($row['place']); ?></td>
                         <td><?php echo htmlspecialchars($row['Bib']); ?></td>
-                        <td><?php echo htmlspecialchars($row['name']); ?></td>
                         <td><?php echo htmlspecialchars($row['race_type']); ?></td>
                         <td><?php echo htmlspecialchars($row['category']); ?></td>
                         <td><?php echo htmlspecialchars($row['time']); ?></td>

@@ -75,6 +75,20 @@ include '../bootstrap.php';
     <meta name="viewport" content="width=1100">
     <link rel="stylesheet" href="admincss/raceresults-details.css">
     <title><?php echo htmlspecialchars($organization_name); ?> Yarış Detayları</title>
+        <!-- jQuery Ekleyelim (Seçim işlemi için) -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Tüm checkbox'ları seçme ve kaldırma işlemi
+        $('#select_all').click(function() {
+            var checked = this.checked;
+            $('input[type="checkbox"]').each(function() {
+                this.checked = checked;
+            });
+        });
+    });
+</script>
 </head>
 <body>
 
@@ -107,6 +121,10 @@ include '../bootstrap.php';
         <table>
             <thead>
                 <tr>
+                <th>
+                        <!-- Tümünü Seç Checkbox -->
+                        <input type="checkbox" id="select_all">
+                    </th>
                     <th>Seç</th>
                     <th>Sıra</th>
                     <th>Bib No</th>
