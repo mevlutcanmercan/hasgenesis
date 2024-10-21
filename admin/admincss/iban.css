@@ -99,7 +99,7 @@ input[type="text"]:focus {
 
 .table th {
     background: linear-gradient(135deg, #3a3a3a, #5a5a5a); /* Geçişli gri başlık arka planı */
-    color: #c0c0c0; /* Başlık yazı rengi */
+    color: #ffffff; /* Başlık yazı rengi */
 }
 
 /* Satır hover efekti */
