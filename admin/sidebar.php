@@ -29,7 +29,7 @@ $currentPage = basename($_SERVER['SCRIPT_NAME']);
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar" style="transform: translateX(-100%);">
         <div class="logo-container">
-            <img src="../images/logo-has.png" alt="Admin Logo" class="logo">
+            <img src="../images/logo-has-icon.png" alt="Admin Logo" class="logo">
         </div>
         <h2>Admin Paneli</h2>
         <div class="menu">

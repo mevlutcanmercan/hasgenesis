@@ -179,7 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>İptal Talepleri - Admin Panel</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admincss/admin-cancellation.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
@@ -196,24 +196,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </tr>
             </thead>
             <tbody>
-                <?php while($row = $result->fetch_assoc()): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($row['first_name']) . " " . htmlspecialchars($row['second_name']); ?></td>
-                        <td><?php echo htmlspecialchars($row['organization_name']); ?></td>
-                        <td><?php echo htmlspecialchars($row['reason']); ?></td>
-                        <td>Beklemede</td>
-                        <td>
-                            <form action="admin_cancellation.php" method="post" id="action-form-<?php echo $row['cancellation_id']; ?>">
-                                <input type="hidden" name="cancellation_id" value="<?php echo $row['cancellation_id']; ?>">
-                                <input type="hidden" name="registration_id" value="<?php echo $row['registration_id']; ?>">
-                                <input type="hidden" name="user_id" value="<?php echo $row['user_id']; ?>"> <!-- Kullanıcı ID'sini gizli alan olarak ekle -->
-                                <button type="button" class="approve-button" onclick="confirmAction('approve', <?php echo $row['cancellation_id']; ?>)">Onayla</button>
-                                <button type="button" class="deny-button" onclick="confirmAction('deny', <?php echo $row['cancellation_id']; ?>)">Reddet</button>
-                            </form>
-                        </td>
-                    </tr>
-                <?php endwhile; ?>
-            </tbody>
+    <?php while($row = $result->fetch_assoc()): ?>
+        <tr>
+            <td><?php echo htmlspecialchars($row['first_name']) . " " . htmlspecialchars($row['second_name']); ?></td>
+            <td><?php echo htmlspecialchars($row['organization_name']); ?></td>
+            <td class="reason-cell"><?php echo htmlspecialchars($row['reason']); ?></td> <!-- İptal sebebi hücresi için özel class -->
+            <td>Beklemede</td>
+            <td>
+                <form action="admin_cancellation.php" method="post" id="action-form-<?php echo $row['cancellation_id']; ?>">
+                    <input type="hidden" name="cancellation_id" value="<?php echo $row['cancellation_id']; ?>">
+                    <input type="hidden" name="registration_id" value="<?php echo $row['registration_id']; ?>">
+                    <input type="hidden" name="user_id" value="<?php echo $row['user_id']; ?>"> <!-- Kullanıcı ID'sini gizli alan olarak ekle -->
+                    <button type="button" class="approve-button" onclick="confirmAction('approve', <?php echo $row['cancellation_id']; ?>)">Onayla</button>
+                    <button type="button" class="deny-button" onclick="confirmAction('deny', <?php echo $row['cancellation_id']; ?>)">Reddet</button>
+                </form>
+            </td>
+        </tr>
+    <?php endwhile; ?>
+</tbody>
+
         </table>
     </div>
 
@@ -272,57 +273,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </body>
 </html>
 
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f5f5f5;
-        color: #333;
-    }
-    .cancellation-container {
-        width: 80%;
-        margin: auto;
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    }
-    h2 {
-        text-align: center;
-        color: #444;
-    }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 20px 0;
-    }
-    table, th, td {
-        border: 1px solid #ddd;
-    }
-    th, td {
-        padding: 12px;
-        text-align: center;
-    }
-    th {
-        background-color: #4CAF50;
-        color: white;
-    }
-    tr:nth-child(even) {
-        background-color: #f2f2f2;
-    }
-    tr:hover {
-        background-color: #ddd;
-    }
-    .approve-button, .deny-button {
-        padding: 8px 12px;
-        color: white;
-        border: none;
-        cursor: pointer;
-        border-radius: 4px;
-    }
-    .approve-button {
-        background-color: #4CAF50;
-    }
-    .deny-button {
-        background-color: #f44336;
-    }
-</style>
+
