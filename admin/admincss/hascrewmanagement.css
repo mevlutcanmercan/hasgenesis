@@ -37,7 +37,7 @@ h3 {
     padding: 15px;
     height: 370px; /* Kart yüksekliği */
     width: 100%; /* Kartların genişliği %100 */
-    max-width: 350px; /* Her kartın maksimum genişliği */
+    width: 350px; /* Her kartın maksimum genişliği */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     transition: transform 0.2s;
     overflow: hidden; /* Kart taşmasını önle */
