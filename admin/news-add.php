@@ -1,6 +1,13 @@
 <?php
-include '../db/database.php';
+include '../dB/database.php';
 include 'sidebar.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+// PHPMailer dosyalarını dahil et
+require '../PHPMailer/src/Exception.php';
+require '../PHPMailer/src/PHPMailer.php';
+require '../PHPMailer/src/SMTP.php';
 
 $alertMessage = '';
 $alertType = '';
@@ -69,6 +76,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Sorguyu çalıştır
             if ($stmt->execute()) {
+                // Kullanıcıların e-posta adreslerini al
+                $userQuery = "SELECT mail_users FROM users WHERE mail_users IS NOT NULL AND mail_users != ''";
+                $result = $conn->query($userQuery);
+
+                // PHPMailer yapılandırması
+                $mail = new PHPMailer(true);
+                $mail->isSMTP();
+                $mail->Host = 'mail.hasgenesis.com';
+                $mail->SMTPAuth = true;
+                $mail->Username = 'info@hasgenesis.com';
+                $mail->Password = 'QVVXaWsZ*b9S';
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+                $mail->Port = 465;
+
+                // Gönderen bilgisi
+                $mail->setFrom('info@hasgenesis.com', 'Has Genesis');
+                $mail->CharSet = 'UTF-8'; // Türkçe karakter desteği için karakter setini UTF-8 yap
+
+                // E-posta içeriği
+                $subject = "\"" . $name . "\" başlıklı yeni bir haber yayınlandı!"; // Haber başlığı ile e-posta konusu
+                $body = "<p>Merhaba,</p>";
+                $body .= "<p>Has Genesis'te <strong>\"" . $name . "\"</strong> başlıklı yeni bir haber yayınlandı. Detaylar için tıklayın:</p>";
+                $body .= "<p><a href='https://hasgenesis.com/news'>Buraya tıklayın</a></p>";
+                $body .= "<p>Saygılarımızla,</p>";
+                $body .= "<p>Has Genesis</p>";
+
+                // Kullanıcıların e-postalarına döngü ile mail gönder
+                while ($row = $result->fetch_assoc()) {
+                    try {
+                        // Alıcı e-posta adresi
+                        $mail->addAddress($row['mail_users']);
+
+                        // E-posta içeriği
+                        $mail->isHTML(true);
+                        $mail->Subject = $subject;
+                        $mail->Body = $body;
+
+                        // Mail gönderimi
+                        $mail->send();
+
+                        // Alıcı adresini temizle (her döngüde yeni alıcıya gönderim yapılması için)
+                        $mail->clearAddresses();
+                    } catch (Exception $e) {
+                        // E-posta gönderiminde hata olursa devam et, hata loglanabilir
+                        error_log("E-posta gönderim hatası: " . $e->getMessage());
+                    }
+                }
+
                 // Yönlendirme yap
                 header("Location: " . $_SERVER['PHP_SELF'] . "?status=success");
                 exit; // Yönlendirme yaptıktan sonra çıkış yap
@@ -82,6 +137,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
