@@ -1,7 +1,8 @@
 /* Genel stiller */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f8f9fa; /* Arka plan rengi */
+    background-color: #2f2f2f; /* Arka plan koyu gri */
+    color: #e0e0e0; /* Açık gri yazı rengi */
     margin: 0;
     padding: 20px;
 }
@@ -13,25 +14,26 @@ h2, h3 {
 }
 
 h2 {
-    color: #007bff;
+    color: #ffffff; /* Orta gri başlık */
     font-size: 2rem;
     text-align: center;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Hafif gölge efekti */
 }
 
 h3 {
-    color: #343a40;
+    color: #ffffff; /* Daha açık gri alt başlık */
     margin-top: 30px;
     font-size: 1.5rem;
 }
 
 /* Konteyner stilleri */
 .container {
-    max-width: 800px;
+    max-width: 950px;
     margin: auto;
-    background: #fff;
+    background: linear-gradient(135deg, #3a3a3a, #4f4f4f); /* Geçişli gri arka plan */
     padding: 30px;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Daha belirgin gölge */
 }
 
 /* Form stilleri */
@@ -41,57 +43,69 @@ h3 {
 
 label {
     font-weight: bold;
-    display: block; /* Label'ların blok eleman olmasını sağla */
-    margin-bottom: 5px; /* Label ile input arasına boşluk ekle */
+    display: block;
+    margin-bottom: 5px;
+    color: #ffffff; /* Daha açık gri etiket rengi */
 }
 
 input[type="text"] {
-    border: 1px solid #ced4da;
+    border: 1px solid #6c757d; /* Orta gri kenarlık */
     border-radius: 4px;
     padding: 10px;
     width: 100%;
-    transition: border-color 0.3s;
+    background-color: #404040; /* Koyu gri arka plan */
+    color: #ffffff; /* Açık gri yazı rengi */
+    transition: border-color 0.3s, background-color 0.3s;
 }
 
 /* Focus durumunda input stilleri */
 input[type="text"]:focus {
-    border-color: #007bff;
+    border-color: #9e9e9e; /* Daha açık gri kenarlık */
+    background-color: #363636; /* Biraz daha açık gri arka plan */
     outline: none;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    box-shadow: 0 0 5px rgba(160, 160, 160, 0.5); /* Hafif gri gölge */
 }
 
 /* Buton stilleri */
 .btn {
-    background-color: #007bff;
+    background: linear-gradient(135deg, #6c757d, #5a6268); /* Geçişli koyu gri buton */
     border: none;
-    color: white;
+    color: #e0e0e0; /* Açık gri yazı */
     padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s;
-    text-align: center; /* Buton içindeki metni ortala */
+    transition: background-color 0.3s, transform 0.2s; /* Hover efekti ve büyüme */
+    text-align: center;
 }
 
 .btn:hover {
-    background-color: #0056b3;
+    background: #4f545a; /* Hover durumunda daha koyu gri */
+    transform: scale(1.05); /* Hafif büyüme efekti */
 }
 
 /* Tablo stilleri */
 .table {
     margin-top: 20px;
     width: 100%;
-    border-collapse: collapse; /* Kenar çakışmalarını kaldır */
+    border-collapse: collapse;
 }
 
 .table th, .table td {
-    padding: 12px; /* Hücrelerdeki iç boşluk */
-    text-align: left; /* Metni sola yasla */
-    border-bottom: 1px solid #dee2e6; /* Alt kenar çizgisi */
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #444; /* Koyu gri alt çizgi */
+    color: #d0d0d0; /* Hücre içi yazılar için açık gri */
 }
 
 .table th {
-    background-color: #f8f9fa; /* Başlık arka plan rengi */
-    color: #495057; /* Başlık metin rengi */
+    background: linear-gradient(135deg, #3a3a3a, #5a5a5a); /* Geçişli gri başlık arka planı */
+    color: #c0c0c0; /* Başlık yazı rengi */
+}
+
+/* Satır hover efekti */
+.table tr:hover {
+    background-color: #505050; /* Hover efektinde daha açık gri */
+    transition: background-color 0.3s ease;
 }
 
 /* Alert stilleri */
@@ -102,28 +116,28 @@ input[type="text"]:focus {
 }
 
 .alert-danger {
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-    color: #721c24;
+    background-color: #493d3d;
+    border-color: #6d4c4c;
+    color: #e57373;
 }
 
 .alert-success {
-    background-color: #d4edda;
-    border-color: #c3e6cb;
-    color: #155724;
+    background-color: #3d4d3d;
+    border-color: #4c6d4c;
+    color: #81c784;
 }
 
 /* Duyarlı tasarım */
 @media (max-width: 768px) {
     .container {
-        padding: 15px; /* Mobilde daha az boşluk */
+        padding: 15px;
     }
 
     h2 {
-        font-size: 1.5rem; /* Başlık boyutunu küçült */
+        font-size: 1.5rem;
     }
 
     h3 {
-        font-size: 1.25rem; /* Alt başlık boyutunu küçült */
+        font-size: 1.25rem;
     }
 }
