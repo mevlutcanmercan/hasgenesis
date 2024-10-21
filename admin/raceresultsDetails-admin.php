@@ -125,7 +125,6 @@ include '../bootstrap.php';
                         <!-- Tümünü Seç Checkbox -->
                         <input type="checkbox" id="select_all">
                     </th>
-                    <th>Seç</th>
                     <th>Sıra</th>
                     <th>Bib No</th>
                     <th>Ad</th>

@@ -52,7 +52,7 @@ body {
 
 /* Logo boyutlandırması */
 .logo-container img {
-    max-width: 60%; /* Logoyu orantılı şekilde küçültmek için */
+    max-width: 55%; /* Logoyu orantılı şekilde küçültmek için */
     height: auto;
     display: block;
     margin: 0 auto; /* Merkezi hizalamak için */

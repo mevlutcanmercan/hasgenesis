@@ -154,6 +154,8 @@ table {
 #races {
     color: white;
     max-width: 800px;
+    max-height: 600px; /* Burada istediğiniz yüksekliği belirleyebilirsiniz */
+    overflow-y: auto; /* Yatayda taşma olmayacak şekilde scroll ekler */
     background: linear-gradient(135deg, #8f8f8f, #858585, #000000e3);
     padding: 30px;
     box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
@@ -171,7 +173,10 @@ table {
     padding-bottom: 10px;
     text-align: center;
 }
-
+.table-striped {
+    width: 100%; /* Tablo genişliğini korur */
+    table-layout: auto; /* İçerik uzunluğuna göre otomatik olarak tablo genişliğini ayarlar */
+}
 /* Tablo Stili */
 #races table {
     width: 100%;

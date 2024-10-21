@@ -31,11 +31,11 @@ $currentPage = basename($_SERVER['SCRIPT_NAME']);
         <div class="logo-container">
             <img src="../images/logo-has-icon.png" alt="Admin Logo" class="logo">
         </div>
-        <h2>Admin Paneli</h2>
         <div class="menu">
             <ul>
                 <li><a href="adminmainpage" class="<?php echo ($currentPage == 'adminmainpage.php') ? 'active' : ''; ?>">Ana Sayfa</a></li>
                 <li><a href="hascrewmanagement" class="<?php echo ($currentPage == 'hascrewmanagement.php') ? 'active' : ''; ?>">Has Crew</a></li>
+                <li><a href="userManagement" class="<?php echo ($currentPage == 'userManagement.php') ? 'active' : ''; ?>">Üye Yönetimi</a></li>
                 <li><a href="newsmanagement" class="<?php echo ($currentPage == 'newsmanagement.php') ? 'active' : ''; ?>">Haber Yönetimi</a></li>
                 <li><a href="project-managament" class="<?php echo ($currentPage == 'project-managament.php') ? 'active' : ''; ?>">Proje Yönetimi</a></li>
                 <li><a href="sliderManagement" class="<?php echo ($currentPage == 'sliderManagement.php') ? 'active' : ''; ?>">Slider Yönetimi</a></li>
