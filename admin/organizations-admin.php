@@ -138,7 +138,7 @@ $pdf_file_path = '../documents/race_details/'; // PDF dosya yolu
         function confirmDelete(organizationId) {
             Swal.fire({
                 title: 'Emin misiniz?',
-                text: 'Bu organizasyonu silmek istediğinize emin misiniz?',
+                text: 'Bu organizasyonu silmek istediğinize emin misiniz? Organizasyon silindiğinde ona ait kayıtlar ve sonuçlar kalıcı olarak silinecektir !',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Evet, sil!',
