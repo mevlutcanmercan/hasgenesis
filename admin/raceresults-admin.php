@@ -182,7 +182,7 @@ if ($organization_id) {
                 <tr>
                     <td><?= htmlspecialchars($org['name']); ?></td>
                     <td>
-                        <form action="raceresultsDetails-admin.php" method="GET">
+                        <form action="raceresultsDetails-admin" method="GET">
                             <input type="hidden" name="organization_id" value="<?= $org['id']; ?>">
                             <button type="submit" name="race_type" value="downhill" class="btn btn-info" <?= !$org['downhill'] ? '' : ''; ?>>Downhill</button>
                             <button type="submit" name="race_type" value="enduro" class="btn btn-info" <?= !$org['enduro'] ? '' : ''; ?>>Enduro</button>

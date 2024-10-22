@@ -1,8 +1,14 @@
 <?php
+// Veritabanı bağlantısı ve gerekli dosyaların dahil edilmesi
 include '../db/database.php';
 include 'sidebar.php';
 
-$organization_id = $_GET['organization_id']; // organization_id'yi alın
+// organization_id parametresini güvenli bir şekilde alın
+if (isset($_GET['organization_id'])) {
+    $organization_id = $_GET['organization_id'];
+} else {
+    die('organization_id parametresi eksik!');
+}
 
 // Kullanıcı adını ve soyadını getirmek için sorgu
 $sql = "
@@ -25,9 +31,10 @@ unset($_SESSION['error_message']);
 
 // POST isteği kontrolü
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    // organization_id değerini POST parametresinden alın
+    $organization_id = $_POST['organization_id']; // Bu POST parametresini aldığımızdan emin olun
     $registration_ids = $_POST['registration_ids'];
     $new_bib_numbers = $_POST['new_bib_numbers'];
-    $organization_id = $_POST['organization_id'];
     $update_count = 0; // Kaç tane Bib güncellendiğini takip etmek için
 
     for ($i = 0; $i < count($registration_ids); $i++) {
@@ -48,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 // Eğer Bib numarası mevcut değilse güncelleme yap
                 $updateSql = "UPDATE registrations SET Bib = ? WHERE id = ?";
                 $updateStmt = $conn->prepare($updateSql);
-                $updateStmt->bind_param("ii", $newBib, $id); // 'si' yerine 'ii' kullanmalıyız çünkü Bib int tipindedir
+                $updateStmt->bind_param("ii", $newBib, $id);
                 $updateStmt->execute();
                 $update_count++;
             } else {
@@ -63,11 +70,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $_SESSION['success_message'] = "$update_count kayıt başarıyla güncellendi!";
     }
 
-    // Güncelleme tamamlandığında yönlendirme yap
+    // Güncelleme tamamlandığında yönlendirme yapmadan önce başka çıktı olmadığından emin olun
     header("Location: editBibNumbers.php?organization_id=" . $organization_id);
     exit();
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -93,14 +101,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         text-align: center;
         color: white;
         background-color: black;
-        padding 10px;
+        padding: 10px;
     }
 
     table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 20px;
-        
+        margin-top: 20px;   
     }
 
     table, th, td {
@@ -117,11 +124,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     tr {
         background-color: #ffffff; /* Tüm satırların arka planı beyaz */
     }
-
-    /* Hover durumunu kaldırmak için aşağıdaki kısmı kaldırabilirsiniz */
-    /* tr:hover {
-        background-color: #f1f1f1; // Bu satır kaldırılabilir
-    } */
 
     td input[type="text"] {
         width: 100%;
@@ -177,7 +179,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <?php endif; ?>
 
 <h1>Bib Numaralarını Düzenle</h1>
-<form action="editBibNumbers.php" method="post">
+<form action="editBibNumbers.php?organization_id=<?php echo $organization_id; ?>" method="post">
     <table>
         <tr>
             <th>Kayıt ID</th>

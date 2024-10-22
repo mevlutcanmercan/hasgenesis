@@ -244,15 +244,15 @@ $org_result = $conn->query($org_query);
             } else {
                 // Kayıt süresi devam ediyorsa ve kullanıcı kayıtlı değilse "Kayıt Ol" butonunu göster
                 if ($user_id) {
-                    echo "<a href='registrations.php?organization_id={$row['id']}' class='btn btn-primary'>Kayıt Ol</a>";
+                    echo "<a href='registrations?organization_id={$row['id']}' class='btn btn-primary'>Kayıt Ol</a>";
                 } else {
-                    echo "<a href='login.php' class='btn btn-primary'>Giriş Yap ve Kayıt Ol</a>";
+                    echo "<a href='login' class='btn btn-primary'>Giriş Yap ve Kayıt Ol</a>";
                 }
             }
 
             // Sonuçları Görüntüle butonunu ekleme
             if ($has_results) {
-                echo "<a href='raceresults.php?organization_id={$row['id']}' class='btn btn-primary' style='margin-left: 10px;'>Sonuçları Görüntüle</a>";
+                echo "<a href='raceresults?organization_id={$row['id']}' class='btn btn-primary' style='margin-left: 10px;'>Sonuçları Görüntüle</a>";
             }
 
             echo "      </div>

@@ -155,13 +155,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $special_bib = isset($_POST['custom_bib']);
     $error_message = 'Bu bib numarası zaten kayıtlı. Lütfen başka bir bib numarası girin.'; // Hata mesajı
 
-    
     // Toplam fiyatı hesapla
     $total_price = calculateTotalPrice($selected_races, $prices_row, $bib, $special_bib);
 
-    $base_url = ''; // Base URL burada tanımlanmalı
-    $feragatname_dir = $_SERVER['DOCUMENT_ROOT'] . '/documents/feragatname/';
-    $receipt_dir = $_SERVER['DOCUMENT_ROOT'] . '/documents/receipt/';
+    // Belgeleri kaydetmek için klasör yolları
+    $feragatname_dir = 'documents/feragatname/';
+    $receipt_dir = 'documents/receipt/';
     
     // Dizinlerin varlığını kontrol et ve oluştur
     if (!is_dir($feragatname_dir)) {
@@ -172,31 +171,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         mkdir($receipt_dir, 0755, true); // Eğer dizin yoksa oluştur
     }
     
-// Maksimum dosya boyutu
-$max_file_size = 3 * 1024 * 1024; // 7 MB
+    // Maksimum dosya boyutu
+    $max_file_size = 7 * 1024 * 1024; // 7 MB
 
-// Feragatname dosyasını yükleme
-if (isset($_FILES['waiver']) && $_FILES['waiver']['error'] === UPLOAD_ERR_OK) {
-    // Dosya boyutunu kontrol et
-    if ($_FILES['waiver']['size'] <= $max_file_size) {
-        $feragatname_filename = basename($_FILES['waiver']['name']);
-        $feragatname_target = $feragatname_dir . $feragatname_filename;
-        if (move_uploaded_file($_FILES['waiver']['tmp_name'], $feragatname_target)) {
-            $feragatname = '/documents/feragatname/' . $feragatname_filename;
+    // Feragatname dosyasını yükleme
+    if (isset($_FILES['waiver']) && $_FILES['waiver']['error'] === UPLOAD_ERR_OK) {
+        // Dosya boyutunu kontrol et
+        if ($_FILES['waiver']['size'] <= $max_file_size) {
+            $feragatname_filename = basename($_FILES['waiver']['name']);
+            $feragatname_target = $feragatname_dir . $feragatname_filename;
+            if (move_uploaded_file($_FILES['waiver']['tmp_name'], $feragatname_target)) {
+                $feragatname = $feragatname_filename; // Sadece dosya adını sakla
+            }
+        } else {
+            // Yükleme işlemini engelle ve tüm işlemleri durdur
+            exit('Feragatname belgesi 7 MB\'dan büyük olamaz. Lütfen uygun boyutta bir dosya yükleyin.');
         }
-    } else {
-        // Yükleme işlemini engelle ve tüm işlemleri durdur
-        exit('Feragatname belgesi 7 MB\'dan büyük olamaz. Lütfen uygun boyutta bir dosya yükleyin.');
     }
-}
-    
+
     // Fiyat belgesi dosyasını yükleme
     $price_document = null;
     if (isset($_FILES['receipt']['name']) && $_FILES['receipt']['name'] != '') {
         $price_document_filename = basename($_FILES['receipt']['name']);
-        $price_document_target = $receipt_dir . $price_document_filename; // Doğru dizin
+        $price_document_target = $receipt_dir . $price_document_filename;
         if (move_uploaded_file($_FILES['receipt']['tmp_name'], $price_document_target)) {
-            $price_document = '/documents/receipt/' . $price_document_filename; // URL yapısı
+            $price_document = $price_document_filename; // Sadece dosya adını sakla
         }
     }
     if ($bib > 0 && checkBibExistence($conn, $bib, $organization_id)) {

@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_registration_id
     $delete_stmt->bind_param("i", $delete_registration_id);
 
     if ($delete_stmt->execute()) {
-        echo "<script>showSuccessAlert('Kayıt başarıyla silindi!', '/hasgenesis/admin/registrationsManagement.php?organization_id=$organization_id');</script>";
+        echo "<script>showSuccessAlert('Kayıt başarıyla silindi!', 'admin/registrationsManagement.php?organization_id=$organization_id');</script>";
     } else {
         echo "<script>showErrorAlert('Kayıt silinirken bir hata oluştu.');</script>";
     }
@@ -219,7 +219,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
 
 <!-- Filtreleme ve Sıralama Formu -->
 <div class="filter-sort">
-    <form method="GET" action="registrationsManagement.php">
+    <form method="GET" action="registrationsManagement">
         <input type="hidden" name="organization_id" value="<?php echo $organization_id; ?>">
 
         <!-- Kategoriye Göre Filtreleme -->
@@ -269,8 +269,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
 
         <!-- Filtrele ve Sırala Butonu -->
         <button type="submit">Filtrele ve Sırala</button>
-        <a href="registrationsManagement.php?action=export&organization_id=<?php echo $organization_id; ?>" class="btn btn-primary">Excel İndir </a>
-        <a href="editBibNumbers.php?organization_id=<?php echo $organization_id; ?>" class="btn btn-primary">Bib</a>
+        <a href="registrationsManagement?action=export&organization_id=<?php echo $organization_id; ?>" class="btn btn-primary">Excel İndir </a>
+        <a href="editBibNumbers?organization_id=<?php echo $organization_id; ?>" class="btn btn-primary">Bib</a>
     </form>
 </div>
 
