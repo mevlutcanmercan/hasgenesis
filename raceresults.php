@@ -66,6 +66,7 @@ $result = $stmt->get_result();
                     <option value="ELITLER" <?php echo ($category_filter == 'ELITLER') ? 'selected' : ''; ?>>Elitler</option>
                     <option value="MASTER B" <?php echo ($category_filter == 'MASTER B') ? 'selected' : ''; ?>>Master B</option>
                     <option value="MASTER A" <?php echo ($category_filter == 'MASTER A') ? 'selected' : ''; ?>>Master A</option>
+                    <option value="KADINLAR" <?php echo ($category_filter == 'KADINLAR') ? 'selected' : ''; ?>>Kadınlar</option>
                     <!-- Diğer kategoriler eklenebilir -->
                 </select>
             </div>
