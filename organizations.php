@@ -183,12 +183,12 @@ $org_result = $conn->query($org_query);
                 }
             }
 
-            // Yarış detayları ve kuralları için PDF bağlantısı
-            echo "<p class='card-text'><strong>Detaylarını ve kurallarını indirmek için tıklayınız:</strong> ";
-
             // PDF dosyası var mı kontrol et
             if (!empty($row['race_details_pdf'])) {
-                echo "<a href='{$row['race_details_pdf']}' target='_blank' class='btn btn-link'>PDF'i Aç</a>";
+                // PDF adını ve yolunu birleştir
+                $pdf_file_name = $row['race_details_pdf']; // Veritabanından PDF adı al
+                $pdf_file_path = 'documents/race_details/' . $pdf_file_name; // Yol oluştur
+                echo "<p class='card-text'><strong>Yarış Detayları ve Kuralları:</strong><a href='{$pdf_file_path}' target='_blank' class='btn btn-link'>PDF'i Aç</a>";
             } else {
                 echo "PDF mevcut değil.";
             }

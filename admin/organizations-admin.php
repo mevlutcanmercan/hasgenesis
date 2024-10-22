@@ -3,7 +3,6 @@ include 'sidebar.php';
 include '../db/database.php'; // Veritabanı bağlantısını dahil et
 include '../bootstrap.php';
 
-
 // Kullanıcı giriş kontrolü
 $user_id = isset($_SESSION['id_users']) ? $_SESSION['id_users'] : null; // Kullanıcı ID'si
 
@@ -34,13 +33,19 @@ if (isset($_GET['delete_id'])) {
 
     // Başarılı bir şekilde silindiyse
     if ($stmt->affected_rows > 0) {
-        echo "<script>alert('Organizasyon başarıyla silindi.');</script>";
+        // Başarılı silme durumu
+        $_SESSION['success_message'] = 'Organizasyon başarıyla silindi.';
     } else {
-        echo "<script>alert('Silme işlemi sırasında bir hata oluştu.');</script>";
+        $_SESSION['error_message'] = 'Silme işlemi sırasında bir hata oluştu.';
     }
 
     $stmt->close();
 }
+
+// Sayfa yüklendiğinde oturum değişkenini sıfırla
+$success_message = isset($_SESSION['success_message']) ? $_SESSION['success_message'] : '';
+$error_message = isset($_SESSION['error_message']) ? $_SESSION['error_message'] : '';
+unset($_SESSION['success_message'], $_SESSION['error_message']); // Değişkenleri sıfırla
 
 // Sorgu başlangıcı
 $sql = "
@@ -90,6 +95,8 @@ $total_pages = ceil($total_items / $items_per_page); // Toplam sayfa sayısı
 // Sorguya limit ekle
 $sql .= " LIMIT $offset, $items_per_page";
 $result = $conn->query($sql);
+
+$pdf_file_path = '../documents/race_details/'; // PDF dosya yolu
 ?>
 
 <!DOCTYPE html>
@@ -98,12 +105,52 @@ $result = $conn->query($sql);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1100">
     <link rel="stylesheet" href="admincss/organizations-admin.css"> <!-- CSS dosyasına bağlantı -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"> <!-- SweetAlert2 CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script> <!-- SweetAlert2 JS -->
     <title>Organizasyonlar</title>
 </head>
 <body>
 
 <div class="container mt-5">
     <h1 class="text-center mb-4">Organizasyonlar</h1>
+
+    <!-- SweetAlert2 Mesajları -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            <?php if ($success_message): ?>
+                Swal.fire({
+                    title: 'Başarılı!',
+                    text: '<?= $success_message; ?>',
+                    icon: 'success',
+                    confirmButtonText: 'Tamam'
+                });
+            <?php endif; ?>
+            <?php if ($error_message): ?>
+                Swal.fire({
+                    title: 'Hata!',
+                    text: '<?= $error_message; ?>',
+                    icon: 'error',
+                    confirmButtonText: 'Tamam'
+                });
+            <?php endif; ?>
+        });
+
+        function confirmDelete(organizationId) {
+            Swal.fire({
+                title: 'Emin misiniz?',
+                text: 'Bu organizasyonu silmek istediğinize emin misiniz?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Evet, sil!',
+                cancelButtonText: 'Hayır, iptal et!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Eğer onaylanırsa, silme işlemi gerçekleştirilecek
+                    window.location.href = '?delete_id=' + organizationId;
+                }
+            });
+        }
+    </script>
 
     <!-- Filtreleme Barı -->
     <form method="GET" class="mb-4">
@@ -192,7 +239,7 @@ $result = $conn->query($sql);
                 // PDF bağlantısını ekleyelim
                 echo "<p class='card-text'><strong>Organizasyon detaylarını ve kurallarını indirmek için tıklayınız:</strong> ";
                 if (!empty($row['race_details_pdf'])) {
-                    echo "<a href='{$row['race_details_pdf']}' target='_blank' class='btn btn-link'>PDF'i Aç</a>";
+                    echo "<a href='{$pdf_file_path}{$row['race_details_pdf']}' target='_blank' class='btn btn-link'>PDF'i Aç</a>";
                 } else {
                     echo "PDF mevcut değil.";
                 }
@@ -201,7 +248,7 @@ $result = $conn->query($sql);
                 // Düzenle ve Sil butonları
                 echo "<div class='mt-3'>
                         <a href='edit-organizations.php?id={$row['id']}' class='btn btn-secondary'>Düzenle</a>
-                        <a href='?delete_id={$row['id']}' class='btn btn-danger' onclick='return confirm(\"Bu organizasyonu silmek istediğinizden emin misiniz?\");'>Sil</a>
+                        <a href='javascript:void(0);' class='btn btn-danger' onclick='confirmDelete({$row['id']});'>Sil</a>
                         <a href='/hasgenesis/admin/registrationsManagement.php?organization_id=$organization_id' class='btn btn-secondary' style='text-decoration: none;'>Kayıtları Görüntüle</a>
                       </div>";
             
@@ -222,29 +269,29 @@ $result = $conn->query($sql);
 
     <!-- Sayfalama -->
     <div class="pagination-container">
-    <nav aria-label="Page navigation">
-        <ul class="pagination">
-            <?php if ($current_page > 1): ?>
-                <li class="page-item">
-                    <a class="pagination-link" href="?page=<?= $current_page - 1; ?>&registration_time=<?= urlencode($registration_time); ?>&category=<?= urlencode($category); ?>" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-            <?php endif; ?>
-            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                <li class="page-item <?= ($i === $current_page) ? 'active' : ''; ?>">
-                    <a class="pagination-link" href="?page=<?= $i; ?>&registration_time=<?= urlencode($registration_time); ?>&category=<?= urlencode($category); ?>"><?= $i; ?></a>
-                </li>
-            <?php endfor; ?>
-            <?php if ($current_page < $total_pages): ?>
-                <li class="page-item">
-                    <a class="pagination-link" href="?page=<?= $current_page + 1; ?>&registration_time=<?= urlencode($registration_time); ?>&category=<?= urlencode($category); ?>" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-            <?php endif; ?>
-        </ul>
-    </nav>
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                <?php if ($current_page > 1): ?>
+                    <li class="page-item">
+                        <a class="pagination-link" href="?page=<?= $current_page - 1; ?>&registration_time=<?= urlencode($registration_time); ?>&category=<?= urlencode($category); ?>" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                <?php endif; ?>
+                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                    <li class="page-item <?= ($i === $current_page) ? 'active' : ''; ?>">
+                        <a class="pagination-link" href="?page=<?= $i; ?>&registration_time=<?= urlencode($registration_time); ?>&category=<?= urlencode($category); ?>"><?= $i; ?></a>
+                    </li>
+                <?php endfor; ?>
+                <?php if ($current_page < $total_pages): ?>
+                    <li class="page-item">
+                        <a class="pagination-link" href="?page=<?= $current_page + 1; ?>&registration_time=<?= urlencode($registration_time); ?>&category=<?= urlencode($category); ?>" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                <?php endif; ?>
+            </ul>
+        </nav>
     </div>
 </div>
 

@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     // PDF dosyasını kontrol et ve yükle
     if ($race_details_pdf['type'] == 'application/pdf' && $race_details_pdf['error'] == 0) {
-        // Dosya adı ve yolu
+        // Dosya adı
         $pdf_file_name = basename($race_details_pdf['name']);
         $upload_file = $upload_dir . $pdf_file_name;
         
@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $e_bike = isset($_POST['e_bike']) ? 1 : 0;
 
     // Sorguyu çalıştır
-    if ($stmt->execute([$organization_name, $address, $details, $register_start_date, $last_register_day, $organization_type, $downhill, $enduro, $tour, $ulumega, $e_bike, $min_front_suspension_travel, $min_rear_suspension_travel, $upload_file])) {
+    if ($stmt->execute([$organization_name, $address, $details, $register_start_date, $last_register_day, $organization_type, $downhill, $enduro, $tour, $ulumega, $e_bike, $min_front_suspension_travel, $min_rear_suspension_travel, $pdf_file_name])) { // Yalnızca dosya adını ekledik
         $organization_id = $conn->insert_id;
 
         // Fiyatları ekle
