@@ -165,6 +165,25 @@ tbody tr:hover {
         color: #721c24; /* Koyu kırmızı yazı */
     }
 
+    .delete-btn {
+        background-color: #e74c3c; /* Kırmızı arka plan */
+        color: white; /* Beyaz yazı rengi */
+        border: none; /* Kenarlık yok */
+        border-radius: 5px; /* Hafif yuvarlak köşeler */
+        padding: 10px 15px; /* Yükseklik ve genişlik için iç boşluk */
+        cursor: pointer; /* İmleci buton üzerine geldiğinde değiştir */
+        transition: background-color 0.3s, transform 0.2s; /* Geçiş efektleri */
+    }
+    
+    .delete-btn:hover {
+        background-color: #c0392b; /* Hover durumunda daha koyu kırmızı */
+        transform: scale(1.05); /* Hover durumunda biraz büyüt */
+    }
+    
+    .delete-btn:active {
+        transform: scale(0.95); /* Butona tıklanırken küçült */
+    }
+    
 /* Mobil CSS */
 @media (max-width: 768px) {
     h2 {

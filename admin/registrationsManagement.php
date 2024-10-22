@@ -5,7 +5,13 @@ require '../vendor/autoload.php'; // Composer autoload dosyasını dahil et
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
+// PHPMailer dosyalarını dahil et
+require '../PHPMailer/src/Exception.php';
+require '../PHPMailer/src/PHPMailer.php';
+require '../PHPMailer/src/SMTP.php';
 // organization_id'yi GET parametresi ile alıyoruz
 if (isset($_GET['organization_id'])) {
     $organization_id = intval($_GET['organization_id']);
@@ -29,14 +35,63 @@ function checkOrganizationName($conn, $organization_id) {
 }
 $organization_name = checkOrganizationName($conn, $organization_id);
 
+// Silinen kayıt için e-posta gönderme fonksiyonu
+function sendEmailOnDelete($email, $firstName, $lastName) {
+    try {
+        $mail = new PHPMailer(true);
+        $mail->isSMTP();
+        $mail->Host = 'mail.hasgenesis.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'info@hasgenesis.com';
+        $mail->Password = 'QVVXaWsZ*b9S';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $mail->Port = 465;
+
+        // Gönderen bilgisi
+        $mail->setFrom('info@hasgenesis.com', 'Has Genesis');
+        $mail->addAddress($email);  // Alıcı e-posta adresi
+        $mail->CharSet = 'UTF-8';   // Türkçe karakter desteği
+
+        // İçerik
+        $mail->isHTML(true);
+        $mail->Subject = 'Kaydınız Gerekliliklere Uygun Değildir';
+        $mail->Body    = 'Merhaba ' . $firstName . ' ' . $lastName . ',<br><br>' . 'Kaydınız gerekliliklere uygun olmadığı için iptal edilmiştir.';
+
+        $mail->send();
+    } catch (Exception $e) {
+        // Eğer mail gönderimi başarısız olursa, bunu burada yönetebilirsiniz.
+        error_log("Mail gönderim hatası: {$mail->ErrorInfo}");
+    }
+}
+
 // Kayıt Silme İşlemi
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_registration_id'])) {
     $delete_registration_id = intval($_POST['delete_registration_id']);
+
+    // Silmeden önce kayıt sahibinin mailini almak için sorgu
+    $stmt_user = $conn->prepare("SELECT u.mail_users, r.first_name, r.second_name FROM users u 
+        JOIN user_registrations ur ON u.id_users = ur.user_id 
+        JOIN registrations r ON ur.registration_id = r.id 
+        WHERE r.id = ?");
+    $stmt_user->bind_param("i", $delete_registration_id);
+    $stmt_user->execute();
+    $user_result = $stmt_user->get_result();
+
+    if ($user_row = $user_result->fetch_assoc()) {
+        $email = $user_row['mail_users'];
+        $firstName = $user_row['first_name'];
+        $lastName = $user_row['second_name'];
+    } else {
+        echo "<script>showErrorAlert('Kullanıcı bilgileri alınırken bir hata oluştu.');</script>";
+        exit();
+    }
 
     $delete_stmt = $conn->prepare("DELETE FROM registrations WHERE id = ?");
     $delete_stmt->bind_param("i", $delete_registration_id);
 
     if ($delete_stmt->execute()) {
+        // Kayıt silindikten sonra e-posta gönder
+        sendEmailOnDelete($email, $firstName, $lastName);
         echo "<script>showSuccessAlert('Kayıt başarıyla silindi!', 'admin/registrationsManagement.php?organization_id=$organization_id');</script>";
     } else {
         echo "<script>showErrorAlert('Kayıt silinirken bir hata oluştu.');</script>";
@@ -112,7 +167,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
     ob_clean();
     
     // Veritabanı sorgusu
-    $query = "SELECT * FROM registrations WHERE organization_id = ?";
+    $query = "SELECT * FROM registrations WHERE organization_id = ? AND approval_status = 1";
     $stmt_export = $conn->prepare($query);
     $stmt_export->bind_param("i", $organization_id);
     $stmt_export->execute();
@@ -287,14 +342,24 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
                 <th>Fiyat</th>
                 <th>Onay Durumu</th>
                 <th>Belgeler</th>
+                <th>E-Mail</th>
                 <th>Onay Durumu</th>
                 <th>İşlem</th>
+                <th>Sil</th>
             </tr>
         </thead>
         <tbody>
         <?php
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
+
+                // user_registrations tablosu ile user tablosundan mail bilgisi çekme
+        $user_stmt = $conn->prepare("SELECT u.mail_users FROM users u JOIN user_registrations ur ON u.id_users = ur.user_id WHERE ur.registration_id = ?");
+        $user_stmt->bind_param("i", $row['id']);
+        $user_stmt->execute();
+        $user_result = $user_stmt->get_result();
+        $user_row = $user_result->fetch_assoc();
+
         echo "<tr id='row-{$row['id']}'>";
         echo "<td>" . $row['Bib'] . "</td>";
         echo "<td>" . $row['first_name'] . "</td>";
@@ -306,6 +371,14 @@ if ($result->num_rows > 0) {
         // Feragatname ve Ücret Belgesi sütunları
         echo "<td>" . ($row['feragatname'] ? "<a href='../documents/feragatname/" . $row['feragatname'] . "' target='_blank'>Feragatname</a>" : "-") . "</td>";
         echo "<td>" . ($row['price_document'] ? "<a href='../documents/receipt/" . $row['price_document'] . "' target='_blank'>Ücret Belgesi</a>" : "-") . "</td>";
+
+            // Mail adresi ve pop-up
+    if ($user_row) {
+        $mail = $user_row['mail_users'];
+        echo "<td><a href='#' onclick='sendMail(\"$mail\")'>" . $mail . "</a></td>";
+    } else {
+        echo "<td>-</td>";
+    }
 
         // Onay durumu
         // Onaylı ise yeşil, onaysız ise kırmızı arka plan
@@ -319,6 +392,17 @@ if ($result->num_rows > 0) {
         echo "<input type='hidden' name='approval_status' value='" . ($row['approval_status'] ? 0 : 1) . "'>";
         echo "<button type='submit' class='" . ($row['approval_status'] ? "reject-btn" : "approve-btn") . "'>" . ($row['approval_status'] ? "Reddet" : "Onayla") . "</button>";
         echo "</form>";
+
+            // Silme işlemi
+    echo "<td>
+    <form id='deleteForm-{$row['id']}' method='POST' action=''>
+        <input type='hidden' name='delete_registration_id' value='{$row['id']}'>
+        <button type='button' onclick='confirmDelete({$row['id']})' class='delete-btn'>Sil</button>
+    </form>
+</td>";
+
+echo "</tr>";
+
         echo "</td>";
         echo "</tr>";
     }
@@ -332,7 +416,25 @@ if ($result->num_rows > 0) {
     </table>
 </div>
 
-
+<script>
+    function sendMail(mail) {
+    Swal.fire({
+        title: 'Mail Gönder',
+        text: mail + ' adresine mail göndermek istiyor musunuz?',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Gönder',
+        cancelButtonText: 'İptal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Mail uygulaması açılır
+            window.location.href = 'mailto:' + mail;
+        }
+    })
+}
+</script>
 
 </body>
 </html>
