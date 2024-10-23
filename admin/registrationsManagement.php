@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_registration_id
     if ($delete_stmt->execute()) {
         // Kayıt silindikten sonra e-posta gönder
         sendEmailOnDelete($email, $firstName, $lastName);
-        echo "<script>showSuccessAlert('Kayıt başarıyla silindi!', 'admin/registrationsManagement.php?organization_id=$organization_id');</script>";
+        echo "<script>showSuccessAlert('Kayıt başarıyla silindi!', 'admin/registrationsmanagement.php?organization_id=$organization_id');</script>";
     } else {
         echo "<script>showErrorAlert('Kayıt silinirken bir hata oluştu.');</script>";
     }
@@ -274,7 +274,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
 
 <!-- Filtreleme ve Sıralama Formu -->
 <div class="filter-sort">
-    <form method="GET" action="registrationsManagement">
+    <form method="GET" action="registrationsmanagement">
         <input type="hidden" name="organization_id" value="<?php echo $organization_id; ?>">
 
         <!-- Kategoriye Göre Filtreleme -->
@@ -324,7 +324,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
 
         <!-- Filtrele ve Sırala Butonu -->
         <button type="submit">Filtrele ve Sırala</button>
-        <a href="registrationsManagement?action=export&organization_id=<?php echo $organization_id; ?>" class="btn btn-primary">Excel İndir </a>
+        <a href="registrationsmanagement?action=export&organization_id=<?php echo $organization_id; ?>" class="btn btn-primary">Excel İndir </a>
         <a href="editBibNumbers?organization_id=<?php echo $organization_id; ?>" class="btn btn-primary">Bib</a>
     </form>
 </div>
@@ -387,7 +387,7 @@ if ($result->num_rows > 0) {
         echo "<td>";
         
         // Onaylama ve reddetme işlemleri için form ekle
-        echo "<form method='POST' action='registrationsManagement.php?organization_id=$organization_id' style='display:inline;'>";
+        echo "<form method='POST' action='registrationsmanagement.php?organization_id=$organization_id' style='display:inline;'>";
         echo "<input type='hidden' name='registration_id' value='{$row['id']}'>";
         echo "<input type='hidden' name='approval_status' value='" . ($row['approval_status'] ? 0 : 1) . "'>";
         echo "<button type='submit' class='" . ($row['approval_status'] ? "reject-btn" : "approve-btn") . "'>" . ($row['approval_status'] ? "Reddet" : "Onayla") . "</button>";

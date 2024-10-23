@@ -249,7 +249,7 @@ $pdf_file_path = '../documents/race_details/'; // PDF dosya yolu
                 echo "<div class='mt-3'>
                         <a href='edit-organizations.php?id={$row['id']}' class='btn btn-secondary'>Düzenle</a>
                         <a href='javascript:void(0);' class='btn btn-danger' onclick='confirmDelete({$row['id']});'>Sil</a>
-                        <a href='/hasgenesis/admin/registrationsManagement.php?organization_id=$organization_id' class='btn btn-secondary' style='text-decoration: none;'>Kayıtları Görüntüle</a>
+                        <a href='registrationsmanagement.php?organization_id=$organization_id' class='btn btn-secondary' style='text-decoration: none;'>Kayıtları Görüntüle</a>
                       </div>";
             
                 echo "  </div>
