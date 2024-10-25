@@ -105,14 +105,14 @@ function determineCategoryName($conn, $age, $sex, $organization_id, $race_type) 
     if (preg_match('/(\d+)-(\d+)/', $categories['elite'], $matches)) {
         $age_min = (int)$matches[1];
         $age_max = (int)$matches[2];
-        if ($age >= $age_min && $age <= $age_max) return 'ELITE';
+        if ($age >= $age_min && $age <= $age_max) return 'ELITLER';
     }
 
     // Master A Kategorisi
     if (preg_match('/(\d+)-(\d+)/', $categories['master_a'], $matches)) {
         $age_min = (int)$matches[1];
         $age_max = (int)$matches[2];
-        if ($age >= $age_min && $age <= $age_max) return 'MASTER_A';
+        if ($age >= $age_min && $age <= $age_max) return 'MASTER A';
     }
 
     // Master B Kategorisi
@@ -120,7 +120,7 @@ function determineCategoryName($conn, $age, $sex, $organization_id, $race_type) 
         return 'MASTER_B';
     } elseif (preg_match('/(\d+)\+/', $categories['master_b'], $matches)) {
         $age_min = (int)$matches[1];
-        if ($age >= $age_min) return 'MASTER_B';
+        if ($age >= $age_min) return 'MASTER B';
     }
 
     return 'UNKNOWN';

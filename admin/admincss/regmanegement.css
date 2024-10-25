@@ -17,7 +17,7 @@ h2 {
 /* Filtreleme ve Sıralama Formu */
 .filter-sort {
     width: 90%;
-    max-width: 80%;
+    max-width: 85%;
     margin: 0 auto;
     padding: 20px;
     background-color: #fff;
@@ -31,7 +31,7 @@ h2 {
 }
 
 .filter-sort form {
-    display: flex;
+    display: ruby;
     flex-wrap: wrap;
     gap: 10px;
     align-items: center;
@@ -92,7 +92,7 @@ a.btn-primary:hover {
 /* Tablo Stili */
 .table-container {
     width: 90%;
-    max-width: 80%;
+    max-width: 85%;
     margin: 0 auto;
     padding: 20px;
     padding: 20px;
