@@ -88,7 +88,15 @@ h3 {
     position: relative;
     left: 50%;
 }
-
+.category-label {
+    font-weight: bold;          /* Yazıyı kalın yapar */
+    font-size: 15px;          /* Yazı boyutunu büyütür */
+    color: #2c3e50;            /* Yazının rengini koyu mavi yapar */
+    padding: 5px 10px;         /* Yazının etrafında boşluk bırakır */
+    border-radius: 5px;        /* Kenarları yuvarlar */
+    display: inline-block;      /* Yazıyı blok halinde gösterir, yan yana diğer elementlerle yer kaplamasını sağlar */
+    margin-left: 10px;         /* Soldan biraz boşluk bırakır */
+}
 /* Bölümler arasında çizgi */
 .section-divider {
     border-top: 1px solid #ccc; /* Çizgi rengi ve kalınlığı */

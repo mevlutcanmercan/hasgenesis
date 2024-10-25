@@ -67,15 +67,72 @@ function calculateAge($birthdate) {
     return $birth_date->diff($today)->y;
 }
 
-// Kategoriyi belirle
-function determineCategory($age, $sex) {
-    if ($age >= 14 && $age <= 21 && $sex != 'Kadın') return 'JUNIOR';
-    if ($age >= 22 && $age <= 35 && $sex != 'Kadın') return 'ELITLER';
-    if ($age >= 36 && $age <= 45 && $sex != 'Kadın') return 'MASTER A';
-    if ($age >= 46 && $sex != 'Kadın') return 'MASTER B';
-    if ($age >= 17 && $sex == 'Kadın') return 'KADINLAR';
-    if ($age >= 17) return 'E-BIKE';
+// Kategoriyi belirle - her yarış türü için özel
+function determineCategoryName($conn, $age, $sex, $organization_id, $race_type) {
+    // Yaş kategorilerini al
+    $query = "SELECT junior, elite, master_a, master_b, kadinlar FROM age_category WHERE organization_id = ? AND race_type = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("is", $organization_id, $race_type);
+    $stmt->execute();
+    $categories = $stmt->get_result()->fetch_assoc();
+
+    if (!$categories) return 'UNKNOWN'; // Hatalı durum
+
+    // Cinsiyete göre uygun kategoriyi belirle
+    if ($sex == 'Kadın' && strpos($categories['kadinlar'], '+') !== false) {
+        // Kadın kategorisi için 17+ kontrolü
+        return 'KADINLAR';
+    } elseif ($sex == 'Kadın' && preg_match('/(\d+)-(\d+)/', $categories['kadinlar'], $matches)) {
+        $age_min = (int)$matches[1];
+        if ($age >= $age_min) {
+            return 'KADINLAR';
+        }
+    }
+    // Eğer yarış tipi e_bike ise, her zaman 17+ döndür
+    if ($race_type === 'e_bike') {
+        return '17+'; // Burada istendiği gibi her zaman 17+ kabul edilecektir
+    }
+
+    // Junior, Elite, Master_A ve Master_B kategorilerini kontrol et
+    // Junior Kategorisi
+    if (preg_match('/(\d+)-(\d+)/', $categories['junior'], $matches)) {
+        $age_min = (int)$matches[1];
+        $age_max = (int)$matches[2];
+        if ($age >= $age_min && $age <= $age_max) return 'JUNIOR';
+    }
+
+    // Elite Kategorisi
+    if (preg_match('/(\d+)-(\d+)/', $categories['elite'], $matches)) {
+        $age_min = (int)$matches[1];
+        $age_max = (int)$matches[2];
+        if ($age >= $age_min && $age <= $age_max) return 'ELITE';
+    }
+
+    // Master A Kategorisi
+    if (preg_match('/(\d+)-(\d+)/', $categories['master_a'], $matches)) {
+        $age_min = (int)$matches[1];
+        $age_max = (int)$matches[2];
+        if ($age >= $age_min && $age <= $age_max) return 'MASTER_A';
+    }
+
+    // Master B Kategorisi
+    if (strpos($categories['master_b'], '+') !== false) {
+        return 'MASTER_B';
+    } elseif (preg_match('/(\d+)\+/', $categories['master_b'], $matches)) {
+        $age_min = (int)$matches[1];
+        if ($age >= $age_min) return 'MASTER_B';
+    }
+
     return 'UNKNOWN';
+}
+
+// Kullanıcının yaşını kontrol et ve yaş kategorilerini al
+function getAgeCategoryNamesForRaces($conn, $organization_id, $age, $sex, $active_races) {
+    $categories = [];
+    foreach ($active_races as $race) {
+        $categories[$race] = determineCategoryName($conn, $age, $sex, $organization_id, $race);
+    }
+    return $categories;
 }
 
 // Fiyatı hesapla
@@ -84,13 +141,12 @@ function calculateTotalPrice($selected_races, $prices_row, $bib, $special_bib) {
     foreach ($selected_races as $race) {
         $total_price += $prices_row[$race . '_price'];
     }
-    // Bib ve özel bib ücretleri ekle
     if ($bib >= 0) $total_price += $prices_row['bib_price'];
     if ($special_bib) $total_price += $prices_row['special_bib_price'] - $prices_row['bib_price'];
     return $total_price;
 }
 
-// Bib numarasının zaten var olup olmadığını kontrol et
+// Bib numarasının var olup olmadığını kontrol et
 function checkBibExistence($conn, $bib, $organization_id) {
     $query = "SELECT Bib FROM registrations WHERE Bib = ? AND organization_id = ?";
     $stmt = $conn->prepare($query);
@@ -118,7 +174,6 @@ function checkBicycleSuspension($conn, $bicycle_id, $organization) {
 // Kullanıcı bilgileri
 $user_details = getUserDetails($conn, $user_id);
 $age = calculateAge($user_details['birthday_users']);
-$category = determineCategory($age, $user_details['sex']);
 
 if (isset($_GET['organization_id'])) {
     $organization_id = intval($_GET['organization_id']);
@@ -133,7 +188,6 @@ if (isset($_GET['organization_id'])) {
     $result = $stmt->get_result();
     $row = $result->fetch_assoc();
     
-    // Aktif olan yarışları diziye ekleyin
     $active_races = [];
     if ($row['downhill'] == 1) $active_races[] = 'downhill';
     if ($row['enduro'] == 1) $active_races[] = 'enduro';
@@ -146,58 +200,46 @@ if (isset($_GET['organization_id'])) {
 } else {
     die('Organizasyon ID bulunamadı.');
 }
+
 // POST işlemleri
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $category = $_POST['category'] ?? null; // Sabit kategori değeri
     $bib = intval($_POST['bib_selection']);
     $selected_races = $_POST['races'] ?? [];
     $selected_bicycles = $_POST['bicycle_for'] ?? [];
     $special_bib = isset($_POST['custom_bib']);
-    $error_message = 'Bu bib numarası zaten kayıtlı. Lütfen başka bir bib numarası girin.'; // Hata mesajı
+    $error_message = 'Bu bib numarası zaten kayıtlı. Lütfen başka bir bib numarası girin.';
 
     // Toplam fiyatı hesapla
     $total_price = calculateTotalPrice($selected_races, $prices_row, $bib, $special_bib);
 
-    // Belgeleri kaydetmek için klasör yolları
+    // Dosya yükleme işlemleri (Aynı kaldı)
+    // Feragatname dosyası
     $feragatname_dir = 'documents/feragatname/';
     $receipt_dir = 'documents/receipt/';
+    if (!is_dir($feragatname_dir)) mkdir($feragatname_dir, 0755, true);
+    if (!is_dir($receipt_dir)) mkdir($receipt_dir, 0755, true);
     
-    // Dizinlerin varlığını kontrol et ve oluştur
-    if (!is_dir($feragatname_dir)) {
-        mkdir($feragatname_dir, 0755, true); // Eğer dizin yoksa oluştur
-    }
-    
-    if (!is_dir($receipt_dir)) {
-        mkdir($receipt_dir, 0755, true); // Eğer dizin yoksa oluştur
-    }
-    
-    // Maksimum dosya boyutu
-    $max_file_size = 7 * 1024 * 1024; // 7 MB
-
-    // Feragatname dosyasını yükleme
+    $max_file_size = 7 * 1024 * 1024; 
+    $feragatname = null;
     if (isset($_FILES['waiver']) && $_FILES['waiver']['error'] === UPLOAD_ERR_OK) {
-        // Dosya boyutunu kontrol et
         if ($_FILES['waiver']['size'] <= $max_file_size) {
-            $feragatname_filename = basename($_FILES['waiver']['name']);
-            $feragatname_target = $feragatname_dir . $feragatname_filename;
-            if (move_uploaded_file($_FILES['waiver']['tmp_name'], $feragatname_target)) {
-                $feragatname = $feragatname_filename; // Sadece dosya adını sakla
-            }
-        } else {
-            // Yükleme işlemini engelle ve tüm işlemleri durdur
-            exit('Feragatname belgesi 7 MB\'dan büyük olamaz. Lütfen uygun boyutta bir dosya yükleyin.');
-        }
+            $feragatname = basename($_FILES['waiver']['name']);
+            move_uploaded_file($_FILES['waiver']['tmp_name'], $feragatname_dir . $feragatname);
+        } else exit('Feragatname belgesi 7 MB\'dan büyük olamaz.');
     }
 
-    // Fiyat belgesi dosyasını yükleme
     $price_document = null;
     if (isset($_FILES['receipt']['name']) && $_FILES['receipt']['name'] != '') {
-        $price_document_filename = basename($_FILES['receipt']['name']);
-        $price_document_target = $receipt_dir . $price_document_filename;
-        if (move_uploaded_file($_FILES['receipt']['tmp_name'], $price_document_target)) {
-            $price_document = $price_document_filename; // Sadece dosya adını sakla
-        }
+        $price_document = basename($_FILES['receipt']['name']);
+        move_uploaded_file($_FILES['receipt']['tmp_name'], $receipt_dir . $price_document);
     }
+
+    // Kategori belirleme işlemi her yarış için yapıldı
+    $categories = [];
+    foreach ($active_races as $race) {
+        $categories = getAgeCategoryNamesForRaces($conn, $organization_id, $age, $user_details['sex'], $active_races);
+    }
+
     if ($bib > 0 && checkBibExistence($conn, $bib, $organization_id)) {
         ?>
         <script>
@@ -207,55 +249,58 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 text: '<?= $error_message ?>',
             });
         </script>
-        <?php 
-    } else{
-
-    // Bisiklet uygunluk kontrolü
-    foreach ($selected_races as $race) {
-        if (!isset($selected_bicycles[$race])) {
-            exit(); // Yarış türü için bisiklet seçilmemişse işlemi sonlandır
-        }
-        $bicycle_id = intval($selected_bicycles[$race]);
-        if (!checkBicycleSuspension($conn, $bicycle_id, $organization)) {
-            exit(); // Bisiklet organizasyon gereksinimlerini karşılamıyorsa işlemi sonlandır
-        }
-    }
-
-    // Kayıt işlemi
-    $stmt = $conn->prepare("INSERT INTO registrations (Bib, first_name, second_name, organization_id, race_type, category, feragatname, price_document, registration_price, created_time, approval_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)");
-    $race_type_string = implode(',', $selected_races); // Düz metin olarak
-    $status = 0; // Beklemede
-
-    $stmt->bind_param("issssssssd", $bib, $user_details['name_users'], $user_details['surname_users'], $organization_id, $race_type_string, $category, $feragatname, $price_document, $total_price, $status);
-
-    if ($stmt->execute()) {
-        // En son eklenen kaydın ID'sini al
-        $registration_id = $conn->insert_id;
-
-        // Kategori bilgilerini yeni tabloya ekle
-        $stmt_category = $conn->prepare("INSERT INTO registration_categories (registration_id, category) VALUES (?, ?)");
-        $stmt_category->bind_param("is", $registration_id, $category);
-        $stmt_category->execute(); // Hata kontrolü yapılmadı
-
-        // Seçilen bisikletleri kaydet
-        foreach ($selected_races as $race) {
-            $bicycle_id = intval($selected_bicycles[$race]);
-            $stmt_bicycles = $conn->prepare("INSERT INTO registred_bicycles (registration_id, bicycles_id, race_type) VALUES (?, ?, ?)");
-            $stmt_bicycles->bind_param("iis", $registration_id, $bicycle_id, $race);
-            $stmt_bicycles->execute(); // Hata kontrolü yapılmadı
-        }
-
-        // Kullanıcı kayıtları tablosuna ekle
-        $stmt_user_registration = $conn->prepare("INSERT INTO user_registrations (user_id, registration_id) VALUES (?, ?)");
-        $stmt_user_registration->bind_param("ii", $user_id, $registration_id);
-        $stmt_user_registration->execute(); // Hata kontrolü yapılmadı
-
-        echo "<script>window.location.href = 'account';</script>"; // Başarılı işlem sonrasında yönlendirme
+        <?php
     } else {
-        exit(); // Kayıt hatası durumunda işlemi sonlandır
+        foreach ($selected_races as $race) {
+            if (!isset($selected_bicycles[$race])) exit();
+            $bicycle_id = intval($selected_bicycles[$race]);
+            if (!checkBicycleSuspension($conn, $bicycle_id, $organization)) exit();
+        }
+
+        $stmt = $conn->prepare("INSERT INTO registrations 
+        (Bib, first_name, second_name, organization_id, race_type, feragatname, price_document, registration_price, created_time, approval_status, 
+        dh_kategori, end_kategori, ulumega_kategori, tour_kategori, ebike_kategori) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?, ?, ?)");
+    
+    $race_type_string = implode(',', $selected_races); // Seçilen yarış türlerini al
+    $status = 0;
+    
+// Kategorileri al
+$downhill_kategori = in_array('downhill', $selected_races) ? $categories['downhill'] : '';
+$enduro_kategori = in_array('enduro', $selected_races) ? $categories['enduro'] : '';
+$ulumega_kategori = in_array('ulumega', $selected_races) ? $categories['ulumega'] : '';
+$tour_kategori = in_array('tour', $selected_races) ? $categories['tour'] : '';
+$ebike_kategori = in_array('e_bike', $selected_races) ? $categories['e_bike'] : '';
+
+    // bind_param ile her bir değişkeni uygun türleriyle birlikte ekleyelim
+    $stmt->bind_param(
+        "isssssssdsssss", // 15 parametre var
+        $bib,
+        $user_details['name_users'],
+        $user_details['surname_users'],
+        $organization_id,
+        $race_type_string,
+        $feragatname,
+        $price_document,
+        $total_price,
+        $status,
+        $downhill_kategori,
+        $enduro_kategori,
+        $ulumega_kategori,
+        $tour_kategori,
+        $ebike_kategori
+    );
+        if ($stmt->execute()) {
+            $registration_id = $conn->insert_id;
+            $stmt_user_registration = $conn->prepare("INSERT INTO user_registrations (user_id, registration_id) VALUES (?, ?)");
+            $stmt_user_registration->bind_param("ii", $user_id, $registration_id);
+            $stmt_user_registration->execute();
+            echo "<script>window.location.href = 'account';</script>";
+        } else exit();
     }
-}}
+}
 ?>
+
     <!DOCTYPE html>
     <html lang="tr">
     <head>
@@ -370,20 +415,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     });
 }
 
-    function validateForm() {
-
-        const selectedRaces = document.querySelectorAll('input[name="races[]"]:checked');
-        if (selectedRaces.length === 0) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Hata!',
-                text: 'En az bir yarış türü seçmelisiniz.',
-            });
-            return false; // Formun gönderilmesini engelle
-        }
-        return true; // Form gönderilebilir
-
+function validateForm() {
+    const selectedRaces = document.querySelectorAll('input[name="races[]"]:checked');
+    if (selectedRaces.length === 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Hata!',
+            text: 'En az bir yarış türü seçmelisiniz.',
+        });
+        return false; // Formun gönderilmesini engelle
     }
+
+    // Kategorileri güncelle
+    const categoryHidden = document.getElementById("category_hidden");
+    const selectedCategories = [];
+    
+    selectedRaces.forEach((checkbox) => {
+        const raceType = checkbox.value;
+        const category = document.getElementById("category_display").value; // Kategoriyi al
+        selectedCategories.push(category); // Seçilen kategoriyi ekle
+    });
+
+    // Kategorileri gizli alana yaz
+    categoryHidden.value = selectedCategories.join(", "); // Kategorileri virgülle ayırarak yaz
+
+    return true; // Form gönderilebilir
+}
 
     
 
@@ -442,7 +499,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <label for="second_name" class="form-label">Soyisim</label>
                 <input type="text" class="form-control" id="second_name" name="second_name" value="<?php echo htmlspecialchars($user_details['surname_users']); ?>" required readonly>
             </div>
-
+            <div class="section-divider"></div>
                     <div class="mb-3">
                         <input type="checkbox" id="custom_bib" name="custom_bib" onchange="toggleBibInput()">
                         <label for="custom_bib" class="form-label">Özel Bib Numarası Almak İstiyorum</label>
@@ -453,26 +510,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <input type="number" class="form-control" id="bib_selection" name="bib_selection">
                     </div>
 
-                 <div class="mb-3">
-                    <label class="form-label">Kategori</label>
-                <!-- Kategori bilgisi görüntülenen, ama sunucuya gönderilmeyen bir alan -->
-                <input type="text" class="form-control" id="category_display" name="category_display" value="<?php echo htmlspecialchars($category); ?>" disabled>
-
-                <!-- Kategori bilgisi sunucuya gönderilecek olan gizli bir alan -->
-                <input type="hidden" id="category_hidden" name="category" value="<?php echo htmlspecialchars($category); ?>">
-
-                </div>
-
                     <div class="section-divider"></div> <!-- Bölüm Çizgisi -->
 
                     <div class="mb-3">
-                        <!-- Yarış türleri -->
-                        <label class="form-label">Yarış Türleri:</label>
-                        <?php foreach ($active_races as $race): ?>
-                            <div>
-                                <input type="checkbox" name="races[]" value="<?php echo $race; ?>" id="<?php echo $race; ?>" onclick="showBikeSelection(this)">
-                                <label for="<?php echo $race; ?>"><?php echo ucfirst($race); ?></label>
-
+    <!-- Yarış türleri -->
+    <label class="form-label">Yarış Türleri:</label>
+    <?php 
+    // Kategorileri almak için kullanıcı bilgilerini ve organizasyon id'sini kullanıyoruz
+    $categories = getAgeCategoryNamesForRaces($conn, $organization_id, $age, $user_details['sex'], $active_races);
+    
+    foreach ($active_races as $race): 
+        $category = isset($categories[$race]) ? $categories[$race] : 'UNKNOWN'; // Kategoriyi al
+    ?>
+   <div>
+            <input type="checkbox" name="races[]" value="<?php echo $race; ?>" id="<?php echo $race; ?>" onclick="showBikeSelection(this)">
+            <label for="<?php echo $race; ?>"><?php echo ucfirst($race); ?></label>
+            <span class="category-label">(Kategori: <?php echo htmlspecialchars($category); ?>)</span> <!-- Kategoriyi göster -->
+            
                                 <div id="bike_selection_for_<?php echo $race; ?>" style="display: none;">
                                     <label for="bicycle_for_<?php echo $race; ?>">Bisiklet Seç:</label>
                                     <select name="bicycle_for[<?php echo $race; ?>]" class="form-control" onchange="validateBikeSelection(this, <?php echo $organization_id; ?>)">

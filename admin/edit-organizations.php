@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $enduro_price = isset($_POST['enduro']) ? ($_POST['enduro_price'] !== '' ? $_POST['enduro_price'] : NULL) : NULL;
     $ulumega_price = isset($_POST['ulumega']) ? ($_POST['ulumega_price'] !== '' ? $_POST['ulumega_price'] : NULL) : NULL;
     $tour_price = isset($_POST['tour']) ? ($_POST['tour_price'] !== '' ? $_POST['tour_price'] : NULL) : NULL;
-    $ebike_price = isset($_POST['ebike']) && $_POST['ebike'] === 'on' ? ($_POST['ebike_price'] !== '' ? $_POST['ebike_price'] : NULL) : NULL; // E-Bike fiyatı
+    $ebike_price = isset($_POST['e_bike']) && $_POST['e_bike'] === 'on' ? ($_POST['e_bike_price'] !== '' ? $_POST['e_bike_price'] : NULL) : NULL; // E-Bike fiyatı
 
     // Yarış Numarası (Bib) ve Özel Yarış Numarası fiyatları
     $bib_price = !empty($_POST['bib_price']) ? $_POST['bib_price'] : NULL; 
@@ -65,11 +65,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $enduro = isset($_POST['enduro']) ? 1 : 0;
     $tour = isset($_POST['tour']) ? 1 : 0;
     $ulumega = isset($_POST['ulumega']) ? 1 : 0;
-    $ebike = isset($_POST['ebike']) ? 1 : 0; // E-Bike durumu
+    $ebike = isset($_POST['e_bike']) ? 1 : 0; // E-Bike durumu
 
     if ($stmt->execute([$organization_name, $adress, $details, $register_start_date, $last_register_day, $organization_type, $downhill, $enduro, $tour, $ulumega, $ebike, $min_front_suspension_travel, $min_rear_suspension_travel, $upload_file, $organization_id])) {
         // Fiyatları güncelle
-        $price_stmt = $conn->prepare("UPDATE prices SET downhill_price=?, enduro_price=?, ulumega_price=?, tour_price=?, ebike_price=?, bib_price=?, special_bib_price=? WHERE organization_id=?"); 
+        $price_stmt = $conn->prepare("UPDATE prices SET downhill_price=?, enduro_price=?, ulumega_price=?, tour_price=?, e_bike_price=?, bib_price=?, special_bib_price=? WHERE organization_id=?"); 
         if ($price_stmt->execute([$downhill_price, $enduro_price, $ulumega_price, $tour_price, $ebike_price, $bib_price, $special_bib_price, $organization_id])) {
             echo '<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>';
             echo '<script>
@@ -181,10 +181,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
             </div>
             <div>
-                <input type="checkbox" id="ebike" name="ebike" onclick="togglePriceInput('ebike', 'ebike_price_input')" <?= $prices['ebike_price'] ? 'checked' : '' ?> >
+                <input type="checkbox" id="ebike" name="ebike" onclick="togglePriceInput('e_bike', 'ebike_price_input')" <?= $prices['e_bike_price'] ? 'checked' : '' ?> >
                 <label for="ebike">E-Bike</label>
-                <div id="ebike_price_input" style="display: <?= $prices['ebike_price'] ? 'block' : 'none' ?>">
-                    <input type="text" name="ebike_price" placeholder="Fiyat" value="<?= $prices['ebike_price'] ?>">
+                <div id="e_bike_price_input" style="display: <?= $prices['e_bike_price'] ? 'block' : 'none' ?>">
+                    <input type="text" name="e_bike_price" placeholder="Fiyat" value="<?= $prices['e_bike_price'] ?>">
                 </div>
             </div>
         </div>
