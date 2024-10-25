@@ -42,9 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $upload_file = $upload_dir . $pdf_file_name;
         
         // Dosyayı yükle
-        if (move_uploaded_file($race_details_pdf['tmp_name'], $upload_file)) {
-            // Dosya başarıyla yüklendi
-        } else {
+        if (!move_uploaded_file($race_details_pdf['tmp_name'], $upload_file)) {
             echo "<script>alert('PDF dosyası yüklenirken bir hata oluştu.');</script>";
             exit; // Yükleme hatası varsa işlem sonlandırılır
         }
@@ -65,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $e_bike = isset($_POST['e_bike']) ? 1 : 0;
 
     // Sorguyu çalıştır
-    if ($stmt->execute([$organization_name, $address, $details, $register_start_date, $last_register_day, $organization_type, $downhill, $enduro, $tour, $ulumega, $e_bike, $min_front_suspension_travel, $min_rear_suspension_travel, $pdf_file_name])) { // Yalnızca dosya adını ekledik
+    if ($stmt->execute([$organization_name, $address, $details, $register_start_date, $last_register_day, $organization_type, $downhill, $enduro, $tour, $ulumega, $e_bike, $min_front_suspension_travel, $min_rear_suspension_travel, $pdf_file_name])) {
         $organization_id = $conn->insert_id;
 
         // Fiyatları ekle
@@ -73,6 +71,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
         if ($price_stmt->execute([$organization_id, $downhill_price, $enduro_price, $ulumega_price, $tour_price, $ebike_price, $bib_price, $special_bib_price])) {
+            // Yaş kategorilerini ekle
+            $age_categories = [
+                'downhill' => ['junior' => $_POST['downhill_age_junior'], 'elite' => $_POST['downhill_age_elite'], 'master_a' => $_POST['downhill_age_master_a'], 'master_b' => $_POST['downhill_age_master_b'], 'women' => $_POST['downhill_age_women']],
+                'enduro' => ['junior' => $_POST['enduro_age_junior'], 'elite' => $_POST['enduro_age_elite'], 'master_a' => $_POST['enduro_age_master_a'], 'master_b' => $_POST['enduro_age_master_b'], 'women' => $_POST['enduro_age_women']],
+                'ulumega' => ['junior' => $_POST['ulumega_age_junior'], 'elite' => $_POST['ulumega_age_elite'], 'master_a' => $_POST['ulumega_age_master_a'], 'master_b' => $_POST['ulumega_age_master_b'], 'women' => $_POST['ulumega_age_women']],
+                'tour' => ['junior' => $_POST['tour_age_junior'], 'elite' => $_POST['tour_age_elite'], 'master_a' => $_POST['tour_age_master_a'], 'master_b' => $_POST['tour_age_master_b'], 'women' => $_POST['tour_age_women']],
+                'e_bike' => ['junior' => $_POST['ebike_age_junior'], 'elite' => $_POST['ebike_age_elite'], 'master_a' => $_POST['ebike_age_master_a'], 'master_b' => $_POST['ebike_age_master_b'], 'women' => $_POST['ebike_age_women']]
+            ];
+
+            foreach ($age_categories as $category => $ages) {
+                if (${$category}) { // Eğer kategori seçildiyse
+                    $age_stmt = $conn->prepare("INSERT INTO age_category (organization_id, race_type, junior, elite, master_a, master_b, kadinlar) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                    $age_stmt->execute([$organization_id, $category, $ages['junior'], $ages['elite'], $ages['master_a'], $ages['master_b'], $ages['women']]);
+                }
+            }
+
             // Sweet Alert ile başarı mesajı
             echo '<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>';
             echo '<script>
@@ -97,15 +111,79 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=1024">
     <link rel="stylesheet" href="admincss/add-organizations.css"> <!-- CSS dosyasına bağlantı -->
     <title>Organizasyon Ekle</title>
+    <style>
+        .age-inputs {
+            margin-top: 10px;
+            margin-left: 3%;
+            display: flex;
+            gap: 10px; /* Alanlar arasında boşluk */
+        }
+        .age-inputs input {
+            width: 70%; /* Alan genişliği */
+            align-items: center !important;
+        }
+    </style>
+    <!-- SweetAlert CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
     <script>
-        function togglePriceInput(checkboxId, priceInputId) {
-            var checkbox = document.getElementById(checkboxId);
-            var priceInput = document.getElementById(priceInputId);
+        function togglePriceAndAgeInput(checkboxId, priceInputId, ageInputId) {
+            const checkbox = document.getElementById(checkboxId);
+            const priceInput = document.getElementById(priceInputId);
+            const ageInput = document.getElementById(ageInputId);
+
             if (checkbox.checked) {
-                priceInput.style.display = 'block';
+                priceInput.style.display = 'block'; // Fiyat giriş alanını göster
+                ageInput.style.display = 'flex'; // Yaş giriş alanını göster
             } else {
-                priceInput.style.display = 'none';
-                priceInput.querySelector('input').value = ''; // Fiyat kutusunu sıfırla
+                priceInput.style.display = 'none'; // Fiyat giriş alanını gizle
+                ageInput.style.display = 'none'; // Yaş giriş alanını gizle
+                Array.from(ageInput.querySelectorAll('input')).forEach(input => input.value = ''); // Yaş kategorilerini sıfırla
+            }
+        }
+
+        function validateAgeRanges() {
+            const ageFields = [
+                {name: 'downhill', inputs: ['downhill_age_junior', 'downhill_age_elite', 'downhill_age_master_a', 'downhill_age_master_b', 'downhill_age_women']},
+                {name: 'enduro', inputs: ['enduro_age_junior', 'enduro_age_elite', 'enduro_age_master_a', 'enduro_age_master_b', 'enduro_age_women']},
+                {name: 'ulumega', inputs: ['ulumega_age_junior', 'ulumega_age_elite', 'ulumega_age_master_a', 'ulumega_age_master_b', 'ulumega_age_women']},
+                {name: 'tour', inputs: ['tour_age_junior', 'tour_age_elite', 'tour_age_master_a', 'tour_age_master_b', 'tour_age_women']},
+                {name: 'e_bike', inputs: ['ebike_age_junior', 'ebike_age_elite', 'ebike_age_master_a', 'ebike_age_master_b', 'ebike_age_women']},
+            ];
+
+            for (const category of ageFields) {
+                const ageValues = category.inputs.map(inputName => {
+                    const inputValue = document.querySelector(`input[name="${inputName}"]`).value;
+                    return inputValue.split('-').map(Number); // Yaş aralığını sayılara çevir
+                });
+
+                // Yaş aralıklarını kontrol et
+                for (let i = 0; i < ageValues.length; i++) {
+                    for (let j = i + 1; j < ageValues.length; j++) {
+                        // Çakışma kontrolü
+                        if ((ageValues[i][0] <= ageValues[j][1] && ageValues[j][0] <= ageValues[i][1]) || 
+                            (ageValues[i][1] === Infinity && ageValues[j][0] <= ageValues[i][0]) || 
+                            (ageValues[j][1] === Infinity && ageValues[i][0] <= ageValues[j][0])) {
+                            return { valid: false, category: category.name };
+                        }
+                    }
+                }
+            }
+
+            return { valid: true }; // Tüm kontroller başarılı
+        }
+
+        function handleSubmit(event) {
+            const validationResult = validateAgeRanges();
+            if (!validationResult.valid) {
+                event.preventDefault(); // Formun gönderimini engelle
+                // SweetAlert ile hata mesajı göster
+                swal({
+                    title: "Hata!",
+                    text: `${validationResult.category} için yaş aralıkları çakışıyor!`,
+                    icon: "error",
+                    button: "Tamam",
+                });
             }
         }
     </script>
@@ -113,7 +191,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
 <div class="form-container">
     <h2>Organizasyon Ekle</h2>
-    <form action="" method="post" class="organization-form" enctype="multipart/form-data"> <!-- enctype ekledik -->
+    <form action="" method="post" class="organization-form" enctype="multipart/form-data" onsubmit="handleSubmit(event)"> <!-- enctype ekledik -->
         <!-- Organizasyon Genel Bilgiler -->
         <div class="form-group">
             <label for="organization_name">Organizasyon Adı</label>
@@ -168,65 +246,183 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         <!-- Fiyat Kategorileri -->
         <h3>Fiyat Kategorileri</h3>
+
+        <!-- Downhill -->
         <div class="form-group">
-            <input type="checkbox" id="downhill" name="downhill" onclick="togglePriceInput('downhill', 'downhill_price_input')">
+            <input type="checkbox" id="downhill" name="downhill" onclick="togglePriceAndAgeInput('downhill', 'downhill_price_input', 'downhill_age_input')">
             <label for="downhill">Downhill</label>
             <div id="downhill_price_input" style="display:none;">
                 <label for="downhill_price">Downhill Fiyatı</label>
                 <input type="number" id="downhill_price" name="downhill_price" step="0.01">
             </div>
+            <div id="downhill_age_input" style="display:none;" class="age-inputs">
+                <div>
+                    <label>Junior</label>
+                    <input type="text" name="downhill_age_junior" value="14-18" placeholder="Yaş Aralığı">
+                </div>
+                <div>
+                    <label>Elite</label>
+                    <input type="text" name="downhill_age_elite" value="19-29" placeholder="Yaş Aralığı">
+                </div>
+                <div>
+                    <label>Master A</label>
+                    <input type="text" name="downhill_age_master_a" value="30-39" placeholder="Yaş Aralığı">
+                </div>
+                <div>
+                    <label>Master B</label>
+                    <input type="text" name="downhill_age_master_b" value="40+" placeholder="Yaş Aralığı">
+                </div>
+                <div>
+                    <label>Kadınlar</label>
+                    <input type="text" name="downhill_age_women" value="17+" placeholder="Yaş Aralığı">
+                </div>
+            </div>
         </div>
 
+        <!-- Enduro -->
         <div class="form-group">
-            <input type="checkbox" id="enduro" name="enduro" onclick="togglePriceInput('enduro', 'enduro_price_input')">
+            <input type="checkbox" id="enduro" name="enduro" onclick="togglePriceAndAgeInput('enduro', 'enduro_price_input', 'enduro_age_input')">
             <label for="enduro">Enduro</label>
             <div id="enduro_price_input" style="display:none;">
                 <label for="enduro_price">Enduro Fiyatı</label>
                 <input type="number" id="enduro_price" name="enduro_price" step="0.01">
             </div>
+            <div id="enduro_age_input" style="display:none;" class="age-inputs">
+                <div>
+                    <label>Junior</label>
+                    <input type="text" name="enduro_age_junior" value="14-21" placeholder="Yaş Aralığı">
+                </div>
+                <div>
+                    <label>Elite</label>
+                    <input type="text" name="enduro_age_elite" value="22-35" placeholder="Yaş Aralığı">
+                </div>
+                <div>
+                    <label>Master A</label>
+                    <input type="text" name="enduro_age_master_a" value="36-45" placeholder="Yaş Aralığı">
+                </div>
+                <div>
+                    <label>Master B</label>
+                    <input type="text" name="enduro_age_master_b" value="46+" placeholder="Yaş Aralığı">
+                </div>
+                <div>
+                    <label>Kadınlar</label>
+                    <input type="text" name="enduro_age_women" value="17+" placeholder="Yaş Aralığı">
+                </div>
+            </div>
         </div>
 
+        <!-- Ulumega -->
         <div class="form-group">
-            <input type="checkbox" id="ulumega" name="ulumega" onclick="togglePriceInput('ulumega', 'ulumega_price_input')">
+            <input type="checkbox" id="ulumega" name="ulumega" onclick="togglePriceAndAgeInput('ulumega', 'ulumega_price_input', 'ulumega_age_input')">
             <label for="ulumega">Ulumega</label>
             <div id="ulumega_price_input" style="display:none;">
                 <label for="ulumega_price">Ulumega Fiyatı</label>
                 <input type="number" id="ulumega_price" name="ulumega_price" step="0.01">
             </div>
+            <div id="ulumega_age_input" style="display:none;" class="age-inputs">
+                <div>
+                    <label>Junior</label>
+                    <input type="text" name="ulumega_age_junior" value="14-21" placeholder="Yaş Aralığı">
+                </div>
+                <div>
+                    <label>Elite</label>
+                    <input type="text" name="ulumega_age_elite" value="22-35" placeholder="Yaş Aralığı">
+                </div>
+                <div>
+                    <label>Master A</label>
+                    <input type="text" name="ulumega_age_master_a" value="36-45" placeholder="Yaş Aralığı">
+                </div>
+                <div>
+                    <label>Master B</label>
+                    <input type="text" name="ulumega_age_master_b" value="46+" placeholder="Yaş Aralığı">
+                </div>
+                <div>
+                    <label>Kadınlar</label>
+                    <input type="text" name="ulumega_age_women" value="17+" placeholder="Yaş Aralığı">
+                </div>
+            </div>
         </div>
 
+        <!-- Tur -->
         <div class="form-group">
-            <input type="checkbox" id="tour" name="tour" onclick="togglePriceInput('tour', 'tour_price_input')">
+            <input type="checkbox" id="tour" name="tour" onclick="togglePriceAndAgeInput('tour', 'tour_price_input', 'tour_age_input')">
             <label for="tour">Tur</label>
             <div id="tour_price_input" style="display:none;">
                 <label for="tour_price">Tur Fiyatı</label>
                 <input type="number" id="tour_price" name="tour_price" step="0.01">
             </div>
+            <div id="tour_age_input" style="display:none;" class="age-inputs">
+                <div>
+                    <label>Junior</label>
+                    <input type="text" name="tour_age_junior" value="14-21" placeholder="Yaş Aralığı">
+                </div>
+                <div>
+                    <label>Elite</label>
+                    <input type="text" name="tour_age_elite" value="22-35" placeholder="Yaş Aralığı">
+                </div>
+                <div>
+                    <label>Master A</label>
+                    <input type="text" name="tour_age_master_a" value="36-45" placeholder="Yaş Aralığı">
+                </div>
+                <div>
+                    <label>Master B</label>
+                    <input type="text" name="tour_age_master_b" value="46+" placeholder="Yaş Aralığı">
+                </div>
+                <div>
+                    <label>Kadınlar</label>
+                    <input type="text" name="tour_age_women" value="17+" placeholder="Yaş Aralığı">
+                </div>
+            </div>
         </div>
 
+        <!-- E-Bike -->
         <div class="form-group">
-            <input type="checkbox" id="e_bike" name="e_bike" onclick="togglePriceInput('e_bike', 'ebike_price_input')">
+            <input type="checkbox" id="e_bike" name="e_bike" onclick="togglePriceAndAgeInput('e_bike', 'ebike_price_input', 'ebike_age_input')">
             <label for="e_bike">E-Bike</label>
             <div id="ebike_price_input" style="display:none;">
                 <label for="ebike_price">E-Bike Fiyatı</label>
                 <input type="number" id="ebike_price" name="ebike_price" step="0.01">
             </div>
+            <div id="ebike_age_input" style="display:none;" class="age-inputs">
+                <div>
+                    <label>Junior</label>
+                    <input type="text" name="ebike_age_junior" value="17+" placeholder="Yaş Aralığı">
+                </div>
+                <div>
+                    <label>Elite</label>
+                    <input type="text" name="ebike_age_elite" value="17+" placeholder="Yaş Aralığı">
+                </div>
+                <div>
+                    <label>Master A</label>
+                    <input type="text" name="ebike_age_master_a" value="17+" placeholder="Yaş Aralığı">
+                </div>
+                <div>
+                    <label>Master B</label>
+                    <input type="text" name="ebike_age_master_b" value="17+" placeholder="Yaş Aralığı">
+                </div>
+                <div>
+                    <label>Kadınlar</label>
+                    <input type="text" name="ebike_age_women" value="17+" placeholder="Yaş Aralığı">
+                </div>
+            </div>
         </div>
 
+        <!-- Bib Fiyatı -->
         <div class="form-group">
-            <label for="bib_price">Bib Fiyatı</label>
+            <label for="bib_price">Yarış Numarası (Bib) Fiyatı</label>
             <input type="number" id="bib_price" name="bib_price" step="0.01">
         </div>
 
+        <!-- Özel Yarış Numarası Fiyatı -->
         <div class="form-group">
-            <label for="special_bib_price">Özel Bib Fiyatı</label>
+            <label for="special_bib_price">Özel Yarış Numarası Fiyatı</label>
             <input type="number" id="special_bib_price" name="special_bib_price" step="0.01">
         </div>
 
-        <!-- PDF dosyası yükleme -->
+        <!-- PDF Yükleme -->
         <div class="form-group">
             <label for="race_details_pdf">Yarış Detayları PDF</label>
-            <input type="file" id="race_details_pdf" name="race_details_pdf" accept="application/pdf" required>
+            <input type="file" id="race_details_pdf" name="race_details_pdf" accept=".pdf" required>
         </div>
 
         <button type="submit">Organizasyonu Ekle</button>

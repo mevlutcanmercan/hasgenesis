@@ -71,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     // Güncelleme tamamlandığında yönlendirme yapmadan önce başka çıktı olmadığından emin olun
-    header("Location: editBibNumbers.php?organization_id=" . $organization_id);
+    header("Location: editBibNumbers?organization_id=" . $organization_id);
     exit();
 }
 ?>
