@@ -70,24 +70,51 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
 
     // Hata ayarları
     error_reporting(E_ALL);
-    ini_set('display_errors', 0); // Hataları göstermemek için
+    ini_set('display_errors', 1); // Hataları görmek için
 
     // Organizasyon ID'sini al
     $organization_id = intval($_GET['organization_id'] ?? 0); // Organizasyon ID'yi al
     $race_type_filter = $_GET['race_type'] ?? null; // URL'den yarış tipini al
 
-    // Veritabanı sorgusu
+    // Yarış tipine göre sorgu oluştur
     $query = "SELECT * FROM registrations WHERE organization_id = ? AND approval_status = 1";
+
+    if ($race_type_filter) {
+        // race_type'i kontrol et
+        $query .= " AND race_type LIKE ?";
+    }
+
+    // Sorguyu çalıştırma
     $stmt_export = $conn->prepare($query);
-    $stmt_export->bind_param("i", $organization_id);
+    
+    if ($race_type_filter) {
+        // race_type ile kayıtları filtrele
+        $filter = '%' . $race_type_filter . '%'; // LIKE kullanarak filtreleme
+        $stmt_export->bind_param("is", $organization_id, $filter);
+    } else {
+        $stmt_export->bind_param("i", $organization_id);
+    }
+
     $stmt_export->execute();
     $result_export = $stmt_export->get_result();
 
-    // Excel dosyası oluşturma
+    // Seçilen yarış tipine ait kayıt yoksa indirmeyi durdur
+    if ($result_export->num_rows === 0) {
+        echo "<script>alert('Seçilen yarış tipi için kayıt bulunmamaktadır.'); window.location.href = '/hasgenesis/admin/registrationsmanagement?organization_id=$organization_id';</script>";
+        exit();
+    }
+
+    // Yaş kategorilerini al
+    $age_category_query = "SELECT * FROM age_category WHERE organization_id = ? AND race_type = ?";
+    $stmt_age_category = $conn->prepare($age_category_query);
+    $stmt_age_category->bind_param("is", $organization_id, $race_type_filter);
+    $stmt_age_category->execute();
+    $age_categories_result = $stmt_age_category->get_result();
+    $age_categories = $age_categories_result->fetch_assoc(); // Tek bir sonuç bekliyoruz
+
+    // Excel dosyası oluşturma ve başlık satırlarını ekleme
     $spreadsheet = new Spreadsheet();
     $sheet = $spreadsheet->getActiveSheet();
-
-    // Sınır stilini tanımla
     $styleArray = [
         'borders' => [
             'allBorders' => [
@@ -102,47 +129,64 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
     $sheet->setCellValue('B1', 'Name');
     $sheet->setCellValue('C1', 'First Name');
     $sheet->setCellValue('D1', 'Last Name');
-    $sheet->setCellValue('E1', 'Category');
+    $sheet->setCellValue('E1', 'Category with Age Range');
 
     // Verileri tabloya ekle
     $row = 2;
     while ($data = $result_export->fetch_assoc()) {
         // Name sütunu için first_name + second_name birleştir
-        $full_name = trim($data['first_name'] . ' ' . $data['second_name']); // Boşlukları temizle
+        $full_name = trim($data['first_name'] . ' ' . $data['second_name']);
         $sheet->setCellValue('A' . $row, $data['Bib']);
-        $sheet->setCellValue('B' . $row, $full_name); // Name sütunu
+        $sheet->setCellValue('B' . $row, $full_name);
         $sheet->setCellValue('C' . $row, $data['first_name']);
         $sheet->setCellValue('D' . $row, $data['second_name']);
 
-        // Kategori dönüşümü
-        $category = '-'; // Default değer
+        // Kategori dönüşümü ve yaş aralığını ekleme
+        $category = '-';        
+        $age_range = '-'; // Varsayılan değer
+
+        // Yarış tipine göre doğru kategori ve yaş aralığını al
         if ($race_type_filter) {
+            $category_key = ''; // Kategoriyi tutacak değişken
             switch ($race_type_filter) {
                 case 'downhill':
-                    $category = isset($category_map[$data['dh_kategori']]) ? $category_map[$data['dh_kategori']] : $data['dh_kategori'];
+                    $category_key = $data['dh_kategori']; // 'downhill' için kategori al
                     break;
                 case 'enduro':
-                    $category = isset($category_map[$data['end_kategori']]) ? $category_map[$data['end_kategori']] : $data['end_kategori'];
+                    $category_key = $data['end_kategori']; // 'enduro' için kategori al
                     break;
                 case 'ulumega':
-                    $category = isset($category_map[$data['ulumega_kategori']]) ? $category_map[$data['ulumega_kategori']] : $data['ulumega_kategori'];
+                    $category_key = $data['ulumega_kategori']; // 'ulumega' için kategori al
                     break;
                 case 'tour':
-                    $category = isset($category_map[$data['tour_kategori']]) ? $category_map[$data['tour_kategori']] : $data['tour_kategori'];
+                    $category_key = $data['tour_kategori']; // 'tour' için kategori al
                     break;
                 case 'e_bike':
-                    $category = isset($category_map[$data['ebike_kategori']]) ? $category_map[$data['ebike_kategori']] : $data['ebike_kategori'];
+                    $category_key = $data['ebike_kategori']; // 'e_bike' için kategori al
                     break;
+            }
+
+            // Kategori ve yaş aralığını almak
+            if ($age_categories) {
+                $age_map = [
+                    'junior' => $age_categories['junior'],
+                    'elite' => $age_categories['elite'],
+                    'master_a' => $age_categories['master_a'],
+                    'master_b' => $age_categories['master_b'],
+                    'kadinlar' => $age_categories['kadinlar']
+                ];
+
+                // Kategori adını küçük harfle kontrol edelim
+                $lowercase_category_key = strtolower($category_key);
+                if (array_key_exists($lowercase_category_key, $age_map)) {
+                    $category = strtoupper($lowercase_category_key); // Kategoriyi büyük harfe çevir
+                    $age_range = $age_map[$lowercase_category_key];
+                }
             }
         }
 
-        // Kategori bilgisi kontrolü
-        if ($category === '-') {
-            // Debug çıktısı
-            echo "Kategoriyi bulamadım. Yarış tipi: $race_type_filter, Data: " . json_encode($data);
-        }
-
-        $sheet->setCellValue('E' . $row, $category);
+        // Kategori ve yaş aralığını birleştir
+        $sheet->setCellValue('E' . $row, trim($category . ' ' . $age_range));
 
         // Hücrelere sınır ekle
         $sheet->getStyle("A$row:E$row")->applyFromArray($styleArray);
@@ -159,7 +203,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
 
     // Excel dosyasını indirilmeye hazırla
     $writer = new Xlsx($spreadsheet);
-    $fileName = 'registrations_' . date('Y-m-d') . '.xlsx';
+    $fileName = 'registrations_' . $race_type_filter . '_' . date('Y-m-d') . '.xlsx';
 
     // Excel için doğru başlıklar
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -172,8 +216,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
     $writer->save('php://output');
     exit();
 }
-
-
+    
 
     // Silinen kayıt için e-posta gönderme fonksiyonu
     function sendEmailOnDelete($email, $firstName, $lastName) {
