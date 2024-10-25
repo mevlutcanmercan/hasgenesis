@@ -253,6 +253,8 @@ $org_result = $conn->query($org_query);
             // Sonuçları Görüntüle butonunu ekleme
             if ($has_results) {
                 echo "<a href='raceresults?organization_id={$row['id']}' class='btn btn-primary' style='margin-left: 10px;'>Sonuçları Görüntüle</a>";
+            } else {
+                echo "<a href='organization_registers?organization_id={$row['id']}' class='btn btn-secondary' style='margin-left: 10px;'>Kayıtları Görüntüle</a>";
             }
 
             echo "      </div>
