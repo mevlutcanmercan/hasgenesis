@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $enduro_price = isset($_POST['enduro']) ? ($_POST['enduro_price'] !== '' ? $_POST['enduro_price'] : NULL) : NULL;
     $ulumega_price = isset($_POST['ulumega']) ? ($_POST['ulumega_price'] !== '' ? $_POST['ulumega_price'] : NULL) : NULL;
     $tour_price = isset($_POST['tour']) ? ($_POST['tour_price'] !== '' ? $_POST['tour_price'] : NULL) : NULL;
-    $ebike_price = isset($_POST['e_bike']) ? ($_POST['ebike_price'] !== '' ? $_POST['ebike_price'] : NULL) : NULL; // E-Bike fiyatı
+    $ebike_price = isset($_POST['e_bike']) ? ($_POST['e_bike_price'] !== '' ? $_POST['e_bike_price'] : NULL) : NULL; // E-Bike fiyatı
 
     // Yarış Numarası (Bib) ve Özel Yarış Numarası fiyatları
     $bib_price = !empty($_POST['bib_price']) ? $_POST['bib_price'] : NULL; 
@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $organization_id = $conn->insert_id;
 
         // Fiyatları ekle
-        $price_stmt = $conn->prepare("INSERT INTO prices (organization_id, downhill_price, enduro_price, ulumega_price, tour_price, ebike_price, bib_price, special_bib_price) 
+        $price_stmt = $conn->prepare("INSERT INTO prices (organization_id, downhill_price, enduro_price, ulumega_price, tour_price, e_bike_price, bib_price, special_bib_price) 
                                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
         if ($price_stmt->execute([$organization_id, $downhill_price, $enduro_price, $ulumega_price, $tour_price, $ebike_price, $bib_price, $special_bib_price])) {
@@ -205,11 +205,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
 
         <div class="form-group">
-            <input type="checkbox" id="e_bike" name="e_bike" onclick="togglePriceInput('e_bike', 'ebike_price_input')">
+            <input type="checkbox" id="e_bike" name="e_bike" onclick="togglePriceInput('e_bike', 'e_bike_price_input')">
             <label for="e_bike">E-Bike</label>
-            <div id="ebike_price_input" style="display:none;">
-                <label for="ebike_price">E-Bike Fiyatı</label>
-                <input type="number" id="ebike_price" name="ebike_price" step="0.01">
+            <div id="e_bike_price_input" style="display:none;">
+                <label for="e_bike_price">E-Bike Fiyatı</label>
+                <input type="number" id="e_bike_price" name="e_bike_price" step="0.01">
             </div>
         </div>
 

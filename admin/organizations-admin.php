@@ -49,7 +49,7 @@ unset($_SESSION['success_message'], $_SESSION['error_message']); // Değişkenle
 
 // Sorgu başlangıcı
 $sql = "
-    SELECT o.*, p.downhill_price, p.enduro_price, p.tour_price, p.ulumega_price, p.ebike_price, o.race_details_pdf, o.type
+    SELECT o.*, p.downhill_price, p.enduro_price, p.tour_price, p.ulumega_price, p.e_bike_price, o.race_details_pdf, o.type
     FROM organizations o 
     LEFT JOIN prices p ON o.id = p.organization_id";
 
@@ -75,7 +75,7 @@ if ($category) {
         $filters[] = "o.tour = 1";
     } elseif ($category === 'ulumega') {
         $filters[] = "o.ulumega = 1";
-    } elseif ($category === 'e-bike') { // E-Bike kategorisi kontrolü
+    } elseif ($category === 'e_bike') { // E-Bike kategorisi kontrolü
         $filters[] = "o.e_bike = 1"; // E-Bike kategorisi için filtre
     }
 }
@@ -86,7 +86,7 @@ if (count($filters) > 0) {
 }
 
 // Toplam kayıt sayısını hesapla
-$total_sql = str_replace("o.*, p.downhill_price, p.enduro_price, p.tour_price, p.ulumega_price, p.ebike_price, o.race_details_pdf, o.type", "COUNT(*) as total", $sql);
+$total_sql = str_replace("o.*, p.downhill_price, p.enduro_price, p.tour_price, p.ulumega_price, p.e_bike_price, o.race_details_pdf, o.type", "COUNT(*) as total", $sql);
 $total_result = $conn->query($total_sql);
 $total_row = $total_result->fetch_assoc();
 $total_items = $total_row['total']; // Toplam kayıt sayısı
@@ -231,8 +231,8 @@ $pdf_file_path = '../documents/race_details/'; // PDF dosya yolu
                     if (!is_null($row['ulumega_price'])) {
                         echo "<p class='card-text'><strong>Ulumega Fiyatı:</strong> {$row['ulumega_price']} TL</p>";
                     }
-                    if (!is_null($row['ebike_price'])) {
-                        echo "<p class='card-text'><strong>E-Bike Kategorisi Yarış Ücreti:</strong> {$row['ebike_price']} TL</p>";
+                    if (!is_null($row['e_bike_price'])) {
+                        echo "<p class='card-text'><strong>E-Bike Kategorisi Yarış Ücreti:</strong> {$row['e_bike_price']} TL</p>";
                     }
                 }
             
