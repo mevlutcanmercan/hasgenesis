@@ -437,86 +437,84 @@ $user_bikes_result = $user_bikes_stmt->get_result();
 
         
         <!-- Kayıtlarım kısmı -->
-                <div class="tab-pane fade" id="registrations">
-            <h2>Kayıtlarım</h2>
-            <div class="tab-content">
-                <table>
-                    <tr>
-                        <th>Organizasyon</th>
-                        <th>Yarış Türü</th>
-                        <th>Onay Durumu</th>
-                        <th>Bib Numarası</th> <!-- Yeni sütun -->
-                        <th>İptal Et</th>
-                    </tr>
-                    <?php while($row = $result->fetch_assoc()): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($row['organization_name']); ?></td>
-                            <td><?php echo htmlspecialchars($row['race_type']); ?></td>
-                            <td>
-                                <?php 
-                                // Onay durumu kontrolü
-                                if ($row['approval_status'] == 0) {
-                                    echo 'Beklemede';
-                                } elseif ($row['approval_status'] == 1) {
-                                    echo 'Onaylandı';
-                                } elseif ($row['approval_status'] == 2) {
-                                    echo 'İptal Talebiniz Reddedildi';
-                                }
-                                ?>
-                            </td>
-                            <td>
-                                <?php 
-                                // Kayıtlar tablosundaki Bib numarasını kontrol et
-                                if (isset($row['Bib']) && $row['Bib'] != 0) {
-                                    echo htmlspecialchars($row['Bib']);
-                                } else {
-                                    echo 'Henüz atanmamıştır';
-                                }
-                                ?>
-                            </td>
-                            <td>
-                                <?php
-                                // Kullanıcı daha önce iptal talebi gönderdi mi kontrol et
-                                $cancelCheckSql = "SELECT is_approved FROM cancellations WHERE registration_id = ? AND user_id = ?";
-                                $cancelCheckStmt = $conn->prepare($cancelCheckSql);
-                                $cancelCheckStmt->bind_param("ii", $row['registration_id'], $_SESSION['id_users']);
-                                $cancelCheckStmt->execute();
-                                $cancelCheckStmt->store_result();
-                                $cancelCheckStmt->bind_result($is_approved);
-                                $cancelCheckStmt->fetch();
+<div class="tab-pane fade" id="registrations">
+    <h2>Kayıtlarım</h2>
+    <div class="tab-content">
+        <table>
+            <tr>
+                <th>Organizasyon</th>
+                <th>Yarış Türü</th>
+                <th>Onay Durumu</th>
+                <th>Bib Numarası</th> <!-- Yeni sütun -->
+                <th>İptal Et</th>
+            </tr>
+            <?php while($row = $result->fetch_assoc()): ?>
+                <tr>
+                    <td><?php echo htmlspecialchars($row['organization_name']); ?></td>
+                    <td><?php echo htmlspecialchars($row['race_type']); ?></td>
+                    <td>
+                        <?php 
+                        // Onay durumu kontrolü
+                        if ($row['approval_status'] == 0) {
+                            echo 'Beklemede';
+                        } elseif ($row['approval_status'] == 1) {
+                            echo 'Onaylandı';
+                        } elseif ($row['approval_status'] == 2) {
+                            echo 'İptal Talebiniz Reddedildi';
+                        }
+                        ?>
+                    </td>
+                    <td>
+                        <?php 
+                        // Kayıtlar tablosundaki Bib numarasını kontrol et
+                        if (isset($row['Bib']) && $row['Bib'] != 0) {
+                            echo htmlspecialchars($row['Bib']);
+                        } else {
+                            echo 'Henüz atanmamıştır';
+                        }
+                        ?>
+                    </td>
+                    <td>
+                        <?php
+                        // Kullanıcı daha önce iptal talebi gönderdi mi kontrol et
+                        $cancelCheckSql = "SELECT is_approved FROM cancellations WHERE registration_id = ? AND user_id = ?";
+                        $cancelCheckStmt = $conn->prepare($cancelCheckSql);
+                        $cancelCheckStmt->bind_param("ii", $row['registration_id'], $_SESSION['id_users']);
+                        $cancelCheckStmt->execute();
+                        $cancelCheckStmt->store_result();
+                        $cancelCheckStmt->bind_result($is_approved);
+                        $cancelCheckStmt->fetch();
 
-                                // İptal talebi daha önce gönderilmiş mi ve onay durumu ne
-                                if ($cancelCheckStmt->num_rows > 0) {
-                                    // Eğer iptal talebi reddedilmişse (is_approved == 2)
-                                    if ($is_approved == 2) {
-                                        echo '<span>İptal Talebiniz Reddedildi</span>';
-                                    } elseif ($is_approved == 1) {
-                                        echo '<span>İptal Talebi Onaylandı</span>';
-                                    } else {
-                                        echo '<span>İptal Talebi Gönderildi</span>';
-                                    }
-                                } elseif ($row['approval_status'] == 0) { ?>
-                                    <!-- İptal butonu sadece onaylanmamışsa gösterilecek -->
-                                    <button class="cancel-button" onclick="showReasonForm(<?php echo $row['registration_id']; ?>)">İptal Et</button>
-                                    <div id="reason-form-<?php echo $row['registration_id']; ?>" class="cancel-reason" style="display: none;">
-                                        <form action="account.php" method="post">
-                                            <label for="reason">İptal Sebebi:</label>
-                                            <textarea name="reason" id="reason" rows="3" required></textarea>
-                                            <input type="hidden" name="registration_id" value="<?php echo $row['registration_id']; ?>">
-                                            <button type="submit" class="submit-reason">Gönder</button>
-                                        </form>
-                                    </div>
-                                <?php } else {
-                                    echo 'Onaylandı';
-                                }
-                                $cancelCheckStmt->close();
-                                ?>
-                            </td>
-                        </tr>
-                    <?php endwhile; ?>
-                </table>
-            </div>
-        </div>
+                        // İptal talebi daha önce gönderilmiş mi ve onay durumu ne
+                        if ($cancelCheckStmt->num_rows > 0) {
+                            if ($is_approved == 2) {
+                                echo '<span>İptal Talebiniz Reddedildi</span>';
+                            } elseif ($is_approved == 1) {
+                                echo '<span>İptal Talebi Onaylandı</span>';
+                            } else {
+                                echo '<span>İptal Talebi Gönderildi</span>';
+                            }
+                        } else { ?>
+                            <!-- İptal butonu her zaman gösterilecek -->
+                            <button class="cancel-button" onclick="showReasonForm(<?php echo $row['registration_id']; ?>)">İptal Et</button>
+                            <div id="reason-form-<?php echo $row['registration_id']; ?>" class="cancel-reason" style="display: none;">
+                                <form action="account.php" method="post">
+                                    <label for="reason">İptal Sebebi:</label>
+                                    <textarea name="reason" id="reason" rows="3" required></textarea>
+                                    <input type="hidden" name="registration_id" value="<?php echo $row['registration_id']; ?>">
+                                    <button type="submit" class="submit-reason">Gönder</button>
+                                </form>
+                            </div>
+                        <?php }
+                        $cancelCheckStmt->close();
+                        ?>
+                    </td>
+                </tr>
+            <?php endwhile; ?>
+        </table>
+    </div>
+</div>
+
 
         <script>
             function showReasonForm(registrationId) {
