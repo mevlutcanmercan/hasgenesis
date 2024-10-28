@@ -129,7 +129,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
     $sheet->setCellValue('B1', 'Name');
     $sheet->setCellValue('C1', 'First Name');
     $sheet->setCellValue('D1', 'Last Name');
-    $sheet->setCellValue('E1', 'Category with Age Range');
+    $sheet->setCellValue('E1', 'Category');
 
     // Verileri tabloya ekle
     $row = 2;
@@ -274,7 +274,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
         if ($delete_stmt->execute()) {
             // Kayıt silindikten sonra e-posta gönder
             sendEmailOnDelete($email, $firstName, $lastName);
-            echo "<script>showSuccessAlert('Kayıt başarıyla silindi!', 'admin/registrationsmanagement.php?organization_id=$organization_id');</script>";
+            echo "<script>showSuccessAlert('Kayıt başarıyla silindi!', 'admin/registrationsmanagement?organization_id=$organization_id');</script>";
         } else {
             echo "<script>showErrorAlert('Kayıt silinirken bir hata oluştu.');</script>";
         }
@@ -428,7 +428,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
             echo "<td class='$statusClass' id='status-{$row['id']}'>" . ($row['approval_status'] ? "Onaylı" : "Onaysız") . "</td>";
             
             // Onaylama ve reddetme işlemleri
-            echo "<td><form method='POST' action='registrationsmanagement.php?organization_id=$organization_id' style='display:inline;'>";
+            echo "<td><form method='POST' action='registrationsmanagement?organization_id=$organization_id' style='display:inline;'>";
             echo "<input type='hidden' name='registration_id' value='{$row['id']}'>";
             echo "<input type='hidden' name='approval_status' value='" . ($row['approval_status'] ? 0 : 1) . "'>";
             echo "<button type='submit' class='" . ($row['approval_status'] ? "reject-btn" : "approve-btn") . "'>" . ($row['approval_status'] ? "Reddet" : "Onayla") . "</button>";
