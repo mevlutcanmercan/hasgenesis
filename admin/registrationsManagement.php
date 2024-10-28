@@ -166,23 +166,23 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
                     break;
             }
 
-            // Kategori ve yaş aralığını almak
-            if ($age_categories) {
-                $age_map = [
-                    'junior' => $age_categories['junior'],
-                    'elite' => $age_categories['elite'],
-                    'master_a' => $age_categories['master_a'],
-                    'master_b' => $age_categories['master_b'],
-                    'kadinlar' => $age_categories['kadinlar']
-                ];
+        // Kategori ve yaş aralığını almak
+        if ($age_categories) {
+            $age_map = [
+                'junior' => $age_categories['junior'],
+                'elitler' => $age_categories['elite'],
+                'master a' => $age_categories['master_a'],
+                'master b' => $age_categories['master_b'],
+                'kadinlar' => $age_categories['kadinlar']
+            ];
 
-                // Kategori adını küçük harfle kontrol edelim
-                $lowercase_category_key = strtolower($category_key);
-                if (array_key_exists($lowercase_category_key, $age_map)) {
-                    $category = strtoupper($lowercase_category_key); // Kategoriyi büyük harfe çevir
-                    $age_range = $age_map[$lowercase_category_key];
-                }
+            // Kategori adını küçük harfle kontrol edelim
+            $lowercase_category_key = strtolower($category_key);
+            if (array_key_exists($lowercase_category_key, $age_map)) {
+                $category = strtoupper($lowercase_category_key); // Kategoriyi büyük harfe çevir
+                $age_range = $age_map[$lowercase_category_key];
             }
+        }
         }
 
         // Kategori ve yaş aralığını birleştir
