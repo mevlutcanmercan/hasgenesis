@@ -349,6 +349,7 @@ $ebike_kategori = in_array('e_bike', $selected_races) ? $categories['e_bike'] : 
             checkbox.addEventListener('change', function() {
                 updatePrice(prices);
                 showBikeSelection(this);
+                toggleRaceOptions(this);
             });
         });
 
@@ -360,6 +361,24 @@ $ebike_kategori = in_array('e_bike', $selected_races) ? $categories['e_bike'] : 
         updatePrice(prices);
     };
 
+
+    function toggleRaceOptions(checkbox) {
+    // 'enduro' ve 'e_bike' yarış tiplerinin aynı anda seçilmesini engelle
+    const enduroCheckbox = document.getElementById('enduro');
+    const eBikeCheckbox = document.getElementById('e_bike');
+    
+    if (checkbox.checked) {
+        if (checkbox.id === 'enduro') {
+            eBikeCheckbox.disabled = true; // e_bike seçimini devre dışı bırak
+        } else if (checkbox.id === 'e_bike') {
+            enduroCheckbox.disabled = true; // enduro seçimini devre dışı bırak
+        }
+    } else {
+        // Eğer seçim kaldırılırsa, diğer yarış tipi tekrar seçilebilir hale gelsin
+        enduroCheckbox.disabled = false;
+        eBikeCheckbox.disabled = false;
+    }
+}
     function showBikeSelection(checkbox) {
         const raceType = checkbox.value;
         const selectionDiv = document.getElementById('bike_selection_for_' + raceType);
@@ -617,6 +636,7 @@ function validateForm() {
     // Dosya boyutlarını kontrol et
     checkFileSize('waiver', maxFileSize);
     checkFileSize('receipt', maxFileSize);
+
 </script>
 </body>
 </html>
