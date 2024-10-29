@@ -67,6 +67,7 @@ function calculateAge($birthdate) {
     return $birth_date->diff($today)->y;
 }
 
+
 // Kategoriyi belirle - her yarış türü için özel
 function determineCategoryName($conn, $age, $sex, $organization_id, $race_type) {
     // Yaş kategorilerini al
@@ -79,14 +80,19 @@ function determineCategoryName($conn, $age, $sex, $organization_id, $race_type) 
     if (!$categories) return 'UNKNOWN'; // Hatalı durum
 
     // Cinsiyete göre uygun kategoriyi belirle
-    if ($sex == 'Kadın' && strpos($categories['kadinlar'], '+') !== false) {
-        // Kadın kategorisi için 17+ kontrolü
-        return 'KADINLAR';
-    } elseif ($sex == 'Kadın' && preg_match('/(\d+)-(\d+)/', $categories['kadinlar'], $matches)) {
-        $age_min = (int)$matches[1];
-        if ($age >= $age_min) {
-            return 'KADINLAR';
+    if ($sex == 'Kadın') {
+        // Kadın kategorisi için yaş kontrolü
+        if (strpos($categories['kadinlar'], '+') !== false) {
+            // Eğer kadinlar içinde '+' varsa, 17 yaş ve üzeri kabul edilir
+            return ($age >= 17) ? 'KADINLAR' : 'UNKNOWN';
+        } elseif (preg_match('/(\d+)-(\d+)/', $categories['kadinlar'], $matches)) {
+            // Eğer kadinlar içinde yaş aralığı varsa
+            $age_min = (int)$matches[1];
+            if ($age >= $age_min) {
+                return 'KADINLAR';
+            }
         }
+        return 'UNKNOWN'; // Yaş sınırı karşılanmadı
     }
     // Eğer yarış tipi e_bike ise, her zaman 17+ döndür
     if ($race_type === 'e_bike') {
@@ -115,13 +121,14 @@ function determineCategoryName($conn, $age, $sex, $organization_id, $race_type) 
         if ($age >= $age_min && $age <= $age_max) return 'MASTER A';
     }
 
-    // Master B Kategorisi
-    if (strpos($categories['master_b'], '+') !== false) {
-        return 'MASTER_B';
-    } elseif (preg_match('/(\d+)\+/', $categories['master_b'], $matches)) {
-        $age_min = (int)$matches[1];
-        if ($age >= $age_min) return 'MASTER B';
-    }
+// Master B Kategorisi
+if (preg_match('/(\d+)\+/', $categories['master_b'], $matches)) {
+    $age_min = (int)$matches[1]; // En küçük yaş
+    if ($age >= $age_min) return 'MASTER B'; // Yaş kontrolü
+} elseif (strpos($categories['master_b'], '+') === false) {
+    // Eğer master_b içinde + yoksa, ve bu alandaki değer tam bir yaş aralığı ise
+    return 'MASTER_B'; // Koşul sağlanmazsa burada her yaş için döndürme
+}
 
     return 'UNKNOWN';
 }
@@ -345,10 +352,14 @@ $ebike_kategori = in_array('e_bike', $selected_races) ? $categories['e_bike'] : 
 
     window.onload = function() {
         // Checkbox ve Bib girişi değiştiğinde fiyatı güncelle
+            // Kullanıcı yaşını PHP'den JavaScript değişkenine alın
+    const userAge = <?php echo json_encode($age); ?>; 
         document.querySelectorAll('input[name="races[]"]').forEach((checkbox) => {
             checkbox.addEventListener('change', function() {
                 updatePrice(prices);
                 showBikeSelection(this);
+                toggleRaceOptions(this);
+                checkAgeEligibility(this);
             });
         });
 
@@ -359,7 +370,39 @@ $ebike_kategori = in_array('e_bike', $selected_races) ? $categories['e_bike'] : 
         // İlk toplam fiyat güncellemesi
         updatePrice(prices);
     };
+    function checkAgeEligibility(checkbox) {
+    const minAge = parseInt(checkbox.getAttribute('data-min-age'));
+    const userAge = <?php echo json_encode($age); ?>; // Kullanıcı yaşını PHP'den alın
+    
+    if (minAge && userAge < minAge) {
+        checkbox.checked = false; // Checkbox'ı işaretlenmemiş hale getir
+        
+        Swal.fire({
+            icon: 'warning',
+            title: 'Yaş Uygun Değil',
+            text: `Bu kategori için minimum yaş ${minAge} olmalıdır.`,
+            confirmButtonText: 'Tamam'
+        });
+    }
+}
 
+    function toggleRaceOptions(checkbox) {
+    // 'enduro' ve 'e_bike' yarış tiplerinin aynı anda seçilmesini engelle
+    const enduroCheckbox = document.getElementById('enduro');
+    const eBikeCheckbox = document.getElementById('e_bike');
+    
+    if (checkbox.checked) {
+        if (checkbox.id === 'enduro') {
+            eBikeCheckbox.disabled = true; // e_bike seçimini devre dışı bırak
+        } else if (checkbox.id === 'e_bike') {
+            enduroCheckbox.disabled = true; // enduro seçimini devre dışı bırak
+        }
+    } else {
+        // Eğer seçim kaldırılırsa, diğer yarış tipi tekrar seçilebilir hale gelsin
+        enduroCheckbox.disabled = false;
+        eBikeCheckbox.disabled = false;
+    }
+}
     function showBikeSelection(checkbox) {
         const raceType = checkbox.value;
         const selectionDiv = document.getElementById('bike_selection_for_' + raceType);
@@ -521,11 +564,13 @@ function validateForm() {
     
     foreach ($active_races as $race): 
         $category = isset($categories[$race]) ? $categories[$race] : 'UNKNOWN'; // Kategoriyi al
+        $disabled = ($category == 'UNKNOWN') ? 'disabled' : ''; // Eğer kategori UNKNOWN ise disabled
     ?>
-   <div>
-            <input type="checkbox" name="races[]" value="<?php echo $race; ?>" id="<?php echo $race; ?>" onclick="showBikeSelection(this)">
-            <label for="<?php echo $race; ?>"><?php echo ucfirst($race); ?></label>
-            <span class="category-label">(Kategori: <?php echo htmlspecialchars($category); ?>)</span> <!-- Kategoriyi göster -->
+    <div>
+        <input type="checkbox" name="races[]" value="<?php echo $race; ?>" id="<?php echo $race; ?>" <?php echo $disabled; ?> onclick="showBikeSelection(this)">
+        <label for="<?php echo $race; ?>"><?php echo ucfirst($race); ?></label>
+        <span class="category-label">(Kategori: <?php echo htmlspecialchars($category); ?>)</span> <!-- Kategoriyi göster -->
+
             
                                 <div id="bike_selection_for_<?php echo $race; ?>" style="display: none;">
                                     <label for="bicycle_for_<?php echo $race; ?>">Bisiklet Seç:</label>
@@ -617,6 +662,7 @@ function validateForm() {
     // Dosya boyutlarını kontrol et
     checkFileSize('waiver', maxFileSize);
     checkFileSize('receipt', maxFileSize);
+
 </script>
 </body>
 </html>
