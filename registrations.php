@@ -620,7 +620,7 @@ function validateForm() {
 
             <div class="mb-3">
                 <label for="waiver_template" class="form-label">Feragatname Taslağını İndirmek için 
-                <a href="documents/feragatname_taslak.pdf" download>tıklayın</a>.
+                <a href="documents/feragatname_taslak/feragatname_taslak.pdf" download>tıklayın</a>.
                 </label>
             </div>
 
