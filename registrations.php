@@ -79,21 +79,22 @@ function determineCategoryName($conn, $age, $sex, $organization_id, $race_type) 
 
     if (!$categories) return 'UNKNOWN'; // Hatalı durum
 
-    // Cinsiyete göre uygun kategoriyi belirle
-    if ($sex == 'Kadın') {
-        // Kadın kategorisi için yaş kontrolü
-        if (strpos($categories['kadinlar'], '+') !== false) {
-            // Eğer kadinlar içinde '+' varsa, 17 yaş ve üzeri kabul edilir
-            return ($age >= 17) ? 'KADINLAR' : 'UNKNOWN';
-        } elseif (preg_match('/(\d+)-(\d+)/', $categories['kadinlar'], $matches)) {
-            // Eğer kadinlar içinde yaş aralığı varsa
-            $age_min = (int)$matches[1];
-            if ($age >= $age_min) {
-                return 'KADINLAR';
-            }
-        }
-        return 'UNKNOWN'; // Yaş sınırı karşılanmadı
+ // Cinsiyete göre uygun kategoriyi belirle
+ if ($sex == 'Kadın') {
+    // Kadın kategorisi için yaş kontrolü
+    if (strpos($categories['kadinlar'], '+') !== false) {
+        // '+' içeren bir değer varsa minimum yaşı al
+        preg_match('/(\d+)\+/', $categories['kadinlar'], $matches);
+        $age_min = (int)$matches[1];
+        return ($age >= $age_min) ? 'KADINLAR' : 'UNKNOWN';
+    } elseif (preg_match('/(\d+)-(\d+)/', $categories['kadinlar'], $matches)) {
+        // Yaş aralığı varsa
+        $age_min = (int)$matches[1];
+        $age_max = (int)$matches[2];
+        return ($age >= $age_min && $age <= $age_max) ? 'KADINLAR' : 'UNKNOWN';
     }
+}
+
     // Eğer yarış tipi e_bike ise, her zaman 17+ döndür
     if ($race_type === 'e_bike') {
         return '17+'; // Burada istendiği gibi her zaman 17+ kabul edilecektir
