@@ -569,8 +569,13 @@ function validateForm() {
     <div>
         <input type="checkbox" name="races[]" value="<?php echo $race; ?>" id="<?php echo $race; ?>" <?php echo $disabled; ?> onclick="showBikeSelection(this)">
         <label for="<?php echo $race; ?>"><?php echo ucfirst($race); ?></label>
-        <span class="category-label">(Kategori: <?php echo htmlspecialchars($category); ?>)</span> <!-- Kategoriyi göster -->
-
+        <span class="category-label">
+            <?php if ($category == 'UNKNOWN'): ?>
+                <strong style="color: red;">(Yaşınız Yarış Gerekliliklerini Karşılamıyor)</strong>
+            <?php else: ?>
+                (Kategori: <?php echo htmlspecialchars($category); ?>)
+            <?php endif; ?>
+        </span>
             
                                 <div id="bike_selection_for_<?php echo $race; ?>" style="display: none;">
                                     <label for="bicycle_for_<?php echo $race; ?>">Bisiklet Seç:</label>
