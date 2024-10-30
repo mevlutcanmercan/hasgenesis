@@ -6,48 +6,111 @@ body {
     background-attachment: fixed;
     background-size: cover;
     background-position: center;
-    font-family: 'Arial', sans-serif;
+    
 }
 
+/* Ana Container */
 .container {
-    max-width: 1200px;
+    
+    width: 80%;
     margin: auto;
+    background: linear-gradient(135deg, #2e2e2e, #3d3d3d); /* Geçişli gri arka plan */
     padding: 20px;
-    background: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3); /* Daha belirgin gölge */
 }
 
+/* Başlık */
 h1 {
-    color: #555;
-    font-size: 28px;
-    font-weight: bold;
+    text-align: center;
+    color: #ffffff; /* Beyaz başlık yazısı */
+    margin-bottom: 20px;
+    font-size: 2em;
+    letter-spacing: 0.5px;
 }
 
+/* Tablo Stili */
 .custom-table {
-    margin-top: 20px;
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #2b2b2b; /* Koyu gri tablo arka planı */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Hafif gölge */
 }
 
-.custom-table thead th {
-    background-color: #d3d3d3;
-    color: #333;
-    font-weight: bold;
-    text-align: center;
-}
-
-.custom-table tbody td {
-    background-color: #f0f0f0;
-    color: #555;
-    text-align: center;
-    vertical-align: middle;
+.custom-table, .custom-table th, .custom-table td {
+    border: 1px solid #444; /* Koyu gri kenarlık */
 }
 
 .custom-table th, .custom-table td {
-    padding: 12px;
+    font-weight: 500;
+    background-color: #505050;
+    color: white;
+    padding: 14px; /* Geniş padding */
+    text-align: center;
+    vertical-align: middle; /* Dikeyde ortalama */
+    font-size: large;
 }
 
+/* Alternatif Satır Rengi */
+.custom-table tbody tr:nth-child(even) {
+    background-color: #3a3a3a; /* Orta ton gri */
+    transition: background-color 0.3s ease;
+}
+
+/* Hover Efekti */
+.custom-table tbody tr:hover {
+    background-color: #606060; /* Hover efektinde daha belirgin gri */
+    transition: background-color 0.3s ease;
+}
+
+.custom-table thead th {
+    background: linear-gradient(135deg, #444, #555); /* Geçişli koyu gri başlık */
+    color: #f1f1f1; /* Açık yazı rengi */
+    text-transform: uppercase;
+    font-size: 1em;
+    letter-spacing: 0.1em;
+}
+
+/* Alternatif Satır Rengi */
+.custom-table tbody tr:nth-child(even) {
+    background-color: #3a3a3a; /* Orta ton gri */
+    transition: background-color 0.3s ease;
+}
+
+.custom-table tbody tr:hover {
+    background-color: #505050; /* Hover efektinde daha koyu gri */
+}
+
+/* Düğme Stilleri */
+button {
+    padding: 10px 15px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 1em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Silme Butonu */
+.btn-danger {
+    background: #f44336; /* Kırmızı tonlama (silme) */
+}
+
+.btn-danger:hover {
+    background-color: #d32f2f; /* Daha koyu kırmızı */
+    transform: scale(1.05); /* Hafif büyüme efekti */
+}
+
+/* Metin Renkleri ve Boyutu */
 .text-muted {
-    color: #7a7a7a !important;
+    color: #b0b0b0 !important;
+    font-size: 1.1em;
 }
 
 .text-center {

@@ -7,7 +7,8 @@ if (!$organization_id) {
     die("Organizasyon ID'si belirtilmedi.");
 }
 
-$query = "SELECT * FROM registrations WHERE organization_id = ?";
+// Sadece onaylı kullanıcıları getirmek için sorguyu düzenleyin
+$query = "SELECT * FROM registrations WHERE organization_id = ? AND approval_status = 1";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $organization_id);
 $stmt->execute();
@@ -18,7 +19,7 @@ $result = $stmt->get_result();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=1024">
     <title>Kayıtlı Kullanıcılar</title>
     <link rel="stylesheet" href="css/organization_registers.css"> <!-- CSS dosyasını bağla -->
 </head>
@@ -35,13 +36,14 @@ $result = $stmt->get_result();
                     <th>Soyisim</th>
                     <th>Yarışacağı Yarışlar ve Kategorisi</th>
                     <th>Kayıt Zamanı</th>
-                    <th>Onay Durumu</th>
                 </tr>
             </thead>
             <tbody>
                 <?php while ($row = $result->fetch_assoc()): ?>
                     <tr>
-                        <td><?= $row['Bib']; ?></td>
+                        <td>
+                            <?= $row['Bib'] == 0 ? "Henüz Atanmamıştır" : htmlspecialchars($row['Bib']); ?>
+                        </td>
                         <td><?= htmlspecialchars($row['first_name']); ?></td>
                         <td><?= htmlspecialchars($row['second_name']); ?></td>
                         <td>
@@ -52,18 +54,17 @@ $result = $stmt->get_result();
                             if ($row['end_kategori']) $categories[] = "Enduro: {$row['end_kategori']}";
                             if ($row['ulumega_kategori']) $categories[] = "Ulumega: {$row['ulumega_kategori']}";
                             if ($row['tour_kategori']) $categories[] = "Tour: {$row['tour_kategori']}";
-                            if ($row['ebike_kategori']) $categories[] = "E-Bike";
+                            if ($row['ebike_kategori']) $categories[] = "E-Bike: {$row['ebike_kategori']}";
                             echo implode("<br>", $categories);
                             ?>
                         </td>
                         <td><?= date("d-m-Y H:i", strtotime($row['created_time'])); ?></td>
-                        <td><?= $row['approval_status'] ? 'Onaylı' : 'Onay Bekliyor'; ?></td>
                     </tr>
                 <?php endwhile; ?>
             </tbody>
         </table>
     <?php else: ?>
-        <p class="text-center text-muted">Bu organizasyona kayıtlı kullanıcı bulunmamaktadır.</p>
+        <p class="text-center text-muted">Bu organizasyona onaylı kullanıcı bulunmamaktadır.</p>
     <?php endif; ?>
 
 </div>

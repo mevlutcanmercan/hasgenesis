@@ -89,18 +89,21 @@ tr {
 }
 
 th {
+    padding: 10px;
     text-align: center;
     vertical-align: middle; /* Dikey ortalama */
     border: solid 1px;
 }
 
 td {
+    padding: 10px;
     text-align: center;
     vertical-align: middle; /* Dikey ortalama */
     border: solid 1px !important;
 }
 
 table {
+    
     border: solid 1px !important;
     border-collapse: collapse; /* Hücre sınırlarını birleştir */
 }

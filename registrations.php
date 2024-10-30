@@ -623,6 +623,23 @@ function validateForm() {
 
             <div class="section-divider"></div> <!-- Bölüm Çizgisi -->
 
+            <div class="mb-3">
+                <label for="waiver_template" class="form-label">Feragatname Taslağını İndirmek için 
+                <a href="documents/feragatname_taslak.pdf" download>tıklayın</a>.
+                </label>
+            </div>
+
+            <div class="section-divider"></div> <!-- Bölüm Çizgisi -->
+
+            <div class="mb-3">
+                <label for="receipt_info" class="form-label">Dekont Açıklaması:</label>
+                <div id="receipt_info" class="alert alert-info">
+                    <p style="text-align: justify;">Lütfen havale açıklamasında yarışacak kişinin adını, soyadını, organizasyon adını ve yarışacağı yarış türünü (downhill, enduro vs.) belirtiniz.</p>
+                </div>
+            </div>
+
+            <div class="section-divider"></div> <!-- Bölüm Çizgisi -->
+
             <h4>IBAN Bilgileri</h4>
             <div class="iban-list">
                 <?php if (!empty($ibanList)): ?>
