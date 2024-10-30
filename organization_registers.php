@@ -1,5 +1,5 @@
 <?php
-include 'db/database.php'; // Veritabanı bağlantısı
+include 'dB/database.php'; // Veritabanı bağlantısı
 include 'bootstrap.php';
 
 $organization_id = $_GET['organization_id'] ?? null; // Organizasyon ID'sini URL'den al
