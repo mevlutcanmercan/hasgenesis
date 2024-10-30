@@ -138,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             } else {
                 priceInput.style.display = 'none'; // Fiyat giriş alanını gizle
                 ageInput.style.display = 'none'; // Yaş giriş alanını gizle
-                Array.from(ageInput.querySelectorAll('input')).forEach(input => input.value = ''); // Yaş kategorilerini sıfırla
+                
             }
         }
 
@@ -274,8 +274,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
                 <div>
                     <label>Kadınlar</label>
-                    <input type="text" name="downhill_age_women" value="17+" placeholder="Yaş Aralığı">
-                </div>
+                    <input type="text" name="downhill_age_women" value="17+" placeholder="Yaş Aralığı" readonly >
+                </div>  
             </div>
         </div>
 
@@ -306,7 +306,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
                 <div>
                     <label>Kadınlar</label>
-                    <input type="text" name="enduro_age_women" value="17+" placeholder="Yaş Aralığı">
+                    <input type="text" name="enduro_age_women" value="17+" placeholder="Yaş Aralığı" readonly>
                 </div>
             </div>
         </div>
@@ -338,7 +338,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
                 <div>
                     <label>Kadınlar</label>
-                    <input type="text" name="ulumega_age_women" value="17+" placeholder="Yaş Aralığı">
+                    <input type="text" name="ulumega_age_women" value="17+" placeholder="Yaş Aralığı" readonly>
                 </div>
             </div>
         </div>
@@ -370,7 +370,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
                 <div>
                     <label>Kadınlar</label>
-                    <input type="text" name="tour_age_women" value="17+" placeholder="Yaş Aralığı">
+                    <input type="text" name="tour_age_women" value="17+" placeholder="Yaş Aralığı" readonly>
                 </div>
             </div>
         </div>
@@ -402,7 +402,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
                 <div>
                     <label>Kadınlar</label>
-                    <input type="text" name="ebike_age_women" value="17+" placeholder="Yaş Aralığı">
+                    <input type="text" name="ebike_age_women" value="17+" placeholder="Yaş Aralığı" readonly>
                 </div>
             </div>
         </div>
