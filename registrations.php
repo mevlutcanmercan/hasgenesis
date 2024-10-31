@@ -97,7 +97,7 @@ function determineCategoryName($conn, $age, $sex, $organization_id, $race_type) 
 
     // Eğer yarış tipi e_bike ise, her zaman 17+ döndür
     if ($race_type === 'e_bike') {
-        return '17+'; // Burada istendiği gibi her zaman 17+ kabul edilecektir
+        return ($age >= 17) ? 'E_BIKE' : 'UNKNOWN'; // Yaş 17 ve üstündeyse 'E_BIKE', değilse 'UNKNOWN'
     }
 
     // Junior, Elite, Master_A ve Master_B kategorilerini kontrol et
@@ -469,7 +469,21 @@ function validateForm() {
         });
         return false; // Formun gönderilmesini engelle
     }
-
+    
+ // Bisiklet seçimi kontrolü
+ for (const checkbox of selectedRaces) {
+        const raceType = checkbox.value;
+        const bikeSelect = document.querySelector(`select[name="bicycle_for[${raceType}]"]`);
+        
+        if (bikeSelect && bikeSelect.value === "") {
+            Swal.fire({
+                icon: 'error',
+                title: 'Hata!',
+                text: `${raceType} yarışı için bisiklet seçmelisiniz.`,
+            });
+            return false; // Bisiklet seçimi eksik, form gönderilmesini engelle
+        }
+    }
     // Kategorileri güncelle
     const categoryHidden = document.getElementById("category_hidden");
     const selectedCategories = [];
