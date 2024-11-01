@@ -8,7 +8,10 @@ body {
     background-size: cover;
     background-position: center;
 }
-
+.small-muted {
+    font-size: 0.85em; /* Metni biraz küçült */
+    color: rgb(0, 0, 0); /* Soluk hale getir */
+}
 .container {
     
     margin: 20px auto;

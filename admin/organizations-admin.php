@@ -177,7 +177,7 @@ $pdf_file_path = '../documents/race_details/'; // PDF dosya yolu
             </div>
         </div>
         <button type="submit" class="btn btn-primary mt-3">Filtrele</button>
-        <a href="add-organizations.php" class="btn btn-secondary mt-3 ms-2">Organizasyon Ekle</a> <!-- Organizasyon Ekle butonu -->
+        <a href="add-organizations" class="btn btn-secondary mt-3 ms-2">Organizasyon Ekle</a> <!-- Organizasyon Ekle butonu -->
     </form>
     
     <div class="row">
@@ -208,14 +208,14 @@ $pdf_file_path = '../documents/race_details/'; // PDF dosya yolu
                 $categories_list = implode(', ', $categories); // Kategorileri birleştir
             
                 echo "<div class='col-lg-12 mb-4'>
-                            <div class='card organization-card'>
-                                <div class='card-content p-4'>
-                                    <h5 class='card-title'>{$row['name']}</h5>
-                                    <p class='card-text'><strong>Kategoriler:</strong> {$categories_list}</p>
-                                    <p class='card-text'><strong>Tür:</strong> {$row['type']}</p>
-                                    <p class='card-text'><strong>Kayıt Başlangıç Tarihi:</strong> {$row['register_start_date']}</p>
-                                    <p class='card-text'><strong>Son Kayıt Günü:</strong> {$row['last_register_day']}</p>
-                                    <p class='card-text'><strong>Detaylar:</strong> {$row['details']}</p>";
+                    <div class='card organization-card d-flex flex-row flex-wrap'> <!-- Flex-wrap ekledik -->
+                        <div class='card-content flex-grow-1 p-4'>
+                            <h5 class='card-title'>{$row['name']}</h5>
+                            <p class='card-text'><strong>Kategoriler:</strong> {$categories_list}</p>
+                            <p class='card-text'><strong>Tür:</strong> {$row['type']}</p> <!-- Tür bilgisi eklendi -->
+                            <p class='card-text'><strong>Kayıt Başlangıç Tarihi:</strong> {$row['register_start_date']}</p>
+                            <p class='card-text'><strong>Son Kayıt Günü:</strong> {$row['last_register_day']}</p>
+                            <p class='card-text details-container'><strong>Detaylar:</strong> " . nl2br(htmlspecialchars($row['details'])) . "</p>";
             
                 // Fiyat bilgilerini ekleyelim
                 if (strtotime($row['last_register_day']) >= time()) { 
@@ -247,9 +247,9 @@ $pdf_file_path = '../documents/race_details/'; // PDF dosya yolu
             
                 // Düzenle ve Sil butonları
                 echo "<div class='mt-3'>
-                        <a href='edit-organizations.php?id={$row['id']}' class='btn btn-secondary'>Düzenle</a>
+                        <a href='edit-organizations?id={$row['id']}' class='btn btn-secondary'>Düzenle</a>
                         <a href='javascript:void(0);' class='btn btn-danger' onclick='confirmDelete({$row['id']});'>Sil</a>
-                        <a href='registrationsmanagement.php?organization_id=$organization_id' class='btn btn-secondary' style='text-decoration: none;'>Kayıtları Görüntüle</a>
+                        <a href='registrationsmanagement?organization_id=$organization_id' class='btn btn-secondary' style='text-decoration: none;'>Kayıtları Görüntüle</a>
                       </div>";
             
                 echo "  </div>

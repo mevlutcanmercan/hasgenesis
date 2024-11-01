@@ -162,7 +162,7 @@ $org_result = $conn->query($org_query);
                             <p class='card-text'><strong>Tür:</strong> {$row['type']}</p> <!-- Tür bilgisi eklendi -->
                             <p class='card-text'><strong>Kayıt Başlangıç Tarihi:</strong> {$row['register_start_date']}</p>
                             <p class='card-text'><strong>Son Kayıt Günü:</strong> {$row['last_register_day']}</p>
-                            <p class='card-text'><strong>Detaylar:</strong> {$row['details']}</p>";
+                            <p class='card-text details-container'><strong>Detaylar:</strong> " . nl2br(htmlspecialchars($row['details'])) . "</p>";
 
             // Fiyatları yazdır
             if (strtotime($row['last_register_day']) >= time()) { // Kayıt süresi geçmemişse fiyatları göster

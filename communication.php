@@ -114,7 +114,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="row mb-3 fade-in">
                     <div class="col">
                         <label for="telefon" class="form-label">Telefon*</label>
-                        <input type="text" class="form-control" id="telefon" name="telefon" value="<?= $is_logged_in ? $user_data['telefon'] : '' ?>" <?= $is_logged_in ? 'readonly style="opacity:0.5;"' : 'required' ?>>
+                        <input type="number" class="form-control" id="telefon" name="telefon" value="<?= $is_logged_in ? $user_data['telefon'] : '' ?>" <?= $is_logged_in ? 'readonly style="opacity:0.5;"' : 'required' ?>>
                     </div>
                     <div class="col">
                         <label for="eposta" class="form-label">E-posta*</label>

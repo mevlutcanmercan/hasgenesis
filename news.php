@@ -43,6 +43,19 @@ if ($totalNews > 0) {
 } else {
     $newsResult = false; // Haber yoksa
 }
+
+
+
+function makeClickableLinks($text) {
+    // http(s)://, www., veya direkt domain formatındaki bağlantıları bulur
+    $text = preg_replace(
+        '/\b((https?:\/\/|www\.)[^\s]+|([a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}))(?!\S)/',
+        '<a href="http$2://$1" target="_blank">$1</a>',
+        $text
+    );
+    return $text;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -72,8 +85,8 @@ if ($totalNews > 0) {
                                 <?php echo strftime("%d.%m.%Y", strtotime($news['created_at'])); ?>
                             </p>
                             <p class="project-summary">
-                                <?php echo htmlspecialchars(substr($news['summary'], 0, 175)) . (strlen($news['summary']) > 175 ? '...' : ''); ?>
-                            </p>
+                            <?php echo makeClickableLinks(htmlspecialchars(substr($news['summary'], 0, 175))) . (strlen($news['summary']) > 175 ? '...' : ''); ?>
+                                </p>
                         </div>
                         <div class="project-footer">
                             <a href="news_details.php?id=<?php echo $news['id']; ?>" class="btn btn-primary">Detaya Git</a>

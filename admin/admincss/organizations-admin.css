@@ -24,8 +24,36 @@ label{
     width: 1500px;
 }
 
+.details-container {
+    background-color: #f9f9f900; /* Açık gri arka plan */
+    border-radius: 5px; /* Kenarları yuvarlatma */
+    padding: 10px; /* İç kenar boşluğu */
+    padding-left: 0px;
+    max-height: 200px; /* Maksimum yükseklik, ihtiyaca göre ayarlayın */
+    overflow-y: auto; /* Dikey kaydırma çubuğu için otomatik taşma */
+}
+
+/* Kaydırma çubuğu stilleri */
+.details-container::-webkit-scrollbar {
+    width: 8px; /* Kaydırma çubuğu genişliği */
+}
+
+.details-container::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Kaydırma çubuğu arka planı */
+    border-radius: 10px; /* Arka planın kenarlarını yuvarlat */
+}
+
+.details-container::-webkit-scrollbar-thumb {
+    background: #888; /* Kaydırma çubuğu "kolu" */
+    border-radius: 10px; /* Kaydırma çubuğu "kolu" kenarlarını yuvarlat */
+}
+
+.details-container::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Kaydırma çubuğu "kolu" hover rengi */
+}
+
 .organization-card:hover {
-    transform: translateY(-5px); /* Hover efekt */
+    
 }
 
 .card-content {

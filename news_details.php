@@ -33,6 +33,27 @@ if (!$id) {
     echo "<p>Haber bulunamadı.</p>";
     exit;
 }
+
+function makeClickableLinks($text) {
+    // URL kalıplarını bul ve <a> etiketiyle sar
+    $text = preg_replace(
+        [
+            '~(http(s)?://[^\s<]+)~i',                        // http veya https ile başlayan linkler
+            '~\b(www\.[^\s<]+?\.(com|net|org|edu|gov|mil|biz|info|io|me|co|com\.tr|net\.tr|org\.tr)\b)~i'  // www ile başlayıp, geçerli TLD ile biten linkler
+        ],
+        [
+            '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>',  // http/https linkleri
+            '<a href="http://$1" target="_blank" rel="noopener noreferrer">$1</a>'  // www ile başlayan linkler (http ekleniyor)
+        ],
+        $text
+    );
+
+    // Satır sonlarını koru
+    return nl2br($text);
+}
+
+// Linkleri tıklanabilir hale getir
+$formattedText = makeClickableLinks(htmlspecialchars($text));
 ?>
 
 <!DOCTYPE html>
@@ -82,8 +103,8 @@ if (!$id) {
 
     <!-- Haber Başlığı ve İçeriği -->
     <h2 class="mt-4"><?php echo htmlspecialchars($name); ?></h2>
-    <p class="mt-2 news-text"><?php echo nl2br(htmlspecialchars($text)); ?></p>
-    </div>
+    <p class="mt-2 news-text"><?php echo $formattedText; ?></p>
+</div>
 
 <footer class="footer mt-auto py-2">
     <div class="footer-container text-center">

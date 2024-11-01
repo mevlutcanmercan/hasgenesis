@@ -611,11 +611,16 @@ function validateForm() {
 
                     <h4>Belgeler Yükle</h4>
                     <div class="mb-3">
-                        <label for="waiver" class="form-label">Feragatname Belgesi Yükle</label>
+                        <label for="waiver" class="form-label">Islak İmzalı Feragatname Belgesi Yükle</label>
                         <input type="file" class="form-control" name="waiver" id="waiver" accept=".pdf, .jpg, .png" required>
                     </div>
                     <div class="mb-3">
-                        <label for="receipt" class="form-label">Dekont Yükle</label>
+                    <label for="receipt" class="form-label">
+                        Dekont Yükle 
+                        <span class="small-muted">
+                            (Ücretsiz etkinliklerde dekont yerinede feragatname yüklemeniz yeterlidir...)
+                        </span>
+                    </label>
                         <input type="file" class="form-control" name="receipt" id="receipt" accept=".pdf, .jpg, .png" required>
                     </div>
                     <div class="section-divider"></div> <!-- Bölüm Çizgisi -->
