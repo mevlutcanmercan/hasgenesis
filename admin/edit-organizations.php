@@ -23,6 +23,7 @@ if ($organization_id > 0) {
 
 // Form gönderildiğinde (update işlemi)
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Formdan gelen veriler
     $organization_name = $_POST['organization_name'];
     $adress = $_POST['adress']; // 'address' yerine 'adress' kullanıldı
     $details = $_POST['details'];
@@ -31,19 +32,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $organization_type = $_POST['organization_type'];
 
     // Süspansiyon bilgileri
-    $min_front_suspension_travel = !empty($_POST['min_front_suspension_travel']) ? $_POST['min_front_suspension_travel'] : NULL;
-    $min_rear_suspension_travel = !empty($_POST['min_rear_suspension_travel']) ? $_POST['min_rear_suspension_travel'] : NULL;
+    $min_front_suspension_travel = !empty($_POST['min_front_suspension_travel']) ? $_POST['min_front_suspension_travel'] : '0';
+    $min_rear_suspension_travel = !empty($_POST['min_rear_suspension_travel']) ? $_POST['min_rear_suspension_travel'] : '0';
 
     // Yarış kategorileri ve fiyatları
-    $downhill_price = isset($_POST['downhill']) ? ($_POST['downhill_price'] !== '' ? $_POST['downhill_price'] : NULL) : NULL;
-    $enduro_price = isset($_POST['enduro']) ? ($_POST['enduro_price'] !== '' ? $_POST['enduro_price'] : NULL) : NULL;
-    $ulumega_price = isset($_POST['ulumega']) ? ($_POST['ulumega_price'] !== '' ? $_POST['ulumega_price'] : NULL) : NULL;
-    $tour_price = isset($_POST['tour']) ? ($_POST['tour_price'] !== '' ? $_POST['tour_price'] : NULL) : NULL;
-    $ebike_price = isset($_POST['e_bike']) && $_POST['e_bike'] === 'on' ? ($_POST['e_bike_price'] !== '' ? $_POST['e_bike_price'] : NULL) : NULL; // E-Bike fiyatı
+    $downhill_price = isset($_POST['downhill']) ? ($_POST['downhill_price'] !== '' ? $_POST['downhill_price'] : '0') : '0';
+    $enduro_price = isset($_POST['enduro']) ? ($_POST['enduro_price'] !== '' ? $_POST['enduro_price'] : '0') : '0';
+    $ulumega_price = isset($_POST['ulumega']) ? ($_POST['ulumega_price'] !== '' ? $_POST['ulumega_price'] : '0') : '0';
+    $tour_price = isset($_POST['tour']) ? ($_POST['tour_price'] !== '' ? $_POST['tour_price'] : '0') : '0';
+    $ebike_price = isset($_POST['e_bike']) ? ($_POST['e_bike_price'] !== '' ? $_POST['e_bike_price'] : '0') : '0'; // E-Bike fiyatı
 
     // Yarış Numarası (Bib) ve Özel Yarış Numarası fiyatları
-    $bib_price = !empty($_POST['bib_price']) ? $_POST['bib_price'] : NULL; 
-    $special_bib_price = !empty($_POST['special_bib_price']) ? $_POST['special_bib_price'] : NULL;
+    $bib_price = !empty($_POST['bib_price']) ? $_POST['bib_price'] : '0';
+    $special_bib_price = !empty($_POST['special_bib_price']) ? $_POST['special_bib_price'] : '0';
 
     // PDF dosyası yükleme
     $race_details_pdf = $_FILES['race_details_pdf'];
@@ -142,65 +143,66 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <label for="organization_type">Organizasyon Türü</label>
             <select id="organization_type" name="organization_type" required>
                 <option value="" disabled>Seçiniz...</option>
-                <option value="yarış" <?= $organization['type'] == 'yarış' ? 'selected' : '' ?>>Yarış</option>
-                <option value="keşif" <?= $organization['type'] == 'keşif' ? 'selected' : '' ?>>Keşif</option>
-                <option value="tur" <?= $organization['type'] == 'tur' ? 'selected' : '' ?>>Tur</option>
-                <option value="maraton" <?= $organization['type'] == 'maraton' ? 'selected' : '' ?>>Maraton</option>
+                <option value="Yarış" <?= $organization['type'] == 'Yarış' ? 'selected' : '' ?>>Yarış</option>
+                <option value="Keşif" <?= $organization['type'] == 'Keşif' ? 'selected' : '' ?>>Keşif</option>
+                <option value="Diğer" <?= $organization['type'] == 'Diğer' ? 'selected' : '' ?>>Diğer</option>
             </select>
         </div>
 
-        <!-- Organizasyon Kategorileri ve Fiyatları -->
+        <!-- Süspansiyon Bilgileri -->
         <div class="form-group">
-            <label>Yarış Kategorileri ve Fiyatları:</label>
-            <div>
-                <input type="checkbox" id="downhill" name="downhill" onclick="togglePriceInput('downhill', 'downhill_price_input')" <?= $prices['downhill_price'] ? 'checked' : '' ?> >
-                <label for="downhill">Downhill</label>
-                <div id="downhill_price_input" style="display: <?= $prices['downhill_price'] ? 'block' : 'none' ?>">
-                    <input type="text" name="downhill_price" placeholder="Fiyat" value="<?= $prices['downhill_price'] ?>">
-                </div>
-            </div>
-            <div>
-                <input type="checkbox" id="enduro" name="enduro" onclick="togglePriceInput('enduro', 'enduro_price_input')" <?= $prices['enduro_price'] ? 'checked' : '' ?> >
-                <label for="enduro">Enduro</label>
-                <div id="enduro_price_input" style="display: <?= $prices['enduro_price'] ? 'block' : 'none' ?>">
-                    <input type="text" name="enduro_price" placeholder="Fiyat" value="<?= $prices['enduro_price'] ?>">
-                </div>
-            </div>
-            <div>
-                <input type="checkbox" id="ulumega" name="ulumega" onclick="togglePriceInput('ulumega', 'ulumega_price_input')" <?= $prices['ulumega_price'] ? 'checked' : '' ?> >
-                <label for="ulumega">Ulumega</label>
-                <div id="ulumega_price_input" style="display: <?= $prices['ulumega_price'] ? 'block' : 'none' ?>">
-                    <input type="text" name="ulumega_price" placeholder="Fiyat" value="<?= $prices['ulumega_price'] ?>">
-                </div>
-            </div>
-            <div>
-                <input type="checkbox" id="tour" name="tour" onclick="togglePriceInput('tour', 'tour_price_input')" <?= $prices['tour_price'] ? 'checked' : '' ?> >
-                <label for="tour">Tur</label>
-                <div id="tour_price_input" style="display: <?= $prices['tour_price'] ? 'block' : 'none' ?>">
-                    <input type="text" name="tour_price" placeholder="Fiyat" value="<?= $prices['tour_price'] ?>">
-                </div>
-            </div>
-            <div>
-                <input type="checkbox" id="ebike" name="ebike" onclick="togglePriceInput('e_bike', 'ebike_price_input')" <?= $prices['e_bike_price'] ? 'checked' : '' ?> >
-                <label for="ebike">E-Bike</label>
-                <div id="e_bike_price_input" style="display: <?= $prices['e_bike_price'] ? 'block' : 'none' ?>">
-                    <input type="text" name="e_bike_price" placeholder="Fiyat" value="<?= $prices['e_bike_price'] ?>">
-                </div>
-            </div>
+            <label for="min_front_suspension_travel">Minimum Ön Süspansiyon Mesafesi (mm) - Kural yok ise "0" giriniz !</label>
+            <input type="number" id="min_front_suspension_travel" name="min_front_suspension_travel" value="<?= $organization['min_front_suspension_travel'] ?>">
+        </div>
+        <div class="form-group">
+            <label for="min_rear_suspension_travel">Minimum Arka Süspansiyon Mesafesi (mm) - Kural yok ise "0" giriniz !</label>
+            <input type="number" id="min_rear_suspension_travel" name="min_rear_suspension_travel" value="<?= $organization['min_rear_suspension_travel'] ?>">
         </div>
 
-        <!-- Yarış Detayları PDF -->
+        <!-- Yarış Kategorileri -->
+        <h3>Yarış Kategorileri</h3>
+        <?php
+        // Yarış kategorilerini al
+        $categories = [
+            'downhill' => 'Downhill',
+            'enduro' => 'Enduro',
+            'ulumega' => 'Ulumega',
+            'tour' => 'Tour',
+            'e_bike' => 'E-Bike'
+        ];
+
+        foreach ($categories as $key => $value) {
+            // Kategorinin durumunu kontrol et
+            $is_enabled = $organization[$key]; // Organizasyondaki bu yarış kategorisinin aktif olup olmadığını al
+            $price_key = "{$key}_price"; // Fiyata erişim için anahtar
+            if ($is_enabled) {
+                echo '<div class="form-group">';
+                echo '<label>';
+                echo "<input type='checkbox' id='$key' name='$key' value='1' onchange=\"togglePriceInput('$key', '{$key}_price')\" " . ($organization[$key] ? 'checked' : '') . ">";
+                echo " $value";
+                echo '</label>';
+                echo '<input type="number" id="' . $key . '_price" name="' . $key . '_price" placeholder="Fiyat" value="' . ($prices[$price_key] ?? '') . '" style="display: ' . ($organization[$key] ? 'block' : 'none') . ';">';
+                echo '</div>';
+            }
+        }
+        ?>
+
+        <!-- PDF Yükle -->
         <div class="form-group">
-            <label for="race_details_pdf">Yarış Detayları PDF</label>
+            <label for="race_details_pdf">Yarış Detayları PDF (isteğe bağlı)</label>
             <input type="file" id="race_details_pdf" name="race_details_pdf" accept="application/pdf">
-            <?php if (!empty($organization['race_details_pdf'])): ?>
-                <p>
-                    Mevcut PDF: 
-                    <a href="<?= htmlspecialchars($organization['race_details_pdf'], ENT_QUOTES, 'UTF-8') ?>" target="_blank">
-                        <?= basename($organization['race_details_pdf']) ?>
-                    </a>
-                </p>
-            <?php endif; ?>
+            <small>Mevcut PDF: <?= htmlspecialchars($organization['race_details_pdf'], ENT_QUOTES, 'UTF-8') ?></small>
+        </div>
+
+        <!-- Fiyatlar -->
+        <h3>Yarış Numarası Fiyatları</h3>
+        <div class="form-group">
+            <label for="bib_price">Yarış Numarası (Bib) Fiyatı:</label>
+            <input type="number" id="bib_price" name="bib_price" value="<?= $prices['bib_price'] ?? '' ?>">
+        </div>
+        <div class="form-group">
+            <label for="special_bib_price">Özel Yarış Numarası Fiyatı:</label>
+            <input type="number" id="special_bib_price" name="special_bib_price" value="<?= $prices['special_bib_price'] ?? '' ?>">
         </div>
 
         <div class="form-group">

@@ -22,16 +22,16 @@ h2 {
 
 /* Her form grubu için ayarlar */
 .form-group {
-    margin-bottom: 25px;
+    margin-bottom: 20px; /* Aralığı azalt */
 }
 
 /* Etiketler */
 label {
     display: block;
     font-weight: 600;
-    margin-bottom: 8px;
+    margin-bottom: 5px; /* Alt boşluğu azalt */
     color: #555;
-    font-size: 15px;
+    font-size: 14px; /* Font boyutunu azalt */
 }
 
 /* Input ve textarea stilleri */
@@ -41,12 +41,17 @@ input[type="date"],
 textarea,
 select {
     width: 100%;
-    padding: 12px;
+    padding: 10px; /* İç boşluğu azalt */
     border: 1px solid #ddd;
     border-radius: 5px;
     box-sizing: border-box;
-    font-size: 14px;
+    font-size: 13px; /* Font boyutunu azalt */
     transition: all 0.3s ease;
+}
+
+#e_bike_price_input{
+    margin-top: 12px;
+    padding-left: 25px;
 }
 
 /* Giriş elemanları focus durumu */
@@ -60,9 +65,10 @@ select:focus {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
+
 /* Textarea alanı */
 textarea {
-    height: 120px;
+    height: 100px; /* Textarea yüksekliğini azalt */
     resize: vertical; /* Kullanıcı boyutunu ayarlayabilir */
 }
 
@@ -93,8 +99,8 @@ input[type="checkbox"] {
     background-color: #f0f0f0;
     margin-right: 10px;
     font: inherit;
-    width: 18px;
-    height: 18px;
+    width: 16px; /* Checkbox boyutunu azalt */
+    height: 16px; /* Checkbox boyutunu azalt */
     border: 1px solid #aaa;
     border-radius: 4px;
     display: inline-block;
@@ -113,31 +119,30 @@ input[type="checkbox"]:checked:before {
     position: absolute;
     top: 0;
     left: 3px;
-    font-size: 11px;
+    font-size: 10px; /* Check işaretinin boyutunu azalt */
     color: white;
 }
 
 /* Başlıklar */
 h3 {
     color: #444;
-    margin-top: 40px;
-    font-size: 20px;
+    margin-top: 30px; /* Üstten boşluğu azalt */
+    font-size: 16px; /* Font boyutunu azalt */
     font-weight: 600;
     border-bottom: 1px solid #ddd;
-    padding-bottom: 8px;
-    text-transform: uppercase;
+    padding-bottom: 5px; /* Alt boşluğu azalt */
     letter-spacing: 0.5px;
 }
 
 /* Gönderme düğmesi */
 button[type="submit"] {
     width: 100%;
-    padding: 14px;
+    padding: 12px; /* Düğme iç boşluklarını azalt */
     background-color: #777;
     color: white;
     border: none;
     border-radius: 5px;
-    font-size: 16px;
+    font-size: 14px; /* Düğme font boyutunu azalt */
     font-weight: 600;
     text-transform: uppercase;
     cursor: pointer;
@@ -148,15 +153,47 @@ button[type="submit"]:hover {
     background-color: #555;
 }
 
-/* Responsiveness - Küçük ekranlar için */
+/* Mobil ayarlar */
 @media (max-width: 768px) {
+    /* Form genel ayarları */
     .form-container {
-        width: 95%;
-        padding: 20px;
+        padding: 20px; /* Dış boşluğu azalt */
     }
 
+    /* Form başlığı */
+    h2 {
+        font-size: 22px; /* Başlık boyutunu azalt */
+    }
+
+    /* Her form grubu için ayarlar */
+    .form-group {
+        margin-bottom: 20px; /* Aralığı azalt */
+    }
+
+    /* Input ve textarea stilleri */
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    textarea,
+    select {
+        padding: 10px; /* Giriş alanlarının iç boşluklarını azalt */
+        font-size: 13px; /* Font boyutunu azalt */
+    }
+
+    /* Textarea alanı */
+    textarea {
+        height: 100px; /* Textarea yüksekliğini azalt */
+    }
+
+    /* Checkbox stilleri */
+    input[type="checkbox"] {
+        width: 16px; /* Checkbox boyutunu azalt */
+        height: 16px; /* Checkbox boyutunu azalt */
+    }
+
+    /* Gönderme düğmesi */
     button[type="submit"] {
-        padding: 12px;
-        font-size: 14px;
+        padding: 12px; /* Düğme iç boşluklarını azalt */
+        font-size: 14px; /* Düğme font boyutunu azalt */
     }
 }

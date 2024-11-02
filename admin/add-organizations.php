@@ -12,19 +12,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $organization_type = $_POST['organization_type'];
 
     // Süspansiyon bilgileri
-    $min_front_suspension_travel = !empty($_POST['min_front_suspension_travel']) ? $_POST['min_front_suspension_travel'] : NULL;
-    $min_rear_suspension_travel = !empty($_POST['min_rear_suspension_travel']) ? $_POST['min_rear_suspension_travel'] : NULL;
+    $min_front_suspension_travel = !empty($_POST['min_front_suspension_travel']) ? $_POST['min_front_suspension_travel'] : '0';
+    $min_rear_suspension_travel = !empty($_POST['min_rear_suspension_travel']) ? $_POST['min_rear_suspension_travel'] : '0';
 
     // Yarış kategorileri ve fiyatları
-    $downhill_price = isset($_POST['downhill']) ? ($_POST['downhill_price'] !== '' ? $_POST['downhill_price'] : NULL) : NULL;
-    $enduro_price = isset($_POST['enduro']) ? ($_POST['enduro_price'] !== '' ? $_POST['enduro_price'] : NULL) : NULL;
-    $ulumega_price = isset($_POST['ulumega']) ? ($_POST['ulumega_price'] !== '' ? $_POST['ulumega_price'] : NULL) : NULL;
-    $tour_price = isset($_POST['tour']) ? ($_POST['tour_price'] !== '' ? $_POST['tour_price'] : NULL) : NULL;
-    $ebike_price = isset($_POST['e_bike']) ? ($_POST['e_bike_price'] !== '' ? $_POST['e_bike_price'] : NULL) : NULL; // E-Bike fiyatı
+    $downhill_price = isset($_POST['downhill']) ? ($_POST['downhill_price'] !== '' ? $_POST['downhill_price'] : '0') : '0';
+    $enduro_price = isset($_POST['enduro']) ? ($_POST['enduro_price'] !== '' ? $_POST['enduro_price'] : '0') : '0';
+    $ulumega_price = isset($_POST['ulumega']) ? ($_POST['ulumega_price'] !== '' ? $_POST['ulumega_price'] : '0') : '0';
+    $tour_price = isset($_POST['tour']) ? ($_POST['tour_price'] !== '' ? $_POST['tour_price'] : '0') : '0';
+    $ebike_price = isset($_POST['e_bike']) ? ($_POST['e_bike_price'] !== '' ? $_POST['e_bike_price'] : '0') : '0'; // E-Bike fiyatı
 
     // Yarış Numarası (Bib) ve Özel Yarış Numarası fiyatları
-    $bib_price = !empty($_POST['bib_price']) ? $_POST['bib_price'] : NULL; 
-    $special_bib_price = !empty($_POST['special_bib_price']) ? $_POST['special_bib_price'] : NULL; 
+    $bib_price = !empty($_POST['bib_price']) ? $_POST['bib_price'] : '0';
+    $special_bib_price = !empty($_POST['special_bib_price']) ? $_POST['special_bib_price'] : '0';
+
 
     // PDF dosyası yükleme
     $race_details_pdf = $_FILES['race_details_pdf'];
@@ -186,6 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 });
             }
         }
+
     </script>
 </head>
 <body>
@@ -223,13 +225,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <label for="organization_type">Organizasyon Türü</label>
             <select id="organization_type" name="organization_type" required>
                 <option value="" disabled selected>Seçiniz...</option>
-                <option value="yarış">Yarış</option>
-                <option value="keşif">Keşif</option>
-                <option value="tur">Tur</option>
-                <option value="maraton">Maraton</option>
-                <option value="dağcılık">Dağcılık</option>
-                <option value="bisiklet">Bisiklet</option>
-                <option value="kayak">Kayak</option>
+                <option value="Yarış">Yarış</option>
+                <option value="Keşif">Keşif</option>
+                <option value="Tur">Tur</option>
+                <option value="Ücretsiz Etkinlik">Ücretsiz Etkinlik</option>
+                <option value="Parkur Düzenleme">Parkur Düzenleme</option>
+                <option value="Etkinlik">Etkinlik</option>
             </select>
         </div>
 
@@ -245,7 +246,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
 
         <!-- Fiyat Kategorileri -->
-        <h3>Fiyat Kategorileri</h3>
+        <h3>Yarış Türleri Fiyatlarının ve Kategorilerinin Belirlenmesi (Ücretsiz Etkinliklerde de en az bir tür seçilmelidir !):</h3>
+        
 
         <!-- Downhill -->
         <div class="form-group">
@@ -386,19 +388,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div id="ebike_age_input" style="display:none;" class="age-inputs">
                 <div>
                     <label>Junior</label>
-                    <input type="text" name="ebike_age_junior" value="17+" placeholder="Yaş Aralığı">
+                    <input type="text" name="ebike_age_junior" value="100+" placeholder="Yaş Aralığı">
                 </div>
                 <div>
                     <label>Elite</label>
-                    <input type="text" name="ebike_age_elite" value="17+" placeholder="Yaş Aralığı">
+                    <input type="text" name="ebike_age_elite" value="17-35" placeholder="Yaş Aralığı">
                 </div>
                 <div>
                     <label>Master A</label>
-                    <input type="text" name="ebike_age_master_a" value="17+" placeholder="Yaş Aralığı">
+                    <input type="text" name="ebike_age_master_a" value="36-60" placeholder="Yaş Aralığı">
                 </div>
                 <div>
                     <label>Master B</label>
-                    <input type="text" name="ebike_age_master_b" value="17+" placeholder="Yaş Aralığı">
+                    <input type="text" name="ebike_age_master_b" value="100+" placeholder="Yaş Aralığı">
                 </div>
                 <div>
                     <label>Kadınlar</label>

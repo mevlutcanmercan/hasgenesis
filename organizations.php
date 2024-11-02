@@ -164,24 +164,25 @@ $org_result = $conn->query($org_query);
                             <p class='card-text'><strong>Son Kayıt Günü:</strong> {$row['last_register_day']}</p>
                             <p class='card-text details-container'><strong>Detaylar:</strong> " . nl2br(htmlspecialchars($row['details'])) . "</p>";
 
-            // Fiyatları yazdır
+           // Fiyatları yazdır
             if (strtotime($row['last_register_day']) >= time()) { // Kayıt süresi geçmemişse fiyatları göster
-                if (!is_null($row['downhill_price'])) {
-                    echo "<p class='card-text'><strong>Downhill Kategorisi Yarış Ücreti:</strong> {$row['downhill_price']} TL</p>";
-                }
-                if (!is_null($row['enduro_price'])) {
-                    echo "<p class='card-text'><strong>Enduro Kategorisi Yarış Ücreti:</strong> {$row['enduro_price']} TL</p>";
-                }
-                if (!is_null($row['tour_price'])) {
-                    echo "<p class='card-text'><strong>Tour Fiyatı:</strong> {$row['tour_price']} TL</p>";
-                }
-                if (!is_null($row['ulumega_price'])) {
-                    echo "<p class='card-text'><strong>Ulumega Fiyatı:</strong> {$row['ulumega_price']} TL</p>";
-                }
-                if (!is_null($row['e_bike_price'])) { // E-Bike fiyatı kontrolü
-                    echo "<p class='card-text'><strong>E-Bike Fiyatı:</strong> {$row['e_bike_price']} TL</p>"; // E-Bike fiyatını yazdır
-                }
+            // Sadece aktif olan kategorilere göre fiyatları yazdır
+            if ($row['downhill'] == 1 && !is_null($row['downhill_price'])) {
+                echo "<p class='card-text'><strong>Downhill Kategorisi Ücreti:</strong> {$row['downhill_price']} TL</p>";
             }
+            if ($row['enduro'] == 1 && !is_null($row['enduro_price'])) {
+                echo "<p class='card-text'><strong>Enduro Kategorisi Ücreti:</strong> {$row['enduro_price']} TL</p>";
+            }
+            if ($row['tour'] == 1 && !is_null($row['tour_price'])) {
+                echo "<p class='card-text'><strong>Tour Kategorisi Fiyatı:</strong> {$row['tour_price']} TL</p>";
+            }
+            if ($row['ulumega'] == 1 && !is_null($row['ulumega_price'])) {
+                echo "<p class='card-text'><strong>Ulumega Kategorisi Fiyatı:</strong> {$row['ulumega_price']} TL</p>";
+            }
+            if ($row['e_bike'] == 1 && !is_null($row['e_bike_price'])) { // E-Bike fiyatı kontrolü
+                echo "<p class='card-text'><strong>E-Bike Kategorisi Fiyatı:</strong> {$row['e_bike_price']} TL</p>"; // E-Bike fiyatını yazdır
+            }
+        }
 
             // PDF dosyası var mı kontrol et
             if (!empty($row['race_details_pdf'])) {

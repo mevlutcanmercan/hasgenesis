@@ -1,4 +1,6 @@
 <?php
+ob_start(); // Çıkış tamponlamayı etkinleştir
+
 include 'sidebar.php';
 include '../db/database.php'; // Veritabanı bağlantısını dahil et
 include '../bootstrap.php';
@@ -11,49 +13,49 @@ $registration_time = isset($_POST['registration_time']) ? $_POST['registration_t
 $category = isset($_POST['category']) ? $_POST['category'] : (isset($_GET['category']) ? $_GET['category'] : null);
 
 // Sayfalama ayarları
-$items_per_page = 5; // Her sayfada gösterilecek kart sayısı
-$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Geçerli sayfa numarası
-$offset = ($current_page - 1) * $items_per_page; // Offset hesaplama
+$items_per_page = 5;
+$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($current_page - 1) * $items_per_page;
 
 // Silme işlemi
 if (isset($_GET['delete_id'])) {
     $organization_id = intval($_GET['delete_id']);
 
-    // İlk olarak organizasyonun fiyatlarını sil
+    // Organizasyonun fiyatlarını ve kendisini sil
     $delete_prices_sql = "DELETE FROM prices WHERE organization_id = ?";
     $stmt = $conn->prepare($delete_prices_sql);
     $stmt->bind_param("i", $organization_id);
     $stmt->execute();
 
-    // Ardından organizasyonu sil
     $delete_organization_sql = "DELETE FROM organizations WHERE id = ?";
     $stmt = $conn->prepare($delete_organization_sql);
     $stmt->bind_param("i", $organization_id);
     $stmt->execute();
 
-    // Başarılı bir şekilde silindiyse
     if ($stmt->affected_rows > 0) {
-        // Başarılı silme durumu
         $_SESSION['success_message'] = 'Organizasyon başarıyla silindi.';
     } else {
         $_SESSION['error_message'] = 'Silme işlemi sırasında bir hata oluştu.';
     }
 
     $stmt->close();
+
+    // URL'deki delete_id parametresini temizlemek için sayfayı yeniden yönlendir
+    header("Location: " . strtok($_SERVER["REQUEST_URI"], '?'));
+    exit();
 }
 
-// Sayfa yüklendiğinde oturum değişkenini sıfırla
+// Oturum mesajlarını ayarla
 $success_message = isset($_SESSION['success_message']) ? $_SESSION['success_message'] : '';
 $error_message = isset($_SESSION['error_message']) ? $_SESSION['error_message'] : '';
-unset($_SESSION['success_message'], $_SESSION['error_message']); // Değişkenleri sıfırla
+unset($_SESSION['success_message'], $_SESSION['error_message']); // Mesajları temizle
 
-// Sorgu başlangıcı
+// SQL sorgusu başlangıcı
 $sql = "
     SELECT o.*, p.downhill_price, p.enduro_price, p.tour_price, p.ulumega_price, p.e_bike_price, o.race_details_pdf, o.type
     FROM organizations o 
     LEFT JOIN prices p ON o.id = p.organization_id";
 
-// Filtreleme ekle
 $filters = [];
 
 // Kayıt durumunu kontrol et
@@ -75,8 +77,8 @@ if ($category) {
         $filters[] = "o.tour = 1";
     } elseif ($category === 'ulumega') {
         $filters[] = "o.ulumega = 1";
-    } elseif ($category === 'e_bike') { // E-Bike kategorisi kontrolü
-        $filters[] = "o.e_bike = 1"; // E-Bike kategorisi için filtre
+    } elseif ($category === 'e_bike') {
+        $filters[] = "o.e_bike = 1";
     }
 }
 
@@ -89,15 +91,17 @@ if (count($filters) > 0) {
 $total_sql = str_replace("o.*, p.downhill_price, p.enduro_price, p.tour_price, p.ulumega_price, p.e_bike_price, o.race_details_pdf, o.type", "COUNT(*) as total", $sql);
 $total_result = $conn->query($total_sql);
 $total_row = $total_result->fetch_assoc();
-$total_items = $total_row['total']; // Toplam kayıt sayısı
-$total_pages = ceil($total_items / $items_per_page); // Toplam sayfa sayısı
+$total_items = $total_row['total'];
+$total_pages = ceil($total_items / $items_per_page);
 
 // Sorguya limit ekle
 $sql .= " LIMIT $offset, $items_per_page";
 $result = $conn->query($sql);
 
-$pdf_file_path = '../documents/race_details/'; // PDF dosya yolu
+$pdf_file_path = '../documents/race_details/';
+ob_end_flush(); // Çıkış tamponlamayı sonlandır ve tampondaki içeriği gönder
 ?>
+
 
 <!DOCTYPE html>
 <html lang="tr">
@@ -216,25 +220,26 @@ $pdf_file_path = '../documents/race_details/'; // PDF dosya yolu
                             <p class='card-text'><strong>Kayıt Başlangıç Tarihi:</strong> {$row['register_start_date']}</p>
                             <p class='card-text'><strong>Son Kayıt Günü:</strong> {$row['last_register_day']}</p>
                             <p class='card-text details-container'><strong>Detaylar:</strong> " . nl2br(htmlspecialchars($row['details'])) . "</p>";
-            
-                // Fiyat bilgilerini ekleyelim
-                if (strtotime($row['last_register_day']) >= time()) { 
-                    if (!is_null($row['downhill_price'])) {
-                        echo "<p class='card-text'><strong>Downhill Kategorisi Yarış Ücreti:</strong> {$row['downhill_price']} TL</p>";
-                    }
-                    if (!is_null($row['enduro_price'])) {
-                        echo "<p class='card-text'><strong>Enduro Kategorisi Yarış Ücreti:</strong> {$row['enduro_price']} TL</p>";
-                    }
-                    if (!is_null($row['tour_price'])) {
-                        echo "<p class='card-text'><strong>Tour Fiyatı:</strong> {$row['tour_price']} TL</p>";
-                    }
-                    if (!is_null($row['ulumega_price'])) {
-                        echo "<p class='card-text'><strong>Ulumega Fiyatı:</strong> {$row['ulumega_price']} TL</p>";
-                    }
-                    if (!is_null($row['e_bike_price'])) {
-                        echo "<p class='card-text'><strong>E-Bike Kategorisi Yarış Ücreti:</strong> {$row['e_bike_price']} TL</p>";
-                    }
-                }
+
+                            //fiyatları yazdıralım
+                            if (strtotime($row['last_register_day']) >= time()) { // Kayıt süresi geçmemişse fiyatları göster
+                                // Sadece aktif olan kategorilere göre fiyatları yazdır
+                                if ($row['downhill'] == 1 && !is_null($row['downhill_price'])) {
+                                    echo "<p class='card-text'><strong>Downhill Kategorisi Ücreti:</strong> {$row['downhill_price']} TL</p>";
+                                }
+                                if ($row['enduro'] == 1 && !is_null($row['enduro_price'])) {
+                                    echo "<p class='card-text'><strong>Enduro Kategorisi Ücreti:</strong> {$row['enduro_price']} TL</p>";
+                                }
+                                if ($row['tour'] == 1 && !is_null($row['tour_price'])) {
+                                    echo "<p class='card-text'><strong>Tour Kategorisi Fiyatı:</strong> {$row['tour_price']} TL</p>";
+                                }
+                                if ($row['ulumega'] == 1 && !is_null($row['ulumega_price'])) {
+                                    echo "<p class='card-text'><strong>Ulumega Kategorisi Fiyatı:</strong> {$row['ulumega_price']} TL</p>";
+                                }
+                                if ($row['e_bike'] == 1 && !is_null($row['e_bike_price'])) { // E-Bike fiyatı kontrolü
+                                    echo "<p class='card-text'><strong>E-Bike Kategorisi Fiyatı:</strong> {$row['e_bike_price']} TL</p>"; // E-Bike fiyatını yazdır
+                                }
+                            }
             
                 // PDF bağlantısını ekleyelim
                 echo "<p class='card-text'><strong>Organizasyon detaylarını ve kurallarını indirmek için tıklayınız:</strong> ";

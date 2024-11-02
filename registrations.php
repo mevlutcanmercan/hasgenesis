@@ -96,9 +96,9 @@ function determineCategoryName($conn, $age, $sex, $organization_id, $race_type) 
 }
 
     // Eğer yarış tipi e_bike ise, her zaman 17+ döndür
-    if ($race_type === 'e_bike') {
-        return ($age >= 17) ? 'E_BIKE' : 'UNKNOWN'; // Yaş 17 ve üstündeyse 'E_BIKE', değilse 'UNKNOWN'
-    }
+    //  if ($race_type === 'e_bike') {
+    //      return ($age >= 17) ? 'E_BIKE' : 'Yaş Yetersiz'; // Yaş 17 ve üstündeyse 'E_BIKE', değilse 'UNKNOWN'  //Bu alan e bike'ı kategorilere bölebilmek amaçlı kapatıldı.
+    //  }
 
     // Junior, Elite, Master_A ve Master_B kategorilerini kontrol et
     // Junior Kategorisi
