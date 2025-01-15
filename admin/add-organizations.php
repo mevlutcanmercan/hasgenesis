@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $downhill_price = isset($_POST['downhill']) ? ($_POST['downhill_price'] !== '' ? $_POST['downhill_price'] : '0') : '0';
     $enduro_price = isset($_POST['enduro']) ? ($_POST['enduro_price'] !== '' ? $_POST['enduro_price'] : '0') : '0';
     $ulumega_price = isset($_POST['ulumega']) ? ($_POST['ulumega_price'] !== '' ? $_POST['ulumega_price'] : '0') : '0';
-    $tour_price = isset($_POST['tour']) ? ($_POST['tour_price'] !== '' ? $_POST['tour_price'] : '0') : '0';
+    $hardtail_price = isset($_POST['hardtail']) ? ($_POST['hardtail_price'] !== '' ? $_POST['hardtail_price'] : '0') : '0';
     $ebike_price = isset($_POST['e_bike']) ? ($_POST['e_bike_price'] !== '' ? $_POST['e_bike_price'] : '0') : '0'; // E-Bike fiyatı
 
     // Yarış Numarası (Bib) ve Özel Yarış Numarası fiyatları
@@ -53,31 +53,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Organizasyonu veritabanına ekle
-    $stmt = $conn->prepare("INSERT INTO organizations (name, adress, details, register_start_date, last_register_day, type, downhill, enduro, tour, ulumega, e_bike, min_front_suspension_travel, min_rear_suspension_travel, race_details_pdf) 
+    $stmt = $conn->prepare("INSERT INTO organizations (name, adress, details, register_start_date, last_register_day, type, downhill, enduro, hardtail, ulumega, e_bike, min_front_suspension_travel, min_rear_suspension_travel, race_details_pdf) 
                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
     // Evet/Hayır değerlerini ayarlama
     $downhill = isset($_POST['downhill']) ? 1 : 0;
     $enduro = isset($_POST['enduro']) ? 1 : 0;
-    $tour = isset($_POST['tour']) ? 1 : 0;
+    $hardtail = isset($_POST['hardtail']) ? 1 : 0;
     $ulumega = isset($_POST['ulumega']) ? 1 : 0;
     $e_bike = isset($_POST['e_bike']) ? 1 : 0;
 
     // Sorguyu çalıştır
-    if ($stmt->execute([$organization_name, $address, $details, $register_start_date, $last_register_day, $organization_type, $downhill, $enduro, $tour, $ulumega, $e_bike, $min_front_suspension_travel, $min_rear_suspension_travel, $pdf_file_name])) {
+    if ($stmt->execute([$organization_name, $address, $details, $register_start_date, $last_register_day, $organization_type, $downhill, $enduro, $hardtail, $ulumega, $e_bike, $min_front_suspension_travel, $min_rear_suspension_travel, $pdf_file_name])) {
         $organization_id = $conn->insert_id;
 
         // Fiyatları ekle
-        $price_stmt = $conn->prepare("INSERT INTO prices (organization_id, downhill_price, enduro_price, ulumega_price, tour_price, e_bike_price, bib_price, special_bib_price) 
+        $price_stmt = $conn->prepare("INSERT INTO prices (organization_id, downhill_price, enduro_price, ulumega_price, hardtail_price, e_bike_price, bib_price, special_bib_price) 
                                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
-        if ($price_stmt->execute([$organization_id, $downhill_price, $enduro_price, $ulumega_price, $tour_price, $ebike_price, $bib_price, $special_bib_price])) {
+        if ($price_stmt->execute([$organization_id, $downhill_price, $enduro_price, $ulumega_price, $hardtail_price, $ebike_price, $bib_price, $special_bib_price])) {
             // Yaş kategorilerini ekle
             $age_categories = [
                 'downhill' => ['junior' => $_POST['downhill_age_junior'], 'elite' => $_POST['downhill_age_elite'], 'master_a' => $_POST['downhill_age_master_a'], 'master_b' => $_POST['downhill_age_master_b'], 'women' => $_POST['downhill_age_women']],
                 'enduro' => ['junior' => $_POST['enduro_age_junior'], 'elite' => $_POST['enduro_age_elite'], 'master_a' => $_POST['enduro_age_master_a'], 'master_b' => $_POST['enduro_age_master_b'], 'women' => $_POST['enduro_age_women']],
                 'ulumega' => ['junior' => $_POST['ulumega_age_junior'], 'elite' => $_POST['ulumega_age_elite'], 'master_a' => $_POST['ulumega_age_master_a'], 'master_b' => $_POST['ulumega_age_master_b'], 'women' => $_POST['ulumega_age_women']],
-                'tour' => ['junior' => $_POST['tour_age_junior'], 'elite' => $_POST['tour_age_elite'], 'master_a' => $_POST['tour_age_master_a'], 'master_b' => $_POST['tour_age_master_b'], 'women' => $_POST['tour_age_women']],
+                'hardtail' => ['junior' => $_POST['hardtail_age_junior'], 'elite' => $_POST['hardtail_age_elite'], 'master_a' => $_POST['hardtail_age_master_a'], 'master_b' => $_POST['hardtail_age_master_b'], 'women' => $_POST['hardtail_age_women']],
                 'e_bike' => ['junior' => $_POST['ebike_age_junior'], 'elite' => $_POST['ebike_age_elite'], 'master_a' => $_POST['ebike_age_master_a'], 'master_b' => $_POST['ebike_age_master_b'], 'women' => $_POST['ebike_age_women']]
             ];
 
@@ -148,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 {name: 'downhill', inputs: ['downhill_age_junior', 'downhill_age_elite', 'downhill_age_master_a', 'downhill_age_master_b', 'downhill_age_women']},
                 {name: 'enduro', inputs: ['enduro_age_junior', 'enduro_age_elite', 'enduro_age_master_a', 'enduro_age_master_b', 'enduro_age_women']},
                 {name: 'ulumega', inputs: ['ulumega_age_junior', 'ulumega_age_elite', 'ulumega_age_master_a', 'ulumega_age_master_b', 'ulumega_age_women']},
-                {name: 'tour', inputs: ['tour_age_junior', 'tour_age_elite', 'tour_age_master_a', 'tour_age_master_b', 'tour_age_women']},
+                {name: 'hardtail', inputs: ['hardtail_age_junior', 'hardtail_age_elite', 'hardtail_age_master_a', 'hardtail_age_master_b', 'hardtail_age_women']},
                 {name: 'e_bike', inputs: ['ebike_age_junior', 'ebike_age_elite', 'ebike_age_master_a', 'ebike_age_master_b', 'ebike_age_women']},
             ];
 
@@ -347,32 +347,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         <!-- Tur -->
         <div class="form-group">
-            <input type="checkbox" id="tour" name="tour" onclick="togglePriceAndAgeInput('tour', 'tour_price_input', 'tour_age_input')">
-            <label for="tour">Tur</label>
-            <div id="tour_price_input" style="display:none;">
-                <label for="tour_price">Tur Fiyatı</label>
-                <input type="number" id="tour_price" name="tour_price" step="0.01">
+            <input type="checkbox" id="hardtail" name="hardtail" onclick="togglePriceAndAgeInput('hardtail', 'hardtail_price_input', 'hardtail_age_input')">
+            <label for="hardtail">Hardtail</label>
+            <div id="hardtail_price_input" style="display:none;">
+                <label for="hardtail_price">Hardtail Fiyatı</label>
+                <input type="number" id="hardtail_price" name="hardtail_price" step="0.01">
             </div>
-            <div id="tour_age_input" style="display:none;" class="age-inputs">
+            <div id="hardtail_age_input" style="display:none;" class="age-inputs">
                 <div>
                     <label>Junior</label>
-                    <input type="text" name="tour_age_junior" value="14-21" placeholder="Yaş Aralığı">
+                    <input type="text" name="hardtail_age_junior" value="14-21" placeholder="Yaş Aralığı">
                 </div>
                 <div>
                     <label>Elite</label>
-                    <input type="text" name="tour_age_elite" value="22-35" placeholder="Yaş Aralığı">
+                    <input type="text" name="hardtail_age_elite" value="22-35" placeholder="Yaş Aralığı">
                 </div>
                 <div>
                     <label>Master A</label>
-                    <input type="text" name="tour_age_master_a" value="36-45" placeholder="Yaş Aralığı">
+                    <input type="text" name="hardtail_age_master_a" value="36-45" placeholder="Yaş Aralığı">
                 </div>
                 <div>
                     <label>Master B</label>
-                    <input type="text" name="tour_age_master_b" value="46+" placeholder="Yaş Aralığı">
+                    <input type="text" name="hardtail_age_master_b" value="46+" placeholder="Yaş Aralığı">
                 </div>
                 <div>
                     <label>Kadınlar</label>
-                    <input type="text" name="tour_age_women" value="17+" placeholder="Yaş Aralığı" readonly>
+                    <input type="text" name="hardtail_age_women" value="17+" placeholder="Yaş Aralığı" readonly>
                 </div>
             </div>
         </div>

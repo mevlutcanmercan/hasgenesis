@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $downhill_price = isset($_POST['downhill']) ? ($_POST['downhill_price'] !== '' ? $_POST['downhill_price'] : '0') : '0';
     $enduro_price = isset($_POST['enduro']) ? ($_POST['enduro_price'] !== '' ? $_POST['enduro_price'] : '0') : '0';
     $ulumega_price = isset($_POST['ulumega']) ? ($_POST['ulumega_price'] !== '' ? $_POST['ulumega_price'] : '0') : '0';
-    $tour_price = isset($_POST['tour']) ? ($_POST['tour_price'] !== '' ? $_POST['tour_price'] : '0') : '0';
+    $hardtail_price = isset($_POST['hardtail']) ? ($_POST['hardtail_price'] !== '' ? $_POST['hardtail_price'] : '0') : '0';
     $ebike_price = isset($_POST['e_bike']) ? ($_POST['e_bike_price'] !== '' ? $_POST['e_bike_price'] : '0') : '0'; // E-Bike fiyatı
 
     // Yarış Numarası (Bib) ve Özel Yarış Numarası fiyatları
@@ -60,18 +60,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Organizasyonu güncelle
-    $stmt = $conn->prepare("UPDATE organizations SET name=?, adress=?, details=?, register_start_date=?, last_register_day=?, type=?, downhill=?, enduro=?, tour=?, ulumega=?, e_bike=?, min_front_suspension_travel=?, min_rear_suspension_travel=?, race_details_pdf=? WHERE id=?");
+    $stmt = $conn->prepare("UPDATE organizations SET name=?, adress=?, details=?, register_start_date=?, last_register_day=?, type=?, downhill=?, enduro=?, hardtail=?, ulumega=?, e_bike=?, min_front_suspension_travel=?, min_rear_suspension_travel=?, race_details_pdf=? WHERE id=?");
 
     $downhill = isset($_POST['downhill']) ? 1 : 0;
     $enduro = isset($_POST['enduro']) ? 1 : 0;
-    $tour = isset($_POST['tour']) ? 1 : 0;
+    $hardtail = isset($_POST['hardtail']) ? 1 : 0;
     $ulumega = isset($_POST['ulumega']) ? 1 : 0;
     $ebike = isset($_POST['e_bike']) ? 1 : 0; // E-Bike durumu
 
-    if ($stmt->execute([$organization_name, $adress, $details, $register_start_date, $last_register_day, $organization_type, $downhill, $enduro, $tour, $ulumega, $ebike, $min_front_suspension_travel, $min_rear_suspension_travel, $upload_file, $organization_id])) {
+    if ($stmt->execute([$organization_name, $adress, $details, $register_start_date, $last_register_day, $organization_type, $downhill, $enduro, $hardtail, $ulumega, $ebike, $min_front_suspension_travel, $min_rear_suspension_travel, $upload_file, $organization_id])) {
         // Fiyatları güncelle
-        $price_stmt = $conn->prepare("UPDATE prices SET downhill_price=?, enduro_price=?, ulumega_price=?, tour_price=?, e_bike_price=?, bib_price=?, special_bib_price=? WHERE organization_id=?"); 
-        if ($price_stmt->execute([$downhill_price, $enduro_price, $ulumega_price, $tour_price, $ebike_price, $bib_price, $special_bib_price, $organization_id])) {
+        $price_stmt = $conn->prepare("UPDATE prices SET downhill_price=?, enduro_price=?, ulumega_price=?, hardtail_price=?, e_bike_price=?, bib_price=?, special_bib_price=? WHERE organization_id=?"); 
+        if ($price_stmt->execute([$downhill_price, $enduro_price, $ulumega_price, $hardtail_price, $ebike_price, $bib_price, $special_bib_price, $organization_id])) {
             echo '<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>';
             echo '<script>
                     swal("Başarılı!", "Organizasyon başarıyla güncellendi!", "success")
@@ -167,7 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'downhill' => 'Downhill',
             'enduro' => 'Enduro',
             'ulumega' => 'Ulumega',
-            'tour' => 'Tour',
+            'hardtail' => 'Hardtail',
             'e_bike' => 'E-Bike'
         ];
 

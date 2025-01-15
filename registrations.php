@@ -189,7 +189,7 @@ if (isset($_GET['organization_id'])) {
     $prices_row = getPrices($conn, $organization_id);
     
     // Aktif olan yarışları almak için sorgu
-    $sql = "SELECT downhill, enduro, tour, ulumega, e_bike FROM organizations WHERE id = ?";
+    $sql = "SELECT downhill, enduro, hardtail, ulumega, e_bike FROM organizations WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $organization_id);
     $stmt->execute();
@@ -199,7 +199,7 @@ if (isset($_GET['organization_id'])) {
     $active_races = [];
     if ($row['downhill'] == 1) $active_races[] = 'downhill';
     if ($row['enduro'] == 1) $active_races[] = 'enduro';
-    if ($row['tour'] == 1) $active_races[] = 'tour';
+    if ($row['hardtail'] == 1) $active_races[] = 'hardtail';
     if ($row['ulumega'] == 1) $active_races[] = 'ulumega';
     if ($row['e_bike'] == 1) $active_races[] = 'e_bike';
     
@@ -267,7 +267,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $stmt = $conn->prepare("INSERT INTO registrations 
         (Bib, first_name, second_name, organization_id, race_type, feragatname, price_document, registration_price, created_time, approval_status, 
-        dh_kategori, end_kategori, ulumega_kategori, tour_kategori, ebike_kategori) 
+        dh_kategori, end_kategori, ulumega_kategori, hardtail_kategori, ebike_kategori) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?, ?, ?)");
     
     $race_type_string = implode(',', $selected_races); // Seçilen yarış türlerini al
@@ -277,7 +277,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 $downhill_kategori = in_array('downhill', $selected_races) ? $categories['downhill'] : '';
 $enduro_kategori = in_array('enduro', $selected_races) ? $categories['enduro'] : '';
 $ulumega_kategori = in_array('ulumega', $selected_races) ? $categories['ulumega'] : '';
-$tour_kategori = in_array('tour', $selected_races) ? $categories['tour'] : '';
+$hardtail_kategori = in_array('hardtail', $selected_races) ? $categories['hardtail'] : '';
 $ebike_kategori = in_array('e_bike', $selected_races) ? $categories['e_bike'] : '';
 
     // bind_param ile her bir değişkeni uygun türleriyle birlikte ekleyelim
@@ -295,7 +295,7 @@ $ebike_kategori = in_array('e_bike', $selected_races) ? $categories['e_bike'] : 
         $downhill_kategori,
         $enduro_kategori,
         $ulumega_kategori,
-        $tour_kategori,
+        $hardtail_kategori,
         $ebike_kategori
     );
         if ($stmt->execute()) {

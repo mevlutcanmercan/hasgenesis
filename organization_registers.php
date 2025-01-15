@@ -53,7 +53,7 @@ $result = $stmt->get_result();
                             if ($row['dh_kategori']) $categories[] = "Downhill: {$row['dh_kategori']}";
                             if ($row['end_kategori']) $categories[] = "Enduro: {$row['end_kategori']}";
                             if ($row['ulumega_kategori']) $categories[] = "Ulumega: {$row['ulumega_kategori']}";
-                            if ($row['tour_kategori']) $categories[] = "Tour: {$row['tour_kategori']}";
+                            if ($row['hardtail_kategori']) $categories[] = "hardtail: {$row['hardtail_kategori']}";
                             if ($row['ebike_kategori']) $categories[] = "E-Bike: {$row['ebike_kategori']}";
                             echo implode("<br>", $categories);
                             ?>

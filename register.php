@@ -146,7 +146,7 @@
             <div class="input-box">
                 <input type="password" id="password" name="password_users" placeholder="Şifre" required>
                 <i class='bx bxs-lock-alt' style="color:black"></i>
-                <small id="password-error" style="color:red; display:none;">Şifre en az 7 karakter olmalı ve harf+sayı içermelidir.</small>
+                <small id="password-error" style="color:red; display:none; margin: 0px 10px;">Şifre, en az 7 karakter ve harf-rakam içermeli.</small>
             </div>
             <div class="input-box">
                 <input type="text" name="name_users" id="name_users" placeholder="Adınız" required>

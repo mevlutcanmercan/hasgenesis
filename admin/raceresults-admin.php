@@ -95,22 +95,22 @@ if (isset($_FILES['file']) && $organization_id && $race_type) {
 }
 
 // Organizasyonları getir
-$org_query = "SELECT id, name, downhill, enduro, tour, ulumega, e_bike FROM organizations";
+$org_query = "SELECT id, name, downhill, enduro, hardtail, ulumega, e_bike FROM organizations";
 $org_result = $conn->query($org_query);
 
 // Yarış türlerini getir
 $race_types = [];
 if ($organization_id) {
-    $organization_query = "SELECT downhill, enduro, tour, ulumega, e_bike FROM organizations WHERE id = ?";
+    $organization_query = "SELECT downhill, enduro, hardtail, ulumega, e_bike FROM organizations WHERE id = ?";
     $stmt = $conn->prepare($organization_query);
     $stmt->bind_param("i", $organization_id);
     $stmt->execute();
-    $stmt->bind_result($downhill, $enduro, $tour, $ulumega, $e_bike);
+    $stmt->bind_result($downhill, $enduro, $hardtail, $ulumega, $e_bike);
     $stmt->fetch();
 
     if ($downhill) $race_types[] = 'downhill';
     if ($enduro) $race_types[] = 'enduro';
-    if ($tour) $race_types[] = 'tour';
+    if ($hardtail) $race_types[] = 'hardtail';
     if ($ulumega) $race_types[] = 'ulumega';
     if ($e_bike) $race_types[] = 'E-bike'; // 'E-bike' için büyük 'E' kullan
 }
@@ -186,7 +186,7 @@ if ($organization_id) {
                             <input type="hidden" name="organization_id" value="<?= $org['id']; ?>">
                             <button type="submit" name="race_type" value="downhill" class="btn btn-info" <?= !$org['downhill'] ? '' : ''; ?>>Downhill</button>
                             <button type="submit" name="race_type" value="enduro" class="btn btn-info" <?= !$org['enduro'] ? '' : ''; ?>>Enduro</button>
-                            <button type="submit" name="race_type" value="tour" class="btn btn-info" <?= !$org['tour'] ? '' : ''; ?>>Tour</button>
+                            <button type="submit" name="race_type" value="hardtail" class="btn btn-info" <?= !$org['hardtail'] ? '' : ''; ?>>hardtail</button>
                             <button type="submit" name="race_type" value="ulumega" class="btn btn-info" <?= !$org['ulumega'] ? '' : ''; ?>>Ulumega</button>
                             <button type="submit" name="race_type" value="E-bike" class="btn btn-info" <?= !$org['e_bike'] ? '' : ''; ?>>E-Bike</button>
                         </form>

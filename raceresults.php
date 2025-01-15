@@ -75,7 +75,7 @@ $result = $stmt->get_result();
                 <select name="race_type_filter" id="race_type_filter" class="form-select">
                     <option value="Downhill" <?php echo ($race_type_filter == 'Downhill') ? 'selected' : ''; ?>>Downhill</option>
                     <option value="Enduro" <?php echo ($race_type_filter == 'Enduro') ? 'selected' : ''; ?>>Enduro</option>
-                    <option value="Tour" <?php echo ($race_type_filter == 'Tour') ? 'selected' : ''; ?>>Tour</option>
+                    <option value="hardtail" <?php echo ($race_type_filter == 'hardtail') ? 'selected' : ''; ?>>Hardtail</option>
                     <option value="Ulumega" <?php echo ($race_type_filter == 'Ulumega') ? 'selected' : ''; ?>>Ulumega</option>
                     <option value="E-Bike" <?php echo ($race_type_filter == 'E-Bike') ? 'selected' : ''; ?>>E-Bike</option>
                     <!-- Diğer yarış türleri eklenebilir -->

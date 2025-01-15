@@ -52,7 +52,7 @@ unset($_SESSION['success_message'], $_SESSION['error_message']); // Mesajları t
 
 // SQL sorgusu başlangıcı
 $sql = "
-    SELECT o.*, p.downhill_price, p.enduro_price, p.tour_price, p.ulumega_price, p.e_bike_price, o.race_details_pdf, o.type
+    SELECT o.*, p.downhill_price, p.enduro_price, p.hardtail_price, p.ulumega_price, p.e_bike_price, o.race_details_pdf, o.type
     FROM organizations o 
     LEFT JOIN prices p ON o.id = p.organization_id";
 
@@ -73,8 +73,8 @@ if ($category) {
         $filters[] = "o.downhill = 1";
     } elseif ($category === 'enduro') {
         $filters[] = "o.enduro = 1";
-    } elseif ($category === 'tour') {
-        $filters[] = "o.tour = 1";
+    } elseif ($category === 'hardtail') {
+        $filters[] = "o.hardtail = 1";
     } elseif ($category === 'ulumega') {
         $filters[] = "o.ulumega = 1";
     } elseif ($category === 'e_bike') {
@@ -88,7 +88,7 @@ if (count($filters) > 0) {
 }
 
 // Toplam kayıt sayısını hesapla
-$total_sql = str_replace("o.*, p.downhill_price, p.enduro_price, p.tour_price, p.ulumega_price, p.e_bike_price, o.race_details_pdf, o.type", "COUNT(*) as total", $sql);
+$total_sql = str_replace("o.*, p.downhill_price, p.enduro_price, p.hardtail_price, p.ulumega_price, p.e_bike_price, o.race_details_pdf, o.type", "COUNT(*) as total", $sql);
 $total_result = $conn->query($total_sql);
 $total_row = $total_result->fetch_assoc();
 $total_items = $total_row['total'];
@@ -174,7 +174,7 @@ ob_end_flush(); // Çıkış tamponlamayı sonlandır ve tampondaki içeriği g�
                     <option value="">Tüm Kategoriler</option>
                     <option value="downhill" <?= $category === 'downhill' ? 'selected' : '' ?>>Downhill</option>
                     <option value="enduro" <?= $category === 'enduro' ? 'selected' : '' ?>>Enduro</option>
-                    <option value="tour" <?= $category === 'tour' ? 'selected' : '' ?>>Tour</option>
+                    <option value="hardtail" <?= $category === 'hardtail' ? 'selected' : '' ?>>hardtail</option>
                     <option value="ulumega" <?= $category === 'ulumega' ? 'selected' : '' ?>>Ulumega</option>
                     <option value="e-bike" <?= $category === 'e-bike' ? 'selected' : '' ?>>E-Bike</option> <!-- E-Bike seçeneği -->
                 </select>
@@ -200,8 +200,8 @@ ob_end_flush(); // Çıkış tamponlamayı sonlandır ve tampondaki içeriği g�
                 if ($row['enduro']) {
                     $categories[] = 'Enduro';
                 }
-                if ($row['tour']) {
-                    $categories[] = 'Tour';
+                if ($row['hardtail']) {
+                    $categories[] = 'hardtail';
                 }
                 if ($row['ulumega']) {
                     $categories[] = 'Ulumega';
@@ -230,8 +230,8 @@ ob_end_flush(); // Çıkış tamponlamayı sonlandır ve tampondaki içeriği g�
                                 if ($row['enduro'] == 1 && !is_null($row['enduro_price'])) {
                                     echo "<p class='card-text'><strong>Enduro Kategorisi Ücreti:</strong> {$row['enduro_price']} TL</p>";
                                 }
-                                if ($row['tour'] == 1 && !is_null($row['tour_price'])) {
-                                    echo "<p class='card-text'><strong>Tour Kategorisi Fiyatı:</strong> {$row['tour_price']} TL</p>";
+                                if ($row['hardtail'] == 1 && !is_null($row['hardtail_price'])) {
+                                    echo "<p class='card-text'><strong>hardtail Kategorisi Fiyatı:</strong> {$row['hardtail_price']} TL</p>";
                                 }
                                 if ($row['ulumega'] == 1 && !is_null($row['ulumega_price'])) {
                                     echo "<p class='card-text'><strong>Ulumega Kategorisi Fiyatı:</strong> {$row['ulumega_price']} TL</p>";

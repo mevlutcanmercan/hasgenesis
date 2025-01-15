@@ -54,7 +54,7 @@
 
     // Yarış tiplerini almak için fonksiyon
     function getOpenRaceTypes($conn, $organization_id) {
-        $sql = "SELECT downhill, enduro, tour, ulumega, e_bike FROM organizations WHERE id = ?";
+        $sql = "SELECT downhill, enduro, hardtail, ulumega, e_bike FROM organizations WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $organization_id);
         $stmt->execute();
@@ -158,8 +158,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
                 case 'ulumega':
                     $category_key = $data['ulumega_kategori']; // 'ulumega' için kategori al
                     break;
-                case 'tour':
-                    $category_key = $data['tour_kategori']; // 'tour' için kategori al
+                case 'hardtail':
+                    $category_key = $data['hardtail_kategori']; // 'hardtail' için kategori al
                     break;
                 case 'e_bike':
                     $category_key = $data['ebike_kategori']; // 'e_bike' için kategori al
@@ -358,7 +358,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
                 <option value="">Tüm Yarış Tipleri</option>
                 <?php if ($raceTypes['downhill']) echo '<option value="downhill"' . ($race_type_filter === 'downhill' ? ' selected' : '') . '>Downhill</option>'; ?>
                 <?php if ($raceTypes['enduro']) echo '<option value="enduro"' . ($race_type_filter === 'enduro' ? ' selected' : '') . '>Enduro</option>'; ?>
-                <?php if ($raceTypes['tour']) echo '<option value="tour"' . ($race_type_filter === 'tour' ? ' selected' : '') . '>Tour</option>'; ?>
+                <?php if ($raceTypes['hardtail']) echo '<option value="hardtail"' . ($race_type_filter === 'hardtail' ? ' selected' : '') . '>hardtail</option>'; ?>
                 <?php if ($raceTypes['ulumega']) echo '<option value="ulumega"' . ($race_type_filter === 'ulumega' ? ' selected' : '') . '>Ulumega</option>'; ?>
                 <?php if ($raceTypes['e_bike']) echo '<option value="e_bike"' . ($race_type_filter === 'e_bike' ? ' selected' : '') . '>E-Bike</option>'; ?>
             </select>
@@ -382,7 +382,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
                     <th>DH Kategori</th>
                     <th>End Kategori</th>
                     <th>Ulumega Kategori</th>
-                    <th>Tour Kategori</th>
+                    <th>hardtail Kategori</th>
                     <th>Ebike Kategori</th>
                     <th>Yarış Tipi</th>
                     <th>Fiyat</th>
@@ -410,7 +410,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
             echo "<td>" . ($row['dh_kategori'] ? $row['dh_kategori'] : '-') . "</td>";
             echo "<td>" . ($row['end_kategori'] ? $row['end_kategori'] : '-') . "</td>";
             echo "<td>" . ($row['ulumega_kategori'] ? $row['ulumega_kategori'] : '-') . "</td>";
-            echo "<td>" . ($row['tour_kategori'] ? $row['tour_kategori'] : '-') . "</td>";
+            echo "<td>" . ($row['hardtail_kategori'] ? $row['hardtail_kategori'] : '-') . "</td>";
             echo "<td>" . ($row['ebike_kategori'] ? $row['ebike_kategori'] : '-') . "</td>";
             
             echo "<td>" . $row['race_type'] . "</td>";
