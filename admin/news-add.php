@@ -82,56 +82,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // PHPMailer yapılandırması
                 $mail = new PHPMailer(true);
-                $mail->isSMTP();
-                $mail->Host = 'mail.hasgenesis.com';
-                $mail->SMTPAuth = true;
-                $mail->Username = 'info@hasgenesis.com';
-                $mail->Password = 'QVVXaWsZ*b9S';
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-                $mail->Port = 465;
+                try {
+                    $mail->isSMTP();
+                    $mail->Host = 'smtp.gmail.com';
+                    $mail->SMTPAuth = true;
+                    $mail->Username = 'hasgenesisduyuru@gmail.com';
+                    $mail->Password = 'ufjkdlrfjbbcadwh'; // Google App Password kullanmalısınız!
+                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                    $mail->Port = 587;
 
-                // Gönderen bilgisi
-                $mail->setFrom('info@hasgenesis.com', 'Has Genesis');
-                $mail->CharSet = 'UTF-8'; // Türkçe karakter desteği için karakter setini UTF-8 yap
+                    // Gönderen bilgisi
+                    $mail->setFrom('hasgenesisduyuru@gmail.com', 'Has Genesis');
+                    $mail->addReplyTo('hasgenesisduyuru@gmail.com', 'Has Genesis Destek');
+                    $mail->CharSet = 'UTF-8';
 
-                // E-posta içeriği
-                $subject = "\"" . $name . "\" başlıklı yeni bir haber yayınlandı!"; // Haber başlığı ile e-posta konusu
-                $body = "<p>Merhaba,</p>";
-                $body .= "<p>Has Genesis'te <strong>\"" . $name . "\"</strong> başlıklı yeni bir haber yayınlandı. Detaylar için tıklayın:</p>";
-                $body .= "<p><a href='https://hasgenesis.com/news'>Buraya tıklayın</a></p>";
-                $body .= "<p>Saygılarımızla,</p>";
-                $body .= "<p>Has Genesis</p>";
+                    // E-posta içeriği
+                    $subject = "\"" . $name . "\" başlıklı yeni bir haber yayınlandı!";
+                    $body = "<p>Merhaba,</p>";
+                    $body .= "<p>Has Genesis'te <strong>\"" . $name . "\"</strong> başlıklı yeni bir haber yayınlandı. Detaylar için tıklayın:</p>";
+                    $body .= "<p><a href='https://hasgenesis.com/news'>Buraya tıklayın</a></p>";
+                    $body .= "<p>Saygılarımızla,</p>";
+                    $body .= "<p>Has Genesis</p>";
+                    $body .= "<hr>"; // Görsel ayrım için çizgi
+                    $body .= "<p style='color: red; font-weight: bold;'>Bu e-posta otomatik olarak gönderilmiştir, lütfen yanıtlamayınız.</p>";
+                    $body .= "<p>Bilgi almak için bizimle <a href='mailto:info@hasgenesis.com'>info@hasgenesis.com</a> adresinden iletişime geçebilirsiniz.</p>";
 
-                // Kullanıcıların e-postalarına döngü ile mail gönder
-                while ($row = $result->fetch_assoc()) {
-                    try {
-                        // Alıcı e-posta adresi
+
+                    // Kullanıcıların e-postalarına döngü ile mail gönder
+                    while ($row = $result->fetch_assoc()) {
+                        $mail->clearAddresses(); // Önceki adresleri temizle
                         $mail->addAddress($row['mail_users']);
-
-                        // E-posta içeriği
                         $mail->isHTML(true);
                         $mail->Subject = $subject;
                         $mail->Body = $body;
-
-                        // Mail gönderimi
                         $mail->send();
-
-                        // Alıcı adresini temizle (her döngüde yeni alıcıya gönderim yapılması için)
-                        $mail->clearAddresses();
-                    } catch (Exception $e) {
-                        // E-posta gönderiminde hata olursa devam et, hata loglanabilir
-                        error_log("E-posta gönderim hatası: " . $e->getMessage());
                     }
-                }
 
-                // Yönlendirme yap
-                header("Location: " . $_SERVER['PHP_SELF'] . "?status=success");
-                exit; // Yönlendirme yaptıktan sonra çıkış yap
+                    // Yönlendirme yap
+                    header("Location: " . $_SERVER['PHP_SELF'] . "?status=success");
+                    exit;
+                } catch (Exception $e) {
+                    error_log("E-posta gönderim hatası: " . $mail->ErrorInfo);
+                    $alertMessage = "E-posta gönderimi başarısız oldu!";
+                    $alertType = 'error';
+                }
             } else {
                 $alertMessage = "Hata: " . $conn->error;
                 $alertType = 'error';
             }
-
             $stmt->close();
         }
     }

@@ -25,6 +25,26 @@ if (isset($_FILES['file']) && $organization_id && $race_type) {
     $spreadsheet = IOFactory::load($file);
     $sheet = $spreadsheet->getActiveSheet();
 
+    // Başlık satırını al
+    $headerRow = $sheet->getRowIterator()->current();
+    $headerCells = $headerRow->getCellIterator();
+    $headerCells->setIterateOnlyExistingCells(false);
+
+    $differenceColumnIndex = null; // Difference sütununun yerini dinamik olarak tutacağız
+    $columnIndex = 0;
+
+    foreach ($headerCells as $cell) {
+        if (strtolower(trim($cell->getValue())) === 'difference') {
+            $differenceColumnIndex = $columnIndex;
+            break;
+        }
+        $columnIndex++;
+    }
+
+    if ($differenceColumnIndex === null) {
+        die("Hata: 'Difference' sütunu bulunamadı.");
+    }
+
     // Veriyi okuma (satır satır)
     foreach ($sheet->getRowIterator() as $rowIndex => $row) {
         // İlk satırı atla (başlıklar)
@@ -51,7 +71,7 @@ if (isset($_FILES['file']) && $organization_id && $race_type) {
         $category = preg_replace('/\s*\+\s*\(.*?\)/', '', $category); // '+ (1984 VE ALTI)' kısmını temizle
         $category = trim($category); // Boşlukları temizle
         $time = $data[6]; // Time
-        $difference = $data[7]; // Difference
+        $difference = $data[$differenceColumnIndex]; // Dinamik "Difference" sütunu
 
         // Zaman formatını kontrol et ve düzenle
         if (strtolower($time) !== 'dns') {
@@ -89,7 +109,6 @@ if (isset($_FILES['file']) && $organization_id && $race_type) {
     }
 
     // Başarılı yükleme sonrası yönlendirme
-    // header("Location: ../raceresults.php?organization_id=$organization_id&race_type=$race_type");
     header("Location: raceresults-admin.php");
     exit; // Yönlendirmeden sonra işlemi sonlandır
 }
@@ -115,6 +134,7 @@ if ($organization_id) {
     if ($e_bike) $race_types[] = 'E-bike'; // 'E-bike' için büyük 'E' kullan
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="tr">
