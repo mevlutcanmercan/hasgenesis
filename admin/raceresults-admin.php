@@ -25,94 +25,99 @@ if (isset($_FILES['file']) && $organization_id && $race_type) {
     $spreadsheet = IOFactory::load($file);
     $sheet = $spreadsheet->getActiveSheet();
 
-    // Başlık satırını al
-    $headerRow = $sheet->getRowIterator()->current();
-    $headerCells = $headerRow->getCellIterator();
-    $headerCells->setIterateOnlyExistingCells(false);
+   // İlk satırdaki başlıkları al
+$headerRow = $sheet->getRowIterator()->current();
+$headerCells = $headerRow->getCellIterator();
+$headerCells->setIterateOnlyExistingCells(false);
 
-    $differenceColumnIndex = null; // Difference sütununun yerini dinamik olarak tutacağız
-    $columnIndex = 0;
+// Sütun indekslerini bulma
+$differenceColumnIndex = null;
+$lapColumnIndexes = [];
+$columnIndex = 0;
+foreach ($headerCells as $cell) {
+    $headerValue = strtolower(trim($cell->getValue()));
 
-    foreach ($headerCells as $cell) {
-        if (strtolower(trim($cell->getValue())) === 'difference') {
-            $differenceColumnIndex = $columnIndex;
-            break;
-        }
-        $columnIndex++;
+    if ($headerValue === 'difference') {
+        $differenceColumnIndex = $columnIndex;
     }
 
-    if ($differenceColumnIndex === null) {
-        die("Hata: 'Difference' sütunu bulunamadı.");
+    if (strpos($headerValue, 'lap') !== false) {
+        $lapColumnIndexes[] = $columnIndex; // "Lap" sütunlarını diziye ekle
     }
 
-    // Veriyi okuma (satır satır)
-    foreach ($sheet->getRowIterator() as $rowIndex => $row) {
-        // İlk satırı atla (başlıklar)
-        if ($rowIndex == 1) {
-            continue;
-        }
-
-        $cellIterator = $row->getCellIterator();
-        $cellIterator->setIterateOnlyExistingCells(false); // Tüm hücreleri oku, boş hücreler de dahil
-
-        $data = [];
-        foreach ($cellIterator as $cell) {
-            $data[] = $cell->getValue(); // Hücre değerini al
-        }
-
-        // Verileri işleme
-        $place = (int)$data[0]; // Place
-        $bib = (int)$data[1]; // Bib No
-        $first_name = $data[3]; // First Name
-        $last_name = $data[4]; // Last Name
-        $name = $first_name . ' ' . $last_name; // Tam isim (First Name + Last Name)
-        $category = preg_replace('/\d/', '', $data[5]); // Kategori (sadece yazılar)
-        $category = preg_replace('/\s*-\s*\(.*?\)/', '', $category); // Kategori değerinden '- (-)' kısmını kaldır
-        $category = preg_replace('/\s*\+\s*\(.*?\)/', '', $category); // '+ (1984 VE ALTI)' kısmını temizle
-        $category = trim($category); // Boşlukları temizle
-        $time = $data[6]; // Time
-        $difference = $data[$differenceColumnIndex]; // Dinamik "Difference" sütunu
-
-        // Zaman formatını kontrol et ve düzenle
-        if (strtolower($time) !== 'dns') {
-            $time = date('H:i:s', strtotime($time));
-        } else {
-            $time = null; // Eğer DNS ise null atayın
-        }
-
-        // Kullanıcı ID'sini adıyla eşleştir
-        $user_query = "SELECT u.id_users 
-                       FROM users u 
-                       WHERE LOWER(CONCAT(u.name_users, ' ', u.surname_users)) = LOWER(?)";
-        $stmt = $conn->prepare($user_query);
-        if (!$stmt) {
-            die("Sorgu hazırlanamadı: " . $conn->error);
-        }
-
-        $stmt->bind_param("s", $name);
-        $stmt->execute();
-        $stmt->store_result();
-
-        $user_id = null; // Varsayılan değer olarak null ata
-
-        if ($stmt->num_rows > 0) {
-            $stmt->bind_result($user_id);
-            $stmt->fetch();
-        }
-
-        // Elde edilen veriyi veritabanına ekle
-        $insert_query = "INSERT INTO race_results (organization_id, user_id, place, Bib, name, race_type, category, time, difference)
-                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        $insert_stmt = $conn->prepare($insert_query);
-        $insert_stmt->bind_param("iiissssss", $organization_id, $user_id, $place, $bib, $name, $race_type, $category, $time, $difference);
-        $insert_stmt->execute();
-    }
-
-    // Başarılı yükleme sonrası yönlendirme
-    header("Location: raceresults-admin.php");
-    exit; // Yönlendirmeden sonra işlemi sonlandır
+    $columnIndex++;
 }
 
+// Eğer "Difference" sütunu yoksa hata ver
+if ($differenceColumnIndex === null) {
+    die("Hata: 'Difference' sütunu bulunamadı.");
+}
+
+// Excel verisini okuma ve veritabanına aktarma
+foreach ($sheet->getRowIterator() as $rowIndex => $row) {
+    if ($rowIndex == 1) continue; // Başlık satırını atla
+
+    $cellIterator = $row->getCellIterator();
+    $cellIterator->setIterateOnlyExistingCells(false);
+
+    $data = [];
+    foreach ($cellIterator as $cell) {
+        $data[] = $cell->getValue();
+    }
+
+    // Temel verileri al
+    $place = (int)$data[0];
+    $bib = (int)$data[1];
+    $first_name = $data[3];
+    $last_name = $data[4];
+    $name = $first_name . ' ' . $last_name;
+    $category = preg_replace('/\d/', '', $data[5]);
+    $category = preg_replace('/\s*-\s*\(.*?\)/', '', $category);
+    $category = preg_replace('/\s*\+\s*\(.*?\)/', '', $category);
+    $category = trim($category);
+    $time = $data[6];
+    $difference = $data[$differenceColumnIndex];
+
+    // Lap verilerini oku
+    $laps = [];
+    foreach ($lapColumnIndexes as $index) {
+        $laps[] = $data[$index] ?? null;
+    }
+
+    // Eğer eksik lap sütunu varsa, boş string olarak tamamla
+    while (count($laps) < 4) {
+        $laps[] = null;
+    }
+
+    // Kullanıcı ID'sini adıyla eşleştir
+    $user_query = "SELECT id_users FROM users WHERE LOWER(CONCAT(name_users, ' ', surname_users)) = LOWER(?)";
+    $stmt = $conn->prepare($user_query);
+    if (!$stmt) {
+        die("Sorgu hazırlanamadı: " . $conn->error);
+    }
+
+    $stmt->bind_param("s", $name);
+    $stmt->execute();
+    $stmt->store_result();
+
+    $user_id = null;
+    if ($stmt->num_rows > 0) {
+        $stmt->bind_result($user_id);
+        $stmt->fetch();
+    }
+
+    // Veriyi veritabanına ekleme
+    $insert_query = "INSERT INTO race_results (organization_id, user_id, place, Bib, name, race_type, category, time, difference, lap1, lap2, lap3, lap4)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $insert_stmt = $conn->prepare($insert_query);
+
+    $insert_stmt->bind_param("iiissssssssss", $organization_id, $user_id, $place, $bib, $name, $race_type, $category, $time, $difference, $laps[0], $laps[1], $laps[2], $laps[3]);
+    $insert_stmt->execute();
+}
+
+header("Location: raceresults-admin.php");
+exit;
+}
 // Organizasyonları getir
 $org_query = "SELECT id, name, downhill, enduro, hardtail, ulumega, e_bike FROM organizations";
 $org_result = $conn->query($org_query);

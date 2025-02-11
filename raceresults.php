@@ -98,6 +98,10 @@ $result = $stmt->get_result();
                 <th>Kategori</th>
                 <th>Süre</th>
                 <th>Fark</th>
+                <th>Lap 1</th>
+                <th>Lap 2</th>
+                <th>Lap 3</th>
+                <th>Lap 4</th>
             </tr>
         </thead>
         <tbody>
@@ -114,6 +118,10 @@ $result = $stmt->get_result();
                         <td><?php echo htmlspecialchars($row['category']); ?></td>
                         <td><?php echo htmlspecialchars($row['time']); ?></td>
                         <td><?php echo htmlspecialchars($row['difference']); ?></td>
+                        <td><?php echo htmlspecialchars($row['lap1']); ?></td>
+                        <td><?php echo htmlspecialchars($row['lap2']); ?></td>
+                        <td><?php echo htmlspecialchars($row['lap3']); ?></td>
+                        <td><?php echo htmlspecialchars($row['lap4']); ?></td>
                     </tr>
                 <?php endwhile; ?>
             <?php else: ?>
