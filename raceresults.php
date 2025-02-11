@@ -1,5 +1,5 @@
 <?php
-include 'db/database.php'; // Veritabanı bağlantısı
+include 'dB/database.php'; // Veritabanı bağlantısı
 include 'bootstrap.php';
 
 // Organizasyon ID'sini al

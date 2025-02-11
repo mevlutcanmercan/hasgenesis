@@ -61,12 +61,18 @@ function getUserDetails($conn, $user_id) {
 }
 
 // Kullanıcının yaşını hesapla
-function calculateAge($birthdate) {
-    $birth_date = new DateTime($birthdate);
-    $today = new DateTime('today');
-    return $birth_date->diff($today)->y;
-}
+// function calculateAge($birthdate) {
+//     $birth_date = new DateTime($birthdate);
+//     $today = new DateTime('today');
+//     return $birth_date->diff($today)->y;
+// }
 
+
+function calculateAge($birthdate) {
+    $birth_date = new DateTime($birthdate); // Doğum tarihi nesnesi
+    $today = new DateTime('today'); // Bugün tarih nesnesi
+    return $today->format('Y') - $birth_date->format('Y'); // Yaşı doğum yılıyla hesapla
+}
 
 // Kategoriyi belirle - her yarış türü için özel
 function determineCategoryName($conn, $age, $sex, $organization_id, $race_type) {
