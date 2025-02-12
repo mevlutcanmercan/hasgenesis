@@ -19,9 +19,8 @@
     $error = '';
     $success = '';
     
-    $temp_email_domains = [
-        'tempmail.com', '10minutemail.com', 'mailinator.com', 'guerrillamail.com'
-    ];
+    $temp_email_domains = file('https://raw.githubusercontent.com/martenson/disposable-email-domains/master/disposable_email_blocklist.conf', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
 
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -62,10 +61,12 @@
     }
         
 
-        // E-posta geçici mi?
-        $email_domain = substr(strrchr($email, "@"), 1);
-        if (in_array($email_domain, $temp_email_domains)) {
-            $error = "Geçici e-posta adresleri kabul edilmiyor!";
+        $email_domain = strtolower(substr(strrchr($email, "@"), 1)); // @ işaretinden sonrasını al
+        foreach ($temp_email_domains as $temp_domain) {
+            if (strpos($email_domain, $temp_domain) !== false) {
+                $error = "Geçici e-posta adresleri kabul edilmiyor!";
+                break;
+            }
         }
 
         // Doğum tarihi kontrolü (geçerli mi?)
