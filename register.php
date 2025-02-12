@@ -1,15 +1,29 @@
 <?php
     include 'auth.php';
     include 'bootstrap.php';
+    require 'vendor/autoload.php'; 
+
+    use PHPMailer\PHPMailer\PHPMailer;
+    use PHPMailer\PHPMailer\Exception;
+    
+    // PHPMailer dosyalarını dahil et
+    require 'PHPMailer/src/Exception.php';
+    require 'PHPMailer/src/PHPMailer.php';
+    require 'PHPMailer/src/SMTP.php';
 
     session_start();
     
     // Kullanıcı zaten giriş yapmışsa erişimi engelle
     preventAccessIfLoggedIn(); 
-    
+
     $error = '';
     $success = '';
     
+    $temp_email_domains = [
+        'tempmail.com', '10minutemail.com', 'mailinator.com', 'guerrillamail.com'
+    ];
+
+
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Form verilerini al ve temizle
         $email = trim($_POST['mail_users']);
@@ -19,9 +33,41 @@
         $telefon = trim($_POST['telefon']);
         $birthday = trim($_POST['birthday_users']);
         $sex = trim($_POST['sex']);
-    
-        // Sunucu tarafı doğrulamaları
+
+        // Rate limiting mekanizması 
+    if (!isset($_SESSION['activation_requests'])) {
+        $_SESSION['activation_requests'] = [];
+    }
+
+    if (!isset($_SESSION['activation_total'])) {
+        $_SESSION['activation_total'] = [];
+    }
+
+    if (!isset($_SESSION['activation_total'][$email])) {
+        $_SESSION['activation_total'][$email] = 0;
+    }
+
+    // Eski istekleri temizleme (5 dakikadan eski olanları kaldır)
+    $_SESSION['activation_requests'] = array_filter($_SESSION['activation_requests'], function ($timestamp) {
+        return $timestamp > time() - 600; // 300 saniye = 10 dakika
+    });
+
+    // Aynı e-posta için kaç kez istek yapıldığını say
+    $email_requests = array_count_values($_SESSION['activation_requests']);
+    $email_request_count = $email_requests[$email] ?? 0;
+
+    // Eğer rate limit aşıldıysa, hata döndür
+    if ($email_request_count >= 2 || $_SESSION['activation_total'][$email] >= 3) {
+        $error = "Çok fazla aktivasyon kodu istediniz. Lütfen daha sonra tekrar deneyin.";
+    }
         
+
+        // E-posta geçici mi?
+        $email_domain = substr(strrchr($email, "@"), 1);
+        if (in_array($email_domain, $temp_email_domains)) {
+            $error = "Geçici e-posta adresleri kabul edilmiyor!";
+        }
+
         // Doğum tarihi kontrolü (geçerli mi?)
         if (strtotime($birthday) > time()) {
             $error = "Geçersiz doğum tarihi.";
@@ -53,29 +99,111 @@
             }
         }
     
-        // Hata yoksa kullanıcıyı ekle
         if (empty($error)) {
-            // Şifreyi hash'le
-            $hashed_password = password_hash($password, PASSWORD_BCRYPT);
 
-            // Yeni kullanıcı ekle
-            $sql_insert = "INSERT INTO users (password_users, mail_users, name_users, surname_users, telefon, birthday_users, sex, isAdmin) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            $stmt_insert = $conn->prepare($sql_insert);
-            if ($stmt_insert) {
-                $isAdmin = 0; 
-                $stmt_insert->bind_param("sssssssi", $hashed_password, $email, $name, $surname, $telefon, $birthday, $sex, $isAdmin);
-                
-                if ($stmt_insert->execute()) {
-                    $success = "Kayıt başarı ile tamamlandı, giriş sayfasına yönlendiriliyorsunuz...";
-                } else {
-                    $error = "Kayıt sırasında bir hata oluştu: " . $stmt_insert->error;
-                }
-                $stmt_insert->close();
-            } else {
-                $error = "Veritabanı hatası: " . $conn->error;
+                        // Yeni isteği kaydet
+            $_SESSION['activation_requests'][] = time();
+            $_SESSION['activation_total'][$email]++;
+
+            // Aktivasyon kodu oluştur
+            $activation_code = rand(100000, 999999);
+    
+            // Aktivasyon kodunu e-posta ile gönder
+            $mail = new PHPMailer(true);
+            try {
+                $mail->isSMTP();
+                $mail->Host = 'smtp.gmail.com'; 
+                $mail->SMTPAuth = true;
+                $mail->Username = 'mercanmevlutcan@gmail.com';
+                $mail->Password = 'thgupyzldbpbxjcq';
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                $mail->Port = 587;
+                $mail->CharSet = 'UTF-8';
+
+                $mail->setFrom('mercanmevlutcan@gmail.com', 'Kayıt Onayı');
+                $mail->addAddress($email);
+                $mail->isHTML(true);
+                $mail->Subject = "Kayıt Aktivasyon Kodu";
+                $mail->Body = "<p>Merhaba <strong>$name</strong>,</p>
+                               <p>Kaydınızı tamamlamak için aşağıdaki kodu girin:</p>
+                               <h2>$activation_code</h2>
+                               <p>Bu kod 3 dakika geçerlidir.</p>";
+    
+                $mail->send();
+    
+                // Aktivasyon kodunu session'a kaydet
+                $_SESSION['activation_code'] = $activation_code;
+                $_SESSION['user_data'] = compact("email", "password", "name", "surname", "telefon", "birthday", "sex");
+    
+                // Aktivasyon kodu penceresini aç
+                echo "<script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        Swal.fire({
+                            title: 'Aktivasyon Kodu',
+                            input: 'text',
+                            inputLabel: 'E-posta adresinize gelen kodu girin:',
+                            inputPlaceholder: '6 haneli kodu girin',
+                            showCancelButton: false,
+                            confirmButtonText: 'Onayla',
+                            allowOutsideClick: false,
+                            preConfirm: (code) => {
+                                return fetch('register.php', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                                    body: 'activation_code=' + code
+                                }).then(response => response.text());
+                            }
+                        }).then(result => {
+                            if (result.value.includes('success')) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Başarılı!',
+                                    text: 'Kaydınız tamamlandı, giriş yapabilirsiniz.',
+                                    confirmButtonText: 'Tamam'
+                                }).then(() => {
+                                    window.location.href = 'login.php';
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Hata!',
+                                    text: 'Aktivasyon kodu yanlış!',
+                                    confirmButtonText: 'Tekrar Dene'
+                                });
+                            }
+                        });
+                    });
+                </script>";
+            } catch (Exception $e) {
+                $error = "E-posta gönderilemedi: " . $mail->ErrorInfo;
             }
         }
-
+    }
+    
+    // Aktivasyon kodu doğrulama
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['activation_code'])) {
+        $entered_code = trim($_POST['activation_code']);
+    
+        if ($entered_code == $_SESSION['activation_code']) {
+            $user_data = $_SESSION['user_data'];
+    
+            // Kullanıcıyı kaydet
+            $hashed_password = password_hash($user_data['password'], PASSWORD_BCRYPT);
+            $sql_insert = "INSERT INTO users (password_users, mail_users, name_users, surname_users, telefon, birthday_users, sex, isAdmin)
+                           VALUES (?, ?, ?, ?, ?, ?, ?, 0)";
+            $stmt_insert = $conn->prepare($sql_insert);
+            $stmt_insert->bind_param("sssssss", $hashed_password, $user_data['email'], $user_data['name'], $user_data['surname'], $user_data['telefon'], $user_data['birthday'], $user_data['sex']);
+    
+            if ($stmt_insert->execute()) {
+                unset($_SESSION['activation_code'], $_SESSION['user_data']);
+                echo "success";
+            } else {
+                echo "error";
+            }
+            $stmt_insert->close();
+        } else {
+            echo "error";
+        }
     }
 ?>
 <!DOCTYPE html>
