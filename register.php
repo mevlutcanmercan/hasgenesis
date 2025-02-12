@@ -1,7 +1,7 @@
 <?php
     include 'auth.php';
     include 'bootstrap.php';
-    require 'vendor/autoload.php'; 
+    require 'vendor/autoload.php';
 
     use PHPMailer\PHPMailer\PHPMailer;
     use PHPMailer\PHPMailer\Exception;
@@ -19,10 +19,11 @@
     $error = '';
     $success = '';
     
-    $temp_email_domains = file('https://raw.githubusercontent.com/martenson/disposable-email-domains/master/disposable_email_blocklist.conf', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-
-
-
+    // Güvenilir e-posta domainleri
+    $trusted_domains = [
+        'gmail.com', 'outlook.com', 'yahoo.com', 'icloud.com', 'hotmail.com'
+    ];
+    
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Form verilerini al ve temizle
         $email = trim($_POST['mail_users']);
@@ -34,39 +35,30 @@
         $sex = trim($_POST['sex']);
 
         // Rate limiting mekanizması 
-    if (!isset($_SESSION['activation_requests'])) {
-        $_SESSION['activation_requests'] = [];
-    }
+        if (!isset($_SESSION['activation_requests'])) {
+            $_SESSION['activation_requests'] = [];
+        }
 
-    if (!isset($_SESSION['activation_total'])) {
-        $_SESSION['activation_total'] = [];
-    }
+        if (!isset($_SESSION['activation_total'])) {
+            $_SESSION['activation_total'] = [];
+        }
 
-    if (!isset($_SESSION['activation_total'][$email])) {
-        $_SESSION['activation_total'][$email] = 0;
-    }
+        if (!isset($_SESSION['activation_total'][$email])) {
+            $_SESSION['activation_total'][$email] = 0;
+        }
 
-    // Eski istekleri temizleme (5 dakikadan eski olanları kaldır)
-    $_SESSION['activation_requests'] = array_filter($_SESSION['activation_requests'], function ($timestamp) {
-        return $timestamp > time() - 600; // 300 saniye = 10 dakika
-    });
+        // Eski istekleri temizleme (5 dakikadan eski olanları kaldır)
+        $_SESSION['activation_requests'] = array_filter($_SESSION['activation_requests'], function ($timestamp) {
+            return $timestamp > time() - 600; // 600 saniye = 10 dakika
+        });
 
-    // Aynı e-posta için kaç kez istek yapıldığını say
-    $email_requests = array_count_values($_SESSION['activation_requests']);
-    $email_request_count = $email_requests[$email] ?? 0;
+        // Aynı e-posta için kaç kez istek yapıldığını say
+        $email_requests = array_count_values($_SESSION['activation_requests']);
+        $email_request_count = $email_requests[$email] ?? 0;
 
-    // Eğer rate limit aşıldıysa, hata döndür
-    if ($email_request_count >= 2 || $_SESSION['activation_total'][$email] >= 3) {
-        $error = "Çok fazla aktivasyon kodu istediniz. Lütfen daha sonra tekrar deneyin.";
-    }
-        
-
-        $email_domain = strtolower(substr(strrchr($email, "@"), 1)); // @ işaretinden sonrasını al
-        foreach ($temp_email_domains as $temp_domain) {
-            if (strpos($email_domain, $temp_domain) !== false) {
-                $error = "Geçici e-posta adresleri kabul edilmiyor!";
-                break;
-            }
+        // Eğer rate limit aşıldıysa, hata döndür
+        if ($email_request_count >= 5) {
+            $error = "Çok fazla aktivasyon kodu istediniz. Lütfen 5 dakika sonra tekrar deneyin.";
         }
 
         // Doğum tarihi kontrolü (geçerli mi?)
@@ -75,7 +67,6 @@
         }
     
         $phone_pattern = '/^\+?[1-9]\d{1,14}$/'; // 10 ila 14 haneli numaralar kabul edilir
-        
         if (!preg_match($phone_pattern, $telefon)) {
             $error = "Telefon numarası formatı hatalı. Lütfen geçerli bir telefon numarası girin.";
         }
@@ -93,16 +84,37 @@
                 $stmt_check_email->fetch();
                 $stmt_check_email->close();
                 
-                
                 if ($email_count > 0) {       
                     $error = "E-posta zaten kullanılıyor.";
                 }
             }
         }
-    
-        if (empty($error)) {
 
-                        // Yeni isteği kaydet
+        // E-posta domainini çıkar
+        $domain = substr(strrchr($email, "@"), 1); 
+
+        // Eğer domain güvenilir ise, disposable kontrolünü atla
+        if (in_array($domain, $trusted_domains)) {
+            // Güvenilir domain ise işlemi devam ettir
+        } else {
+            // UserCheck API'ye GET isteği yap
+            $api_url = "https://api.usercheck.com/domain/$domain?key=aa7UaylAhE8XjF7wizHtGu4qjUl1d4ol";
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $api_url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            $response = curl_exec($ch);
+            curl_close($ch);
+
+            $response_data = json_decode($response, true);
+
+            if (isset($response_data['disposable']) && $response_data['disposable'] === true) {
+                // Eğer domain disposable ise hata döndür
+                $error = "Tek kullanımlık e-posta adresi kullanamazsınız.";
+            }
+        }
+        
+        if (empty($error)) {
+            // Yeni isteği kaydet
             $_SESSION['activation_requests'][] = time();
             $_SESSION['activation_total'][$email]++;
 
@@ -129,7 +141,7 @@
                                <p>Kaydınızı tamamlamak için aşağıdaki kodu girin:</p>
                                <h2>$activation_code</h2>
                                <p>Bu kod 3 dakika geçerlidir.</p>";
-    
+
                 $mail->send();
     
                 // Aktivasyon kodunu session'a kaydet
@@ -140,7 +152,6 @@
                 echo "<script>
                 document.addEventListener('DOMContentLoaded', function () {
                     let attemptCount = 0; // Kullanıcı giriş deneme sayacı
-            
                     function showActivationPopup() {
                         Swal.fire({
                             title: 'Aktivasyon Kodu',
@@ -199,7 +210,7 @@
             }
         }
     }
-    
+
     // Aktivasyon kodu doğrulama
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['activation_code'])) {
         $entered_code = trim($_POST['activation_code']);
@@ -226,6 +237,22 @@
         }
     }
 ?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
