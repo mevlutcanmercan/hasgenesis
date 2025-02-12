@@ -137,7 +137,10 @@
     
                 // Aktivasyon kodu penceresini aç
                 echo "<script>
-                    document.addEventListener('DOMContentLoaded', function () {
+                document.addEventListener('DOMContentLoaded', function () {
+                    let attemptCount = 0; // Kullanıcı giriş deneme sayacı
+            
+                    function showActivationPopup() {
                         Swal.fire({
                             title: 'Aktivasyon Kodu',
                             input: 'text',
@@ -164,16 +167,32 @@
                                     window.location.href = 'login.php';
                                 });
                             } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Hata!',
-                                    text: 'Aktivasyon kodu yanlış!',
-                                    confirmButtonText: 'Tekrar Dene'
-                                });
+                                attemptCount++; // Yanlış giriş sayısını artır
+                                if (attemptCount >= 3) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Hata!',
+                                        text: 'Çok fazla hatalı giriş yaptınız.',
+                                        confirmButtonText: 'Tamam'
+                                    }).then(() => {
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Hata!',
+                                        text: 'Aktivasyon kodu yanlış! Lütfen tekrar deneyin.',
+                                        confirmButtonText: 'Tekrar Dene'
+                                    }).then(() => {
+                                        showActivationPopup(); // Tekrar pop-up göster
+                                    });
+                                }
                             }
                         });
-                    });
-                </script>";
+                    }
+            
+                    showActivationPopup(); // İlk pop-up gösterimi
+                });
+            </script>";
             } catch (Exception $e) {
                 $error = "E-posta gönderilemedi: " . $mail->ErrorInfo;
             }
