@@ -98,17 +98,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     // E-posta içeriği
                     $subject = "\"" . $name . "\" başlıklı yeni bir haber yayınlandı!";
-                    $body = "<p>Merhaba,</p>";
-                    $body .= "<p>Has Genesis'te <strong>\"" . $name . "\"</strong> başlıklı yeni bir haber yayınlandı. Detaylar için tıklayın:</p>";
-                    $body .= "<p><a href='https://hasgenesis.com/news'>Buraya tıklayın</a></p>";
+                    $body = "<html><body style='font-family: Arial, sans-serif; color: #333; line-height: 1.6;'>";
+                    $body .= "<div style='background-color: #f4f4f4; padding: 20px; border-radius: 8px;'>";
+                    $body .= "<h2 style='color:rgb(0, 0, 0);'>Yeni Haber Yayınlandı!</h2>";
+                    $body .= "<p>Merhaba,</p>";
+                    $body .= "<p><strong>" . $name . "</strong> başlıklı yeni bir haber Has Genesis'te yayınlandı! Detaylar için aşağıdaki bağlantıya tıklayabilirsiniz:</p>";
+                    $body .= "<p><a href='https://hasgenesis.com/news' style='color: #007BFF;'>Haberin Detaylarını Görmek İçin Buraya Tıklayın</a></p>";
                     $body .= "<p>Saygılarımızla,</p>";
-                    $body .= "<p>Has Genesis</p>";
-                    $body .= "<hr>"; // Görsel ayrım için çizgi
-                    $body .= "<p style='color: red; font-weight: bold;'>Bu e-posta otomatik olarak gönderilmiştir, lütfen yanıtlamayınız.</p>";
-                    $body .= "<p>Bilgi almak için bizimle <a href='mailto:info@hasgenesis.com'>info@hasgenesis.com</a> adresinden iletişime geçebilirsiniz.</p>";
+                    $body .= "<p><strong>Has Genesis Ekibi</strong></p>";
+                    $body .= "<hr style='border: 1px solid #ddd; margin: 20px 0;'>";
+                    $body .= "<p style='font-size: 14px; color: #888;'>Bu e-posta otomatik olarak gönderilmiştir, lütfen yanıtlamayınız.</p>";
+                    $body .= "<p>Bilgi almak için bizimle <a href='mailto:info@hasgenesis.com' style='color: #007BFF;'>info@hasgenesis.com</a> adresinden iletişime geçebilirsiniz.</p>";
+                    $body .= "</div>";
+                    $body .= "</body></html>";
 
-
-                    // Kullanıcıların e-postalarına döngü ile mail gönder
+                    // Kullanıcıların e-posta adreslerine döngü ile mail gönder
                     while ($row = $result->fetch_assoc()) {
                         $mail->clearAddresses(); // Önceki adresleri temizle
                         $mail->addAddress($row['mail_users']);

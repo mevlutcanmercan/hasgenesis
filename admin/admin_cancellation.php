@@ -67,35 +67,44 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // E-posta gönderimi
             $mail = new PHPMailer(true);
             try {
+                // E-posta ayarları
                 $mail->isSMTP();
-                    $mail->Host = 'smtp.gmail.com';
-                    $mail->SMTPAuth = true;
-                    $mail->Username = 'hasgenesisduyuru@gmail.com';
-                    $mail->Password = 'ufjkdlrfjbbcadwh'; // Google App Password kullanmalısınız!
-                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-                    $mail->Port = 587;
+                $mail->Host = 'smtp.gmail.com';
+                $mail->SMTPAuth = true;
+                $mail->Username = 'hasgenesisduyuru@gmail.com';
+                $mail->Password = 'ufjkdlrfjbbcadwh'; // Google App Password kullanmalısınız!
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                $mail->Port = 587;
 
                 // Gönderen bilgileri
                 $mail->setFrom('hasgenesisduyuru@gmail.com', 'Has Genesis'); // Gönderen adı
                 $mail->addAddress($user_email); // Alıcı e-posta
 
-                // E-posta başlığı
-                $subject = 'İptal Talebiniz Hk.';
+                // E-posta charset
+                $mail->CharSet = 'UTF-8';
 
-                // E-posta içeriği
-                $body = "<html><body>";
+                // HTML içeriği
+                $subject = "\"{$organization_name}\" organizasyonuna ait iptal talebiniz onaylandı!";
+                $body = "<html><body style='font-family: Arial, sans-serif; color: #333; line-height: 1.6;'>";
+                $body .= "<div style='background-color: #f4f4f4; padding: 20px; border-radius: 8px;'>";
+                $body .= "<h2 style='color:rgb(51, 255, 0);'>İptal Talebiniz Onaylandı!</h2>";
                 $body .= "<p>Merhaba,</p>";
-                $body .= "<p><strong>{$organization_name}</strong> organizasyonuna ait iptal talebiniz maalesef reddedilmiştir. Lütfen daha fazla bilgi almak için bizimle iletişime geçin.</p>";
-                $body .= "<p>İletişim için: <a href='mailto:info@hasgenesis.com' style='color: #007BFF; text-decoration: none;'>info@hasgenesis.com</a></p>";
-                $body .= "<hr style='border: 1px solid #ddd;'>"; // Görsel ayrım için çizgi
-                $body .= "<p style='color: red; font-weight: bold;'>Bu e-posta otomatik olarak gönderilmiştir, lütfen yanıtlamayınız.</p>";
+                $body .= "<p><strong>{$organization_name}</strong> organizasyonuna ait iptal talebiniz başarıyla onaylanmıştır ve işleminiz tamamlanmıştır.</p>";
+                $body .= "<p>Ödemenizin 1 hafta içerisinde geri ödeneceğini bildiririz. Bu süreçte herhangi bir sorunla karşılaşmamanız için sizden bir şey rica etmek istiyoruz:</p>";
+                $body .= "<p>Eğer havale ile ödeme yaparken kullandığınız hesap adı ile organizasyona kayıt olduğunuz hesabınızın adı farklıysa, lütfen bizimle iletişime geçiniz ve durumu bildiriniz.</p>";
+                $body .= "<p>Herhangi bir sorunuz olursa, lütfen bizimle iletişime geçin.</p>";
+                $body .= "<p><strong>İletişim için:</strong> <a href='mailto:info@hasgenesis.com' style='color: #007BFF;'>info@hasgenesis.com</a></p>";
+                $body .= "<hr style='border: 1px solid #ddd; margin: 20px 0;'>";
+                $body .= "<p style='font-size: 14px; color: #888;'>Bu e-posta otomatik olarak gönderilmiştir, lütfen yanıtlamayınız.</p>";
                 $body .= "<p>Saygılarımızla,</p>";
                 $body .= "<p><strong>Has Genesis Ekibi</strong></p>";
+                $body .= "</div>";
                 $body .= "</body></html>";
-                
 
-                // Karakter setini ayarlayın
-                $mail->CharSet = 'UTF-8'; // UTF-8 karakter seti kullanımı
+                // E-posta başlık ve içerik
+                $mail->Subject = $subject;
+                $mail->Body = $body;
+                $mail->isHTML(true);  // HTML içeriği kullanmak için
 
                 // E-posta gönderimi
                 $mail->send();
@@ -145,32 +154,42 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // E-posta gönderimi
             $mail = new PHPMailer(true);
             try {
+                // E-posta ayarları
                 $mail->isSMTP();
-                    $mail->Host = 'smtp.gmail.com';
-                    $mail->SMTPAuth = true;
-                    $mail->Username = 'hasgenesisduyuru@gmail.com';
-                    $mail->Password = 'ufjkdlrfjbbcadwh'; // Google App Password kullanmalısınız!
-                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-                    $mail->Port = 587;
+                $mail->Host = 'smtp.gmail.com';
+                $mail->SMTPAuth = true;
+                $mail->Username = 'hasgenesisduyuru@gmail.com';
+                $mail->Password = 'ufjkdlrfjbbcadwh'; // Google App Password kullanmalısınız!
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                $mail->Port = 587;
 
                 // Gönderen bilgileri
                 $mail->setFrom('hasgenesisduyuru@gmail.com', 'Has Genesis'); // Gönderen adı
                 $mail->addAddress($user_email); // Alıcı e-posta
 
-                // E-posta içeriği
-                $mail->Subject = 'İptal Talebiniz Hk.';
-                $mail->Body = "
-                <p>Merhaba,</p>
-                <p><strong>{$organization_name}</strong> organizasyonuna ait iptal talebiniz reddedilmiştir. Daha fazla bilgi almak için lütfen bizimle iletişime geçin.</p>
-                <p>İletişim için: <a href='mailto:info@hasgenesis.com'>info@hasgenesis.com</a></p>
-                <hr> <!-- Görsel ayrım için çizgi -->
-                <p style='color: red; font-weight: bold;'>Bu e-posta otomatik olarak gönderilmiştir, lütfen yanıtlamayınız.</p>
-                <p>Saygılarımızla,</p>
-                <p>Has Genesis Ekibi</p>
-                ";
+                // E-posta charset
+                $mail->CharSet = 'UTF-8';
 
-                // Karakter setini ayarlayın
-                $mail->CharSet = 'UTF-8'; // UTF-8 karakter seti kullanımı
+                // HTML içeriği
+                $subject = "İptal Talebiniz Reddedildi!";
+                $body = "<html><body style='font-family: Arial, sans-serif; color: #333; line-height: 1.6;'>";
+                $body .= "<div style='background-color: #f4f4f4; padding: 20px; border-radius: 8px;'>";
+                $body .= "<h2 style='color: #FF0000;'>İptal Talebiniz Reddedildi!</h2>";
+                $body .= "<p>Merhaba,</p>";
+                $body .= "<p><strong>{$organization_name}</strong> organizasyonuna ait iptal talebiniz maalesef reddedilmiştir.</p>";
+                $body .= "<p>Herhangi bir sorunuz olursa, lütfen bizimle iletişime geçin.</p>";
+                $body .= "<p><strong>İletişim için:</strong> <a href='mailto:info@hasgenesis.com' style='color: #007BFF;'>info@hasgenesis.com</a></p>";
+                $body .= "<hr style='border: 1px solid #ddd; margin: 20px 0;'>";
+                $body .= "<p style='font-size: 14px; color: #888;'>Bu e-posta otomatik olarak gönderilmiştir, lütfen yanıtlamayınız.</p>";
+                $body .= "<p>Saygılarımızla,</p>";
+                $body .= "<p><strong>Has Genesis Ekibi</strong></p>";
+                $body .= "</div>";
+                $body .= "</body></html>";
+
+                // E-posta başlık ve içerik
+                $mail->Subject = $subject;
+                $mail->Body = $body;
+                $mail->isHTML(true);  // HTML içeriği kullanmak için
 
                 // E-posta gönderimi
                 $mail->send();
@@ -190,6 +209,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 ?>
+
+
+
+
 
 <!DOCTYPE html>
 <html lang="tr">
