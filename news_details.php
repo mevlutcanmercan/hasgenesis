@@ -84,7 +84,7 @@ $formattedText = makeClickableLinks(htmlspecialchars($text));
                     if (!empty($image)) {
                         $activeClass = $index === 0 ? 'active' : '';
                         echo "<div class='carousel-item $activeClass'>
-                                <img src='" . htmlspecialchars($image) . "' class='d-block w-100 slider-image' alt='Haber Resmi'>
+                                <img src='" . htmlspecialchars($image) . "' class='d-block w-100 slider-image' alt='Haber Resmi' onclick='openModal(\"" . htmlspecialchars($image) . "\")'>
                               </div>";
                     }
                 }
@@ -99,7 +99,72 @@ $formattedText = makeClickableLinks(htmlspecialchars($text));
                 <span class="sr-only">Sonraki</span>
             </a>
         </div>
+
+
+                    <!-- Modal (Resmi %50 büyüterek açan) -->
+<div id="imageModal" class="modal fade" tabindex="-1" role="dialog" data-backdrop="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content" style="background: rgba(0,0,0,0.8); border: none;">
+      <div class="modal-body p-0 d-flex justify-content-center align-items-center">
+        <!-- Resmi ve Kapatma Butonunu kapsayan container -->
+        <div class="image-container" style="position: relative; display: inline-block;">
+          <img id="modalImage" src="" alt="Büyütülmüş Resim" style="display: block;">
+          
+        </div>
+      </div>
     </div>
+  </div>
+</div>
+
+
+            <!-- JavaScript ile Modalı Açma -->
+            <script>
+
+                
+            function openModal(imageSrc) {
+                if (window.innerWidth <= 768) {
+                    return; // Mobilde pop-up'ı engelle
+                }
+                const modalImage = document.getElementById("modalImage");
+                modalImage.src = imageSrc;
+
+                modalImage.onload = function() {
+                // Orijinal boyutları al (piksel cinsinden)
+                const originalWidth = modalImage.naturalWidth;
+                const originalHeight = modalImage.naturalHeight;
+
+                // %50 daha büyük (1.5 kat)
+                let newWidth = originalWidth * 1.5;
+                let newHeight = originalHeight * 1.5;
+
+                // Ekranın %90’ına sığacak şekilde sınır belirleyelim
+                const maxW = window.innerWidth * 0.9;
+                const maxH = window.innerHeight * 0.9;
+
+                // En-boy oranını koruyarak ekrana sığdıralım
+                const widthRatio = maxW / newWidth;
+                const heightRatio = maxH / newHeight;
+                const scaleFactor = Math.min(widthRatio, heightRatio, 1);
+
+                // scaleFactor < 1 ise, resim ekrandan taşacak kadar büyük
+                // olduğundan otomatik küçültülür
+                newWidth *= scaleFactor;
+                newHeight *= scaleFactor;
+
+                // Yeni boyutları uygula
+                modalImage.style.width = newWidth + "px";
+                modalImage.style.height = newHeight + "px";
+
+                // Modal'ı göster
+                $("#imageModal").modal("show");
+                };
+            }
+            </script>
+
+
+
+
+        </div>
 
     <!-- Haber Başlığı ve İçeriği -->
     <h2 class="mt-4"><?php echo htmlspecialchars($name); ?></h2>

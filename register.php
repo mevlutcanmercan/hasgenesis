@@ -125,15 +125,15 @@
             $mail = new PHPMailer(true);
             try {
                 $mail->isSMTP();
-                $mail->Host = 'smtp.gmail.com'; 
+                $mail->Host = 'mail.hasgenesis.com'; 
                 $mail->SMTPAuth = true;
-                $mail->Username = 'mercanmevlutcan@gmail.com';
-                $mail->Password = 'thgupyzldbpbxjcq';
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-                $mail->Port = 587;
+                $mail->Username = 'verify@hasgenesis.com';
+                $mail->Password = '4enaC2T,qTw4';
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+                $mail->Port = 465;
                 $mail->CharSet = 'UTF-8';
 
-                $mail->setFrom('mercanmevlutcan@gmail.com', 'Kayıt Onayı');
+                $mail->setFrom('verify@hasgenesis.com', 'Kayıt Onayı');
                 $mail->addAddress($email);
                 $mail->isHTML(true);
                 $mail->Subject = "Kayıt Aktivasyon Kodu";
@@ -156,7 +156,7 @@
                         Swal.fire({
                             title: 'Aktivasyon Kodu',
                             input: 'text',
-                            inputLabel: 'E-posta adresinize gelen kodu girin:',
+                            inputLabel: '3dk içinde E-posta adresinize gelecek olan kodu giriniz:',
                             inputPlaceholder: '6 haneli kodu girin',
                             showCancelButton: false,
                             confirmButtonText: 'Onayla',

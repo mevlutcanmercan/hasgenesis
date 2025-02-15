@@ -17,7 +17,8 @@ $stmt->close();
 
 
 // İptal Sebebi Gönderme
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'cancel_registration') {
+
     $registration_id = isset($_POST['registration_id']) ? intval($_POST['registration_id']) : null;
     $reason = isset($_POST['reason']) ? trim($_POST['reason']) : null;
 
@@ -42,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->bind_param("iis", $registration_id, $user_id, $reason);
 
         if ($stmt->execute()) {
-            $_SESSION['success_message'] = "İptal sebebiniz başarıyla iletildi.";
+            // $_SESSION['success_message'] = "İptal sebebiniz başarıyla iletildi.";
             header("Location: account.php"); // Tekrar yönlendirme yaparak formun tekrar gönderilmesini önler
             exit();
         } else {
@@ -502,7 +503,7 @@ $user_bikes_result = $user_bikes_stmt->get_result();
                                     <label for="reason">İptal Sebebi:</label>
                                     <textarea name="reason" id="reason" rows="3" required></textarea>
                                     <input type="hidden" name="registration_id" value="<?php echo $row['registration_id']; ?>">
-                                    <button type="submit" class="submit-reason">Gönder</button>
+                                    <button type="submit" class="submit-reason" value="cancel_registration" name="action">Gönder</button>
                                 </form>
                             </div>
                         <?php }

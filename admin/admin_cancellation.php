@@ -67,22 +67,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // E-posta gönderimi
             $mail = new PHPMailer(true);
             try {
-                // SMTP ayarları
                 $mail->isSMTP();
-                $mail->Host = 'mail.hasgenesis.com'; // Giden posta sunucusu
-                $mail->SMTPAuth = true;
-                $mail->Username = 'info@hasgenesis.com'; // Gönderen e-posta
-                $mail->Password = 'QVVXaWsZ*b9S'; // E-posta hesabının şifresi
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // SSL kullanımı
-                $mail->Port = 465; // SSL portu
+                    $mail->Host = 'smtp.gmail.com';
+                    $mail->SMTPAuth = true;
+                    $mail->Username = 'hasgenesisduyuru@gmail.com';
+                    $mail->Password = 'ufjkdlrfjbbcadwh'; // Google App Password kullanmalısınız!
+                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                    $mail->Port = 587;
 
                 // Gönderen bilgileri
-                $mail->setFrom('info@hasgenesis.com', 'Has Genesis'); // Gönderen adı
+                $mail->setFrom('hasgenesisduyuru@gmail.com', 'Has Genesis'); // Gönderen adı
                 $mail->addAddress($user_email); // Alıcı e-posta
 
+                // E-posta başlığı
+                $subject = 'İptal Talebiniz Hk.';
+
                 // E-posta içeriği
-                $mail->Subject = 'İptal Talebiniz Hk.';
-                $mail->Body = "Merhaba,\n\n{$organization_name} organizasyonuna ait iptal talebiniz onaylanmıştır ve kaydınız silinmiştir! Eğer kendi banka hesabınızdan havale yapmadıysanız, iletişim kısmından bize 'ücret iadesi hk.' konusunu seçerek ücreti gönderdiğiniz hesabın bilgilerini yazınız. Ücret iadeniz 1 hafta içerisinde hesabınıza yatırılacaktır.";
+                $body = "<html><body>";
+                $body .= "<p>Merhaba,</p>";
+                $body .= "<p><strong>{$organization_name}</strong> organizasyonuna ait iptal talebiniz maalesef reddedilmiştir. Lütfen daha fazla bilgi almak için bizimle iletişime geçin.</p>";
+                $body .= "<p>İletişim için: <a href='mailto:info@hasgenesis.com' style='color: #007BFF; text-decoration: none;'>info@hasgenesis.com</a></p>";
+                $body .= "<hr style='border: 1px solid #ddd;'>"; // Görsel ayrım için çizgi
+                $body .= "<p style='color: red; font-weight: bold;'>Bu e-posta otomatik olarak gönderilmiştir, lütfen yanıtlamayınız.</p>";
+                $body .= "<p>Saygılarımızla,</p>";
+                $body .= "<p><strong>Has Genesis Ekibi</strong></p>";
+                $body .= "</body></html>";
+                
 
                 // Karakter setini ayarlayın
                 $mail->CharSet = 'UTF-8'; // UTF-8 karakter seti kullanımı
@@ -135,22 +145,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // E-posta gönderimi
             $mail = new PHPMailer(true);
             try {
-                // SMTP ayarları
                 $mail->isSMTP();
-                $mail->Host = 'mail.hasgenesis.com'; // Giden posta sunucusu
-                $mail->SMTPAuth = true;
-                $mail->Username = 'info@hasgenesis.com'; // Gönderen e-posta
-                $mail->Password = 'QVVXaWsZ*b9S'; // E-posta hesabının şifresi
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // SSL kullanımı
-                $mail->Port = 465; // SSL portu
+                    $mail->Host = 'smtp.gmail.com';
+                    $mail->SMTPAuth = true;
+                    $mail->Username = 'hasgenesisduyuru@gmail.com';
+                    $mail->Password = 'ufjkdlrfjbbcadwh'; // Google App Password kullanmalısınız!
+                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                    $mail->Port = 587;
 
                 // Gönderen bilgileri
-                $mail->setFrom('info@hasgenesis.com', 'Has Genesis'); // Gönderen adı
+                $mail->setFrom('hasgenesisduyuru@gmail.com', 'Has Genesis'); // Gönderen adı
                 $mail->addAddress($user_email); // Alıcı e-posta
 
                 // E-posta içeriği
                 $mail->Subject = 'İptal Talebiniz Hk.';
-                $mail->Body = "Merhaba,\n\n{$organization_name} organizasyonuna ait iptal talebiniz reddedilmiştir. Lütfen iletişim kurarak daha fazla bilgi alın.";
+                $mail->Body = "
+                <p>Merhaba,</p>
+                <p><strong>{$organization_name}</strong> organizasyonuna ait iptal talebiniz reddedilmiştir. Daha fazla bilgi almak için lütfen bizimle iletişime geçin.</p>
+                <p>İletişim için: <a href='mailto:info@hasgenesis.com'>info@hasgenesis.com</a></p>
+                <hr> <!-- Görsel ayrım için çizgi -->
+                <p style='color: red; font-weight: bold;'>Bu e-posta otomatik olarak gönderilmiştir, lütfen yanıtlamayınız.</p>
+                <p>Saygılarımızla,</p>
+                <p>Has Genesis Ekibi</p>
+                ";
 
                 // Karakter setini ayarlayın
                 $mail->CharSet = 'UTF-8'; // UTF-8 karakter seti kullanımı
