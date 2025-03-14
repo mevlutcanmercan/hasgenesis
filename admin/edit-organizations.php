@@ -46,18 +46,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $bib_price = !empty($_POST['bib_price']) ? $_POST['bib_price'] : '0';
     $special_bib_price = !empty($_POST['special_bib_price']) ? $_POST['special_bib_price'] : '0';
 
-    // PDF dosyası yükleme
+    // PDF dosyası yüklendiyse işleme al
     $race_details_pdf = $_FILES['race_details_pdf'];
     $upload_dir = '../documents/race_details/';
 
-    // PDF dosyası yüklendiyse işleme al
-    if ($race_details_pdf['type'] == 'application/pdf' && $race_details_pdf['error'] == 0) {
-        $pdf_file_name = basename($race_details_pdf['name']);
-        $upload_file = $upload_dir . $pdf_file_name;
-        move_uploaded_file($race_details_pdf['tmp_name'], $upload_file);
-    } else {
-        $upload_file = $organization['race_details_pdf']; // Var olan PDF dosyasını koru
-    }
+        // Eğer yeni bir dosya yüklenmişse
+        if ($race_details_pdf['error'] == 0) {
+            // Eski dosya varsa sil
+            if (!empty($organization['race_details_pdf']) && file_exists($upload_dir . $organization['race_details_pdf'])) {
+                unlink($upload_dir . $organization['race_details_pdf']); // Eski dosyayı sil
+            }
+
+            // Yeni dosyanın ismini al ve dosyayı yükle
+            $pdf_file_name = basename($race_details_pdf['name']);
+            move_uploaded_file($race_details_pdf['tmp_name'], $upload_dir . $pdf_file_name);
+
+            // **Sadece dosya adını sakla**
+            $upload_file = $pdf_file_name;
+        } else {
+            // Yeni dosya yüklenmemişse mevcut dosyayı koru
+            $upload_file = $organization['race_details_pdf'];
+        }
 
     // Organizasyonu güncelle
     $stmt = $conn->prepare("UPDATE organizations SET name=?, adress=?, details=?, register_start_date=?, last_register_day=?, type=?, downhill=?, enduro=?, hardtail=?, ulumega=?, e_bike=?, min_front_suspension_travel=?, min_rear_suspension_travel=?, race_details_pdf=? WHERE id=?");
@@ -78,14 +87,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     .then((value) => {
                         window.location.href = "organizations-admin.php";
                     });
-                  </script>';
+                </script>';
         } else {
             echo "<script>alert('Fiyat güncellenirken bir hata oluştu.');</script>";
         }
     } else {
         echo "<script>alert('Organizasyon güncellenirken bir hata oluştu.');</script>";
     }
-}
+    }
 ?>
 
 <!DOCTYPE html>
